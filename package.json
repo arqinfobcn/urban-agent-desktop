@@ -35,7 +35,8 @@
     "publish": {
       "provider": "github",
       "owner": "arqinfobcn",
-      "repo": "urban-agent-desktop"
+      "repo": "urban-agent-desktop",
+      "releaseType": "release"
     }
   }
 }
