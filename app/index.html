@@ -211,6 +211,7 @@ body{background:var(--bg);font-family:var(--fs);font-size:14px;color:var(--text)
 .a763-q{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
 .a763-q label{font-size:11px;font-weight:600;color:var(--text2);line-height:1.4}
 .a763-q select{padding:7px 9px;border-radius:var(--r-sm);border:1px solid var(--border);font-size:12px;font-family:var(--fs);background:var(--surface2);color:var(--text)}
+.a763-q select.a763-empty{border:1.5px solid var(--red);background:var(--red-bg);color:var(--red)}
 .a763-result{margin-top:6px;padding:12px;border-radius:var(--r-sm);border:1px solid}
 .a763-result.red{background:var(--red-bg);border-color:var(--red-border)}
 .a763-result.green{background:var(--green-bg);border-color:var(--green-border)}
@@ -433,42 +434,74 @@ function rl(lbl,f){
 function evaluarArt763bis(inp){
   const cita=(n)=>`Art. 7.6.3 bis, apdo. ${n}`;
   const cita763=(n)=>`Art. 7.6.3, apdo. ${n}`;
+  const falta=(campo)=>({estado:"incompleto",texto:`Falta responder: ${campo}.`});
+
   // Condiciones generales del Art. 7.6.3 (aplican a CUALQUIER hospedaje,
   // esté o no en el área central) — se comprueban antes de entrar en el
-  // régimen específico del 7.6.3 bis.
-  if(!inp.reqTecnicos)return{estado:"prohibido",texto:"No cumple los requisitos técnicos mínimos de la normativa sectorial vigente aplicable al hospedaje.",cita:cita763("1")};
-  if(inp.usoIndustrial&&!inp.residencialAlternativo)return{estado:"prohibido",texto:"No se puede implantar en parcelas de uso cualificado industrial (o industrial con terciario de oficinas), salvo que la regulación de la parcela admita el uso residencial en categoría de vivienda colectiva como alternativo o autorizable.",cita:cita763("3")};
-  if(inp.usoExistente==="residencial"&&inp.accesoIndependiente==="no")return{estado:"prohibido",texto:"Los locales integrados en edificios de uso residencial deben contar siempre con acceso independiente.",cita:cita763("4")};
+  // régimen específico del 7.6.3 bis. Cada pregunta debe estar respondida
+  // explícitamente: no se asume ningún valor por defecto.
+  if(!inp.reqTecnicos)return falta("A. ¿Cumple los requisitos técnicos mínimos?");
+  if(inp.reqTecnicos==="no")return{estado:"prohibido",texto:"No cumple los requisitos técnicos mínimos de la normativa sectorial vigente aplicable al hospedaje.",cita:cita763("1")};
 
-  if(!inp.dentroAPE)return{estado:"no_aplica",texto:"El Art. 7.6.3 bis solo se aplica dentro del Área de Planeamiento Específico del Centro Histórico (APE 00.01). Fuera de ese ámbito rige el régimen general de compatibilidad de usos de la norma zonal correspondiente (Art. 8.1.30/8.1.31).",cita:cita("2")};
-  if(inp.planeamientoEspecifico)return{estado:"excepcion",texto:"No es de aplicación: la parcela cuenta con un Estudio de Repercusión por Implantación de Usos validado, o con un Plan Especial de hospedaje aprobado definitivamente y vigente, sin haber implantado aún la actividad.",cita:cita("4")};
-  const nivel=inp.colonia?"E":inp.nivel;
+  if(!inp.usoIndustrial)return falta("B. ¿Uso cualificado industrial?");
+  if(inp.usoIndustrial==="si"){
+    if(!inp.residencialAlternativo)return falta("B.1 ¿Admite uso residencial alternativo/autorizable?");
+    if(inp.residencialAlternativo==="no")return{estado:"prohibido",texto:"No se puede implantar en parcelas de uso cualificado industrial (o industrial con terciario de oficinas), salvo que la regulación de la parcela admita el uso residencial en categoría de vivienda colectiva como alternativo o autorizable.",cita:cita763("3")};
+  }
+
+  if(!inp.dentroAPE)return falta("2. ¿Dentro del APE 00.01?");
+  if(inp.dentroAPE==="no")return{estado:"no_aplica",texto:"El Art. 7.6.3 bis solo se aplica dentro del Área de Planeamiento Específico del Centro Histórico (APE 00.01). Fuera de ese ámbito rige el régimen general de compatibilidad de usos de la norma zonal correspondiente (Art. 8.1.30/8.1.31).",cita:cita("2")};
+
+  if(!inp.planeamientoEspecifico)return falta("9. ¿Existe planeamiento específico vigente?");
+  if(inp.planeamientoEspecifico==="si")return{estado:"excepcion",texto:"No es de aplicación: la parcela cuenta con un Estudio de Repercusión por Implantación de Usos validado, o con un Plan Especial de hospedaje aprobado definitivamente y vigente, sin haber implantado aún la actividad.",cita:cita("4")};
+
+  if(!inp.colonia)return falta("¿Es una Colonia Histórica?");
+  const nivel=inp.colonia==="si"?"E":inp.nivel;
   if(nivel==="E")return{estado:"prohibido",texto:"Prohibido: en el nivel E (Colonias Históricas) no se admite la implantación de hospedaje.",cita:cita("6.b y 11")};
-  if(!nivel)return{estado:"incompleto",texto:"Indica el nivel de compatibilidad de usos (A-D) para continuar."};
+  if(!nivel)return falta("6. ¿Nivel de compatibilidad de usos (A-D)?");
+
+  if(!inp.edificio)return falta("3. ¿Edificio exclusivo o parte de la edificación?");
+  if(!inp.usoExistente)return falta("4. ¿Uso existente del edificio?");
 
   let usoEfectivo=inp.usoExistente;
-  if(usoEfectivo==="residencial"&&inp.terciarioSuperior66)usoEfectivo="no_residencial";
+  if(usoEfectivo==="residencial"){
+    if(!inp.terciarioSuperior66)return falta("5. ¿El uso terciario existente supera el 66%?");
+    if(inp.terciarioSuperior66==="si")usoEfectivo="no_residencial";
+  }
 
-  if(inp.edificioExclusivo){
+  if(usoEfectivo==="residencial"){
+    if(!inp.accesoIndependiente)return falta("C. ¿Tendrá acceso independiente?");
+    if(inp.accesoIndependiente==="no")return{estado:"prohibido",texto:"Los locales integrados en edificios de uso residencial deben contar siempre con acceso independiente.",cita:cita763("4")};
+  }
+
+  const edificioExclusivo=inp.edificio==="exclusivo";
+  const esTuristica=inp.modalidad==="vivienda_turistica";
+
+  if(edificioExclusivo){
     if(nivel==="A"||nivel==="B"){
       if(usoEfectivo==="no_residencial"){
+        if(!inp.proteccion)return falta("8. ¿Nivel de protección del edificio?");
         const req=inp.proteccion==="1"||inp.proteccion==="2";
         return{estado:"uso_alternativo",texto:"Uso alternativo."+(req?` Al estar el edificio catalogado con nivel de protección ${inp.proteccion}, será necesario Plan Especial de Protección.`:""),cita:cita("8.a")};
       }
       if(usoEfectivo==="sin_edificar")return{estado:"prohibido",texto:"Prohibido: en parcelas sin edificar, el hospedaje en edificio exclusivo está prohibido.",cita:cita("8.b.iii")};
+      if(!inp.proteccion)return falta("8. ¿Nivel de protección del edificio?");
       if(inp.proteccion==="3"){
-        if(!inp.esTuristica)return{estado:"no_determinado",texto:'El apdo. 8.b.i solo autoriza expresamente la modalidad de "vivienda de uso turístico" en edificios con protección nivel 3. Para otras modalidades de hospedaje en este supuesto, el artículo no da una regla expresa — se recomienda consulta previa al Ayuntamiento.',cita:cita("8.b.i")};
+        if(!inp.modalidad)return falta("1. ¿Qué hospedaje (modalidad)?");
+        if(!esTuristica)return{estado:"no_determinado",texto:'El apdo. 8.b.i solo autoriza expresamente la modalidad de "vivienda de uso turístico" en edificios con protección nivel 3. Para otras modalidades de hospedaje en este supuesto, el artículo no da una regla expresa — se recomienda consulta previa al Ayuntamiento.',cita:cita("8.b.i")};
         return{estado:"uso_alternativo_condicionado",texto:"Uso alternativo, solo como vivienda de uso turístico. Requiere las obras de restauración/rehabilitación necesarias; la licencia caduca a los 15 años y el edificio vuelve al uso residencial (vivienda colectiva).",cita:cita("8.b.i")};
       }
       if(inp.proteccion==="1"||inp.proteccion==="2")return{estado:"autorizable",texto:"Autorizable, con Plan Especial de Protección.",cita:cita("8.b.ii")};
       return{estado:"prohibido",texto:"Prohibido: en edificios de uso residencial no catalogados, el hospedaje en edificio exclusivo está prohibido.",cita:cita("8.b.iii")};
     }
+    if(!inp.proteccion)return falta("8. ¿Nivel de protección del edificio?");
     const req=inp.proteccion==="1"||inp.proteccion==="2";
     return{estado:"uso_alternativo",texto:"Uso alternativo."+(req?` Al estar el edificio catalogado con nivel de protección ${inp.proteccion}, será necesario Plan Especial de Protección.`:""),cita:cita("9")};
   }
   if(usoEfectivo==="sin_edificar")usoEfectivo="no_residencial";
   if(usoEfectivo==="residencial")return{estado:"prohibido",texto:"Prohibido: en edificios de uso existente residencial no se admite el hospedaje como uso parcial en ninguna planta.",cita:cita("10.b")};
   if(nivel==="A"||nivel==="B")return{estado:"complementario",texto:"Complementario, en cualquier situación de planta.",cita:cita("10.a.i")};
+  if(!inp.planta)return falta("7. ¿En qué planta?");
   if(inp.planta==="piso")return{estado:"complementario",texto:"Complementario, solo en situación de planta de piso.",cita:cita("10.a.ii")};
   return{estado:"prohibido",texto:"Prohibido en planta baja/inferior a la baja: en niveles C/D el uso complementario de hospedaje solo se admite en planta de piso.",cita:cita("10.a.ii")};
 }
@@ -492,27 +525,26 @@ function renderArt763bisCard(d){
       ${ptag("interp")}
     </div>
     <div class="card-body">
+      <div class="disc"><i class="ti ti-info-circle" aria-hidden="true"></i><p>Ninguna pregunta viene rellenada por defecto. Las de fondo rojo aún no tienen respuesta tuya — los avisos bajo algunas de ellas son solo pistas del GIS, no la respuesta.</p></div>
       <div class="a763-section">Condiciones generales — Art. 7.6.3 (aplican en toda la ciudad)</div>
       <div class="a763-q"><label>A. ¿Cumple los requisitos técnicos mínimos de la normativa sectorial de hospedaje vigente?</label>
-        <select id="a763_reqTecnicos"><option value="si">Sí</option><option value="no">No</option></select>
+        <select id="a763_reqTecnicos"><option value="" selected>— Sin responder —</option><option value="si">Sí</option><option value="no">No</option></select>
       </div>
       <div class="a763-q"><label>B. ¿La parcela tiene uso cualificado industrial (o industrial con terciario de oficinas)?</label>
-        <select id="a763_usoIndustrial">
-          <option value="no" ${!usoIndustrialDetectado?"selected":""}>No</option>
-          <option value="si" ${usoIndustrialDetectado?"selected":""}>Sí</option>
-        </select>
-        <div class="a763-cita">${usoIndustrialDetectado?`Prellenado: el uso global de la norma zonal detectada es "${esc(d.gd?.uso||"")}". Verifícalo.`:"No se ha detectado uso industrial en la norma zonal — verifícalo si tienes dudas."}</div>
+        <select id="a763_usoIndustrial"><option value="" selected>— Sin responder —</option><option value="no">No</option><option value="si">Sí</option></select>
+        ${usoIndustrialDetectado?`<div class="a763-cita">Pista (no confirmada): el uso global de la norma zonal detectada es "${esc(d.gd?.uso||"")}", que parece industrial. Verifícalo y responde tú.</div>`:""}
       </div>
       <div class="a763-q"><label>B.1 Si es industrial, ¿la normativa de la parcela admite el uso residencial (vivienda colectiva) como alternativo o autorizable?</label>
-        <select id="a763_residencialAlternativo"><option value="no">No / no aplica</option><option value="si">Sí</option></select>
+        <select id="a763_residencialAlternativo"><option value="" selected>— Sin responder / no aplica —</option><option value="no">No</option><option value="si">Sí</option></select>
       </div>
       <div class="a763-q"><label>C. ¿El local dispondrá de acceso independiente? (obligatorio si el edificio es de uso residencial)</label>
-        <select id="a763_accesoIndependiente"><option value="si">Sí</option><option value="no">No</option></select>
+        <select id="a763_accesoIndependiente"><option value="" selected>— Sin responder —</option><option value="si">Sí</option><option value="no">No</option></select>
       </div>
       <div class="sdiv"></div>
       <div class="a763-section">Área central — Art. 7.6.3 bis (solo dentro del APE 00.01)</div>
       <div class="a763-q"><label>1. ¿Qué hospedaje?</label>
         <select id="a763_modalidad">
+          <option value="" selected>— Sin responder —</option>
           <option value="hotel">Hotel</option>
           <option value="apartamentos">Apartamentos turísticos / hoteles-apartamentos</option>
           <option value="hostales_pensiones">Pensión / hostal / casa de huéspedes</option>
@@ -520,51 +552,51 @@ function renderArt763bisCard(d){
         </select>
       </div>
       <div class="a763-q"><label>2. ¿Dónde? — ¿Dentro del Área de Planeamiento Específico del Centro Histórico (APE 00.01)?</label>
-        <select id="a763_dentroAPE">
-          <option value="si" ${posibleAPE?"selected":""}>Sí</option>
-          <option value="no" ${!posibleAPE?"selected":""}>No</option>
-        </select>
-        <div class="a763-cita">${posibleAPE?"Prellenado: la norma zonal detectada es Norma Zonal 1 (Centro Histórico). Verifica el ámbito exacto del APE 00.01.":"Prellenado: la norma zonal detectada no es la Norma Zonal 1. Verifica igualmente si la parcela cae dentro del APE 00.01."}</div>
+        <select id="a763_dentroAPE"><option value="" selected>— Sin responder —</option><option value="si">Sí</option><option value="no">No</option></select>
+        <div class="a763-cita">${posibleAPE?"Pista (no confirmada): la norma zonal detectada es Norma Zonal 1 (Centro Histórico), lo que sugiere que sí — pero verifica el ámbito exacto del APE 00.01 y responde tú.":"Pista (no confirmada): la norma zonal detectada no es la Norma Zonal 1 — verifica igualmente si la parcela cae dentro del APE 00.01 y responde tú."}</div>
       </div>
       <div class="a763-q"><label>¿Es una Colonia Histórica?</label>
-        <select id="a763_colonia"><option value="no">No</option><option value="si">Sí</option></select>
+        <select id="a763_colonia"><option value="" selected>— Sin responder —</option><option value="no">No</option><option value="si">Sí</option></select>
       </div>
       <div class="a763-q"><label>3. ¿Qué edificio? — ¿Edificio exclusivo o parte de la edificación?</label>
-        <select id="a763_edificio"><option value="exclusivo">Edificio exclusivo</option><option value="parcial">Parte de la edificación (uso complementario)</option></select>
+        <select id="a763_edificio"><option value="" selected>— Sin responder —</option><option value="exclusivo">Edificio exclusivo</option><option value="parcial">Parte de la edificación (uso complementario)</option></select>
       </div>
       <div class="a763-q"><label>4. ¿Qué uso existente tiene el edificio?</label>
         <select id="a763_uso">
+          <option value="" selected>— Sin responder —</option>
           <option value="residencial">Residencial</option>
           <option value="no_residencial">No residencial</option>
           <option value="sin_edificar">Parcela sin edificar</option>
         </select>
       </div>
       <div class="a763-q"><label>5. ¿Qué porcentaje? — Si conviven usos residencial y terciario, ¿el terciario supera el 66% de la superficie edificada?</label>
-        <select id="a763_terciario66"><option value="no">No / no aplica</option><option value="si">Sí, supera el 66%</option></select>
+        <select id="a763_terciario66"><option value="" selected>— Sin responder / no aplica —</option><option value="no">No</option><option value="si">Sí, supera el 66%</option></select>
       </div>
       <div class="a763-q"><label>6. ¿Qué nivel de compatibilidad de usos (Art. 8.1.29)?</label>
         <select id="a763_nivel">
-          <option value="A" ${nivelDetectado==="A"?"selected":""}>A</option>
-          <option value="B" ${nivelDetectado==="B"?"selected":""}>B</option>
-          <option value="C" ${nivelDetectado==="C"?"selected":""}>C</option>
-          <option value="D" ${nivelDetectado==="D"?"selected":""}>D</option>
+          <option value="" selected>— Sin responder —</option>
+          <option value="A">A</option>
+          <option value="B">B</option>
+          <option value="C">C</option>
+          <option value="D">D</option>
         </select>
-        <div class="a763-cita">${nivelDetectado?`Prellenado desde el GIS ("Nivel de Usos y Actividades" = Nivel ${esc(nivelDetectado)}). Verifícalo.`:"No se ha detectado automáticamente — selecciónalo manualmente."}</div>
+        ${nivelDetectado?`<div class="a763-cita">Pista (no confirmada): el GIS devuelve "Nivel de Usos y Actividades" = Nivel ${esc(nivelDetectado)}. Verifícalo y responde tú.</div>`:`<div class="a763-cita">El GIS no ha devuelto un nivel — compruébalo en el Plano de Usos y Actividades y responde tú.</div>`}
       </div>
       <div class="a763-q"><label>7. ¿Qué planta? — Si es uso parcial, ¿en qué planta se implanta?</label>
-        <select id="a763_planta"><option value="baja_inferior">Planta baja / inferior a la baja</option><option value="piso">Planta de piso (primera o superior)</option></select>
+        <select id="a763_planta"><option value="" selected>— Sin responder —</option><option value="baja_inferior">Planta baja / inferior a la baja</option><option value="piso">Planta de piso (primera o superior)</option></select>
       </div>
       <div class="a763-q"><label>8. ¿Qué protección? — Nivel de catalogación del edificio</label>
         <select id="a763_proteccion">
-          <option value="no_catalogado" ${!protDetectada?"selected":""}>No catalogado</option>
-          <option value="1" ${protDetectada==="1"?"selected":""}>Nivel 1 (Integral)</option>
-          <option value="2" ${protDetectada==="2"?"selected":""}>Nivel 2 (Estructural)</option>
-          <option value="3" ${protDetectada==="3"?"selected":""}>Nivel 3 (Ambiental)</option>
+          <option value="" selected>— Sin responder —</option>
+          <option value="no_catalogado">No catalogado</option>
+          <option value="1">Nivel 1 (Integral)</option>
+          <option value="2">Nivel 2 (Estructural)</option>
+          <option value="3">Nivel 3 (Ambiental)</option>
         </select>
-        <div class="a763-cita">${protDetectada?`Sugerido a partir del grado de protección GIS ("${esc(d.gradoProt||"")}"). Verifícalo en el Catálogo de Protección.`:`No se ha podido inferir del dato GIS ("${esc(d.gradoProt||"—")}") — confírmalo en el Catálogo de Protección.`}</div>
+        ${protDetectada?`<div class="a763-cita">Pista (no confirmada): el grado de protección GIS ("${esc(d.gradoProt||"")}") sugeriría el nivel ${esc(protDetectada)}. Verifícalo en el Catálogo de Protección y responde tú.</div>`:`<div class="a763-cita">No se ha podido inferir del dato GIS ("${esc(d.gradoProt||"—")}") — confírmalo en el Catálogo de Protección.</div>`}
       </div>
       <div class="a763-q"><label>9. ¿Existe planeamiento específico vigente? — Estudio de Repercusión validado o Plan Especial de hospedaje aprobado sin ejecutar</label>
-        <select id="a763_planeamiento"><option value="no">No</option><option value="si">Sí</option></select>
+        <select id="a763_planeamiento"><option value="" selected>— Sin responder —</option><option value="no">No</option><option value="si">Sí</option></select>
       </div>
       <div class="a763-result" id="a763result"></div>
       <div class="disc"><i class="ti ti-alert-triangle" aria-hidden="true"></i><p>Herramienta de apoyo basada en el texto literal del Art. 7.6.3 bis (Compendio NNUU, ed. 24/09/2025). No sustituye la consulta urbanística oficial al Ayuntamiento de Madrid ni el informe de un técnico competente antes de solicitar una licencia.</p></div>
@@ -577,17 +609,18 @@ function wireArt763bis(container,d){
   if(!els.a763_modalidad)return;
   const colorMap={prohibido:"red",uso_alternativo:"green",uso_alternativo_condicionado:"green",autorizable:"green",complementario:"green",no_aplica:"blue",excepcion:"blue",no_determinado:"amber",incompleto:"amber"};
   function actualizar(){
+    ids.forEach(id=>els[id].classList.toggle("a763-empty",els[id].value===""));
     const inp={
-      reqTecnicos:els.a763_reqTecnicos.value==="si",
-      usoIndustrial:els.a763_usoIndustrial.value==="si",
-      residencialAlternativo:els.a763_residencialAlternativo.value==="si",
+      reqTecnicos:els.a763_reqTecnicos.value,
+      usoIndustrial:els.a763_usoIndustrial.value,
+      residencialAlternativo:els.a763_residencialAlternativo.value,
       accesoIndependiente:els.a763_accesoIndependiente.value,
-      modalidad:els.a763_modalidad.value,esTuristica:els.a763_modalidad.value==="vivienda_turistica",
-      dentroAPE:els.a763_dentroAPE.value==="si",colonia:els.a763_colonia.value==="si",
-      edificioExclusivo:els.a763_edificio.value==="exclusivo",usoExistente:els.a763_uso.value,
-      terciarioSuperior66:els.a763_terciario66.value==="si",nivel:els.a763_nivel.value,
+      modalidad:els.a763_modalidad.value,
+      dentroAPE:els.a763_dentroAPE.value,colonia:els.a763_colonia.value,
+      edificio:els.a763_edificio.value,usoExistente:els.a763_uso.value,
+      terciarioSuperior66:els.a763_terciario66.value,nivel:els.a763_nivel.value,
       planta:els.a763_planta.value,proteccion:els.a763_proteccion.value,
-      planeamientoEspecifico:els.a763_planeamiento.value==="si",
+      planeamientoEspecifico:els.a763_planeamiento.value,
     };
     const r=evaluarArt763bis(inp);
     const cls=colorMap[r.estado]||"amber";
