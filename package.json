@@ -1,7 +1,7 @@
 {
   "name": "urban-agent-desktop",
   "productName": "Urban Agent",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Inteligencia urbanística de Madrid — expediente urbanístico digital sobre el PGOUM 1997",
   "main": "main.js",
   "author": "InmoLab",
@@ -22,6 +22,10 @@
   "build": {
     "appId": "com.inmolab.urbanagent",
     "productName": "Urban Agent",
+    "directories": {
+      "output": "/Users/pedro/.urban-agent-desktop-dist"
+    },
+    "afterSign": "scripts/afterSign.js",
     "files": [
       "main.js",
       "preload.js",
