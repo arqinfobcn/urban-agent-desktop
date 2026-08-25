@@ -1,0 +1,41 @@
+{
+  "name": "urban-agent-desktop",
+  "productName": "Urban Agent",
+  "version": "1.0.0",
+  "description": "Inteligencia urbanística de Madrid — expediente urbanístico digital sobre el PGOUM 1997",
+  "main": "main.js",
+  "author": "InmoLab",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --mac --publish never",
+    "dist": "electron-builder --mac --publish always"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.1.8"
+  },
+  "dependencies": {
+    "electron-updater": "^6.3.9"
+  },
+  "build": {
+    "appId": "com.inmolab.urbanagent",
+    "productName": "Urban Agent",
+    "files": [
+      "main.js",
+      "preload.js",
+      "app/**/*",
+      "package.json"
+    ],
+    "mac": {
+      "target": ["dmg"],
+      "category": "public.app-category.business"
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "arqinfobcn",
+      "repo": "urban-agent-desktop"
+    }
+  }
+}

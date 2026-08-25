@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Urban Agent · InmoLab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/dist/tabler-icons.min.css">
+
+<style>
+:root{
+  --bg:#F2F1EE;--surface:#FFFFFF;--surface2:#F8F7F4;
+  --border:#E4E2DC;--border2:#D0CEC6;
+  --text:#1A1916;--text2:#6B6860;--text3:#A8A69E;
+  --blue:#1B4FD8;--blue-bg:#EEF2FF;--blue-border:#C7D4FA;
+  --green:#1A6B35;--green-bg:#EDFAF2;--green-border:#A8DFC0;
+  --amber:#8A4A00;--amber-bg:#FFF6E8;--amber-border:#FAD89A;
+  --red:#A01818;--red-bg:#FFF0F0;--red-border:#F5C0C0;
+  --purple:#4B2EA8;--purple-bg:#F3F0FF;--purple-border:#C8BEF5;
+  --teal:#0D6B6B;--teal-bg:#EDFAFA;--teal-border:#A0DEDE;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --shadow:0 4px 12px rgba(0,0,0,.07),0 1px 3px rgba(0,0,0,.05);
+  --r:12px;--r-sm:8px;--fm:'DM Mono',monospace;--fs:'DM Sans',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);font-family:var(--fs);font-size:14px;color:var(--text);min-height:100vh}
+.wrap{max-width:640px;margin:0 auto;padding:32px 16px 48px}
+
+.app-header{text-align:center;margin-bottom:28px}
+.brand-name{font-size:13px;font-weight:600;font-family:var(--fm);letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-bottom:6px}
+.app-title{font-size:22px;font-weight:600;letter-spacing:-.03em;color:var(--text);margin-bottom:10px}
+.live-pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-family:var(--fm);color:var(--text2);padding:4px 12px;background:var(--surface);border:1px solid var(--border);border-radius:20px;box-shadow:var(--shadow-sm)}
+.live-dot{width:6px;height:6px;border-radius:50%;background:#34C759;box-shadow:0 0 0 2px #34C75930;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 2px #34C75930}50%{box-shadow:0 0 0 4px #34C75920}}
+
+.update-pill{display:none;align-items:center;gap:6px;font-size:11px;font-family:var(--fm);color:var(--blue);padding:4px 12px;background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:20px;margin-top:8px;cursor:pointer}
+.update-pill.show{display:inline-flex}
+
+.search-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;margin-bottom:16px}
+.search-inner{display:flex;align-items:center;gap:10px;padding:12px 14px}
+.search-ico{color:var(--text3);font-size:18px;flex-shrink:0}
+.search-input{flex:1;border:none;outline:none;font-size:15px;font-family:var(--fs);color:var(--text);background:transparent}
+.search-input::placeholder{color:var(--text3)}
+.search-divider{width:1px;height:20px;background:var(--border);flex-shrink:0}
+.search-btn{height:34px;padding:0 18px;font-size:13px;font-weight:600;border-radius:var(--r-sm);cursor:pointer;background:var(--blue);border:none;color:#fff;font-family:var(--fs);transition:all .15s;white-space:nowrap}
+.search-btn:hover:not(:disabled){background:#1540B8}
+.search-btn:disabled{opacity:.4;cursor:not-allowed}
+.search-foot{padding:9px 14px;background:var(--surface2);border-top:1px solid var(--border);font-size:11px;color:var(--text3);display:flex;align-items:center;gap:6px}
+
+.mbar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;min-height:20px}
+.mchip{font-size:11px;font-family:var(--fm);padding:4px 12px;border-radius:20px;border:1px solid var(--border);color:var(--text2);cursor:pointer;background:var(--surface);box-shadow:var(--shadow-sm);transition:all .15s}
+.mchip:hover,.mchip.on{background:var(--blue-bg);color:var(--blue);border-color:var(--blue-border)}
+.mclr{font-size:11px;padding:4px 8px;border-radius:20px;border:none;color:var(--text3);cursor:pointer;background:none}
+.mclr:hover{color:var(--red)}
+
+.log{display:flex;flex-direction:column;gap:10px}
+.srow{display:flex;gap:10px;align-items:flex-start;animation:fadeUp .22s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.sico{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;font-size:11px;border:1px solid}
+.i-run{background:var(--green-bg);color:var(--green);border-color:var(--green-border)}
+.i-ok{background:var(--green-bg);color:var(--green);border-color:var(--green-border)}
+.i-warn{background:var(--amber-bg);color:var(--amber);border-color:var(--amber-border)}
+.i-err{background:var(--red-bg);color:var(--red);border-color:var(--red-border)}
+.sbody{flex:1;min-width:0}
+.slbl{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px;font-family:var(--fm)}
+.stxt{font-size:13px;color:var(--text2);line-height:1.5}
+.stxt b{color:var(--text);font-weight:600}
+
+.init-screen{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);padding:40px 32px;text-align:center}
+.init-ico{font-size:36px;color:var(--text3);margin-bottom:12px}
+.init-title{font-size:16px;font-weight:600;color:var(--text);margin-bottom:6px}
+.init-sub{font-size:13px;color:var(--text2);line-height:1.7;max-width:360px;margin:0 auto}
+
+.result-stack{display:flex;flex-direction:column;gap:12px;margin-top:4px}
+.card{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;border:1px solid var(--border)}
+.card-hdr{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid var(--border);justify-content:space-between}
+.card-hdr.blue{background:linear-gradient(135deg,var(--blue-bg),#F8FAFF);border-bottom-color:var(--blue-border)}
+.card-hdr.green{background:linear-gradient(135deg,var(--green-bg),#F5FDF8);border-bottom-color:var(--green-border)}
+.card-hdr.amber{background:linear-gradient(135deg,var(--amber-bg),#FFFCF5);border-bottom-color:var(--amber-border)}
+.card-hdr.purple{background:linear-gradient(135deg,var(--purple-bg),#FAF8FF);border-bottom-color:var(--purple-border)}
+.card-hdr.teal{background:linear-gradient(135deg,var(--teal-bg),#F5FDFD);border-bottom-color:var(--teal-border)}
+.card-hdr.red{background:linear-gradient(135deg,var(--red-bg),#FFF8F8);border-bottom-color:var(--red-border)}
+.card-icon{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;border:1px solid}
+.icon-blue{background:var(--blue-bg);color:var(--blue);border-color:var(--blue-border)}
+.icon-green{background:var(--green-bg);color:var(--green);border-color:var(--green-border)}
+.icon-amber{background:var(--amber-bg);color:var(--amber);border-color:var(--amber-border)}
+.icon-purple{background:var(--purple-bg);color:var(--purple);border-color:var(--purple-border)}
+.icon-teal{background:var(--teal-bg);color:var(--teal);border-color:var(--teal-border)}
+.card-hdr-text{flex:1;min-width:0}
+.card-label{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.07em;text-transform:uppercase;font-family:var(--fm);margin-bottom:1px}
+.card-title{font-size:13px;font-weight:600;color:var(--text);letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-body{padding:14px}
+
+.metric-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.metric{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:9px 11px}
+.metric-lbl{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.05em;text-transform:uppercase;font-family:var(--fm);margin-bottom:3px}
+.metric-val{font-size:13px;font-weight:600;color:var(--text);font-family:var(--fm)}
+.metric-val.blue{color:var(--blue)}
+.metric-val.purple{color:var(--purple)}
+.metric-val.amber{color:var(--amber)}
+.metric-val.muted{color:var(--text3);font-weight:400;font-style:italic;font-size:12px;font-family:var(--fs)}
+
+/* ── ALERTA GIS ── */
+.gis-alert{display:flex;gap:8px;align-items:flex-start;background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:var(--r-sm);padding:10px 12px;margin-top:10px}
+.gis-alert i{color:var(--amber);flex-shrink:0;margin-top:1px}
+.gis-alert p{font-size:12px;color:var(--amber);line-height:1.6}
+.gis-alert strong{font-weight:600}
+
+.param-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
+.param{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:9px 11px}
+.param-lbl{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.05em;text-transform:uppercase;font-family:var(--fm);margin-bottom:3px}
+.param-val{font-size:12px;font-weight:500;color:var(--text);line-height:1.4}
+
+.use-section{display:flex;flex-direction:column;gap:10px}
+.use-group-hdr{display:flex;align-items:center;gap:6px;margin-bottom:5px}
+.use-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.use-dot.green{background:var(--green)}.use-dot.amber{background:var(--amber)}.use-dot.blue{background:var(--blue)}.use-dot.red{background:var(--red)}
+.use-group-lbl{font-size:11px;font-weight:600;color:var(--text2)}
+.use-tags{display:flex;flex-wrap:wrap;gap:4px}
+.utag{font-size:11px;font-weight:500;padding:3px 9px;border-radius:20px;border:1px solid;line-height:1.5}
+.u-perm{background:var(--green-bg);color:var(--green);border-color:var(--green-border)}
+.u-tol{background:var(--amber-bg);color:var(--amber);border-color:var(--amber-border)}
+.u-aut{background:var(--blue-bg);color:var(--blue);border-color:var(--blue-border)}
+.u-proh{background:var(--red-bg);color:var(--red);border-color:var(--red-border)}
+
+.cond-list{display:flex;flex-direction:column;gap:5px}
+.cond-item{display:flex;gap:9px;align-items:flex-start;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:9px 11px}
+.cond-bullet{width:5px;height:5px;border-radius:50%;background:var(--teal);margin-top:6px;flex-shrink:0}
+.cond-text{font-size:12px;color:var(--text2);line-height:1.5}
+
+.prot-alert{display:flex;gap:9px;align-items:flex-start;background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:var(--r-sm);padding:11px 13px;margin-bottom:12px}
+.prot-alert-ico{font-size:15px;color:var(--amber);flex-shrink:0;margin-top:1px}
+.prot-alert-txt{font-size:12px;color:var(--amber);line-height:1.6}
+.prot-alert-txt strong{font-weight:600}
+.prot-2col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.prot-col-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px;font-family:var(--fm);display:flex;align-items:center;gap:4px}
+.prot-col-lbl.green{color:var(--green)}.prot-col-lbl.red{color:var(--red)}
+
+.planos{display:flex;flex-wrap:wrap;gap:5px;padding-top:11px;border-top:1px solid var(--border);margin-top:11px}
+.plano-a{font-size:11px;font-weight:500;color:var(--blue);background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:20px;padding:3px 11px;text-decoration:none;display:flex;align-items:center;gap:4px;transition:opacity .15s}
+.plano-a:hover{opacity:.75}
+
+.disc{display:flex;gap:8px;align-items:flex-start;padding:9px 11px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);margin-top:11px}
+.disc i{color:var(--text3);flex-shrink:0;margin-top:1px}
+.disc p{font-size:11px;color:var(--text3);line-height:1.6}
+.disc a{color:var(--blue)}
+
+.source-bar{display:flex;align-items:center;gap:10px;padding:9px 14px;background:var(--surface2);border-top:1px solid var(--border)}
+.source-badge{font-size:10px;font-weight:600;font-family:var(--fm);padding:2px 9px;border-radius:20px;background:var(--purple-bg);color:var(--purple);border:1px solid var(--purple-border);white-space:nowrap}
+.source-txt{font-size:11px;color:var(--text3)}
+
+.app-footer{text-align:center;margin-top:32px;padding-top:16px;border-top:1px solid var(--border)}
+.footer-txt{font-size:11px;color:var(--text3);font-family:var(--fm);letter-spacing:.02em}
+
+.spin{display:inline-block;width:10px;height:10px;border:1.5px solid var(--green-border);border-top-color:var(--green);border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle;margin-right:4px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.sdiv{height:1px;background:var(--border);margin:12px 0}
+.legal-disc{display:flex;gap:8px;align-items:flex-start;padding:10px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);margin-top:14px}
+.legal-disc i{color:var(--text3);flex-shrink:0;margin-top:1px}
+.legal-disc p{font-size:11px;color:var(--text3);line-height:1.6}
+
+/* ── ETIQUETAS DATO / INTERPRETACIÓN / CONCLUSIÓN ── */
+.ptag{font-size:9px;font-weight:600;font-family:var(--fm);letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:20px;border:1px solid;white-space:nowrap;margin-left:auto}
+.ptag-dato{background:var(--blue-bg);color:var(--blue);border-color:var(--blue-border)}
+.ptag-interp{background:var(--purple-bg);color:var(--purple);border-color:var(--purple-border)}
+.ptag-concl{background:var(--green-bg);color:var(--green);border-color:var(--green-border)}
+
+/* ── EXPEDIENTES DE PLANEAMIENTO ── */
+.exp-list{display:flex;flex-direction:column;gap:8px}
+.exp-item{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px}
+.exp-top{display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap}
+.exp-tipo{font-size:10px;font-weight:600;font-family:var(--fm);padding:2px 8px;border-radius:20px;background:var(--teal-bg);color:var(--teal);border:1px solid var(--teal-border)}
+.exp-num{font-size:11px;color:var(--text3);font-family:var(--fm)}
+.exp-denom{font-size:12px;color:var(--text);font-weight:500;line-height:1.4;margin-bottom:3px}
+.exp-meta{font-size:11px;color:var(--text2);display:flex;gap:10px;flex-wrap:wrap}
+.exp-link{font-size:11px;color:var(--blue);text-decoration:none}
+.exp-link:hover{text-decoration:underline}
+
+/* ── REPOSITORIO NORMATIVO ── */
+.repo-toggle{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:10px;margin-top:16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text2);font-size:12px;font-family:var(--fs);cursor:pointer;box-shadow:var(--shadow-sm)}
+.repo-toggle:hover{background:var(--surface2)}
+.repo-panel{margin-top:10px}
+.repo-panel[hidden]{display:none}
+.repo-node{border:1px solid var(--border);border-radius:var(--r-sm);background:var(--surface);margin-bottom:6px;overflow:hidden}
+.repo-node summary{padding:9px 12px;font-size:12px;font-weight:600;color:var(--text);cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px}
+.repo-node summary::-webkit-details-marker{display:none}
+.repo-node summary::before{content:"›";color:var(--text3);transition:transform .15s}
+.repo-node[open]>summary::before{transform:rotate(90deg)}
+.repo-node .repo-children{padding:0 10px 10px 22px}
+.repo-meta{padding:0 12px 10px 22px;font-size:11px;color:var(--text2);line-height:1.7}
+.repo-meta b{color:var(--text3);font-weight:600;font-family:var(--fm);text-transform:uppercase;font-size:9px;letter-spacing:.05em}
+.repo-badge{font-size:9px;font-family:var(--fm);color:var(--text3);text-transform:uppercase}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="app-header">
+    <div class="brand-name">Urban Agent · Madrid PGOUM97</div>
+    <div class="app-title">Consulta urbanística GIS y análisis PGOUM</div>
+    <div class="live-pill"><div class="live-dot"></div>GIS Ayuntamiento de Madrid · en tiempo real</div>
+    <div><button class="update-pill" id="updatePill" type="button"><i class="ti ti-download" aria-hidden="true"></i> <span id="updateTxt">Actualización disponible</span></button></div>
+  </div>
+
+  <div id="app-body">
+    <div class="search-wrap">
+      <div class="search-inner">
+        <i class="ti ti-map-pin search-ico" aria-hidden="true"></i>
+        <input class="search-input" id="addr" placeholder="Calle Alcalá 120, Madrid" autocomplete="off">
+        <div class="search-divider"></div>
+        <button class="search-btn" id="btn">Consultar</button>
+      </div>
+      <div class="search-foot">
+        <i class="ti ti-info-circle" aria-hidden="true"></i>
+        Introduce la vía y el número exacto del portal
+      </div>
+    </div>
+
+    <div class="mbar" id="mbar"></div>
+    <div class="log" id="log">
+      <div class="init-screen">
+        <div class="init-ico"><i class="ti ti-building-estate" aria-hidden="true"></i></div>
+        <div class="init-title">Introduce una dirección de Madrid</div>
+        <div class="init-sub">El agente consulta el GIS oficial del Ayuntamiento y genera el análisis de edificabilidad, usos y protección de forma automática.</div>
+      </div>
+    </div>
+
+    <div class="legal-disc">
+      <i class="ti ti-scale" aria-hidden="true"></i>
+      <p>Información orientativa generada a partir de fuentes públicas (GIS del Ayuntamiento de Madrid) y de la compilación de las Normas Urbanísticas del PGOUM 1997. Cada dato indica si procede directamente de una fuente oficial (<b>DATO OBTENIDO</b>), de una lectura razonada de la normativa (<b>INTERPRETACIÓN NORMATIVA</b>) o de un cálculo derivado (<b>CONCLUSIÓN</b>). No sustituye la consulta al Ayuntamiento de Madrid ni el asesoramiento de un técnico competente (arquitecto/aparejador) antes de tomar decisiones urbanísticas, contractuales o de inversión. InmoLab no se responsabiliza de las decisiones adoptadas a partir de esta información.</p>
+    </div>
+
+    <button class="repo-toggle" id="repoToggle" type="button"><i class="ti ti-books" aria-hidden="true"></i> Repositorio normativo</button>
+    <div class="repo-panel" id="repoPanel" hidden></div>
+  </div>
+
+  <div class="app-footer">
+    <div class="footer-txt">InmoLab · Urban Agent · <span id="appVersion"></span></div>
+  </div>
+</div>
+
+<script type="module">
+import NNUU from "./data/nnuu.js";
+import PROT from "./data/prot.js";
+import REPOSITORIO from "./data/repositorio.js";
+
+const GIS={
+  geo:"https://sigma.madrid.es/hosted/rest/services/GEOLOCATOR/GEOLOCATOR_NDPS_VIAS_PRIORIDAD/GeocodeServer/findAddressCandidates",
+  normas:"https://sigma.madrid.es/hosted/rest/services/DESARROLLO_URBANO_ACTUALIZADO/NORMAS_ZONALES/MapServer",
+  cond:"https://sigma.madrid.es/hosted/rest/services/PGOUM97/PG_CONDICIONES_EDIFICACION/MapServer",
+  prot:"https://sigma.madrid.es/hosted/rest/services/PGOUM97/PG_EDIFICIOS_PROTEGIDOS/MapServer",
+  parcelas:"https://sigma.madrid.es/hosted/rest/services/DESARROLLO_URBANO_ACTUALIZADO/USOS_SUELO/MapServer/identify",
+  barrios:"https://sigma.madrid.es/hosted/rest/services/CARTOGRAFIA/LIMITES_ADMINISTRATIVOS/MapServer/25/query",
+  expedientes:"https://sigma.madrid.es/hosted/rest/services/DESARROLLO_URBANO_ACTUALIZADO/EXPEDIENTES_PLANEAMIENTO_AD/MapServer/1/query"
+};
+// Fecha de la última revisión manual del compendio NNUU/PROT contra el texto oficial del PGOUM.
+const NNUU_DATA_VERSION="24/09/2025";
+let MEM=[],AI=-1;
+
+// ══════════════════════════════════════════════════════════════
+// TABLA DE EQUIVALENCIA GIS → NORMA ZONAL + GRADO REAL PGOUM
+//
+// El GIS del Ayuntamiento devuelve:
+//   Etiqueta: "X.Y"  donde X = norma zonal, Y = grado GIS acumulado
+//   Grado Condición: número entero acumulado entre todas las zonas
+//
+// La "Denominación" devuelta ("ZONA 1 GRADO 2º") es la fuente
+// de verdad para conocer el grado REAL del PGOUM.
+// El número de "Grado Condición" es un índice interno del GIS,
+// NO coincide con el grado PGOUM. Por eso usamos la Denominación.
+// ══════════════════════════════════════════════════════════════
+
+function parseDenominacion(denom, etiqueta){
+  if(denom){
+    const m = String(denom).match(/ZONA\s*(\d+)\s*GRADO\s*(\d+)/i);
+    if(m) return {norma: m[1], grado: m[2], aproximado:false};
+    const m2 = String(denom).match(/GRADO\s*(\d+)/i);
+    if(m2){
+      const nKey = etiqueta ? String(etiqueta).match(/^(\d+)/)?.[1] : null;
+      return {norma: nKey||null, grado: m2[1], aproximado:false};
+    }
+  }
+  if(etiqueta){
+    const m = String(etiqueta).match(/^(\d+)\.(\d+)$/);
+    if(m) return {norma: m[1], grado: m[2], aproximado:true};
+    const m2 = String(etiqueta).match(/^(\d+)/);
+    if(m2) return {norma: m2[1], grado: null, aproximado:true};
+  }
+  return {norma: null, grado: null, aproximado:false};
+}
+
+// ─── HELPERS ───
+function esc(s){return String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
+function nk(s){return String(s).normalize("NFD").replace(/[̀-ͯ]/g,"").toUpperCase().replace(/[^A-Z0-9]+/g," ").trim()}
+function fa(res,al){
+  if(!res||!Array.isArray(res.results))return null;
+  const na=al.map(nk);
+  for(const it of res.results){const a=it.attributes||{};for(const k in a){if(na.includes(nk(k)))return{field:k,value:a[k]}}}
+  return null;
+}
+function vv(f){return(!f||f.value===null||f.value===undefined||f.value==="")? null:f.value}
+async function fj(url,lbl){
+  const r=await fetch(url);if(!r.ok)throw new Error(`${lbl}: HTTP ${r.status}`);
+  const d=await r.json();if(d.error)throw new Error(`${lbl}: ${d.error.message}`);return d;
+}
+function getPK(s){
+  if(!s)return null;const n=nk(s);
+  if(n.includes("INTEGRAL"))return"integral";
+  if(n.includes("ESTRUCTURAL"))return"estructural";
+  if(n.includes("AMBIENTAL"))return"ambiental";
+  if(n.includes("SINGULAR"))return"singular";
+  return null;
+}
+
+const logEl=()=>document.getElementById("log");
+function addStep(icH,cls,lbl,html,id){
+  const el=document.createElement("div");el.className="srow";if(id)el.id=id;
+  el.innerHTML=`<div class="sico ${cls}">${icH}</div><div class="sbody"><div class="slbl">${esc(lbl)}</div><div class="stxt">${html}</div></div>`;
+  logEl().appendChild(el);el.scrollIntoView({behavior:"smooth",block:"end"});return el;
+}
+function updStep(id,cls,icH,html){
+  const el=document.getElementById(id);if(!el)return;
+  const ic=el.querySelector(".sico");if(ic){ic.className=`sico ${cls}`;ic.innerHTML=icH}
+  const tx=el.querySelector(".stxt");if(tx)tx.innerHTML=html;
+}
+function metric(lbl,val,cls=""){
+  return`<div class="metric"><div class="metric-lbl">${esc(lbl)}</div>${val?`<div class="metric-val ${cls}">${esc(val)}</div>`:`<div class="metric-val muted">—</div>`}</div>`;
+}
+function param(lbl,val){
+  if(!val)return"";
+  return`<div class="param"><div class="param-lbl">${esc(lbl)}</div><div class="param-val">${esc(val)}</div></div>`;
+}
+const PTAG_LABEL={dato:"Dato obtenido",interp:"Interpretación normativa",concl:"Conclusión"};
+function ptag(kind){
+  return`<span class="ptag ptag-${kind}">${PTAG_LABEL[kind]}</span>`;
+}
+function ugroup(lbl,arr,cls,dotCls){
+  if(!arr||!arr.length)return"";
+  return`<div class="use-group"><div class="use-group-hdr"><div class="use-dot ${dotCls}"></div><div class="use-group-lbl">${esc(lbl)}</div></div><div class="use-tags">${arr.map(u=>`<span class="utag ${cls}">${esc(u)}</span>`).join("")}</div></div>`;
+}
+function rl(lbl,f){
+  if(!vv(f))return"";let u;try{u=new URL(f.value)}catch{return""}
+  if(u.protocol!=="https:")return"";
+  return`<a href="${esc(u.href)}" class="plano-a" target="_blank" rel="noopener"><i class="ti ti-external-link" aria-hidden="true"></i>${esc(lbl)}</a>`;
+}
+
+function renderResult(d){
+  const nz = d.nz;
+  const gd = d.gd;
+  const pd = d.pd;
+  const planos=[rl("Plano condiciones",d.pc),rl("Plano ordenación",d.po),rl("Plano gestión",d.pg),rl("Plano protección",d.pp)].filter(Boolean).join("");
+
+  const sinGrado = !gd;
+  const gradoAproximado = !!(gd && d.aproximado);
+
+  let supPatText = null, supPatNota = null;
+  if(d.parcela){
+    const sp = d.parcela.superficiePatrimonializable;
+    if(sp){
+      supPatText = sp.min===sp.max ? `${sp.min.toLocaleString("es-ES")} m²t` : `${sp.min.toLocaleString("es-ES")}–${sp.max.toLocaleString("es-ES")} m²t`;
+    }else if(gd){
+      supPatNota = "El coeficiente de edificabilidad de esta norma/grado se fija en el Plano CE de la manzana, no es un valor único — no se puede calcular una superficie patrimonializable automática.";
+    }
+  }
+
+  const wrap=document.createElement("div");wrap.className="result-stack";
+  wrap.innerHTML=`
+
+  <!-- CARD 1: LOCALIZACIÓN GIS -->
+  <div class="card">
+    <div class="card-hdr blue">
+      <div class="card-icon icon-blue"><i class="ti ti-map-pin" aria-hidden="true"></i></div>
+      <div class="card-hdr-text">
+        <div class="card-label">Localización · GIS Ayuntamiento de Madrid</div>
+        <div class="card-title">${esc(d.display_name)}</div>
+      </div>
+      ${ptag("dato")}
+    </div>
+    <div class="card-body">
+      <div class="metric-grid">
+        ${metric("Norma zonal",d.normaRaw,"blue")}
+        ${metric("Denominación",d.denom)}
+        ${metric("Grado condición GIS",d.gradoRaw)}
+        ${metric("Coeficiente Z",d.coefZ||"Ver plano CE")}
+        ${metric("Nº manzana",d.manz)}
+        ${metric("Nº catálogo (condiciones)",d.catCond)}
+      </div>
+      ${d.gradoProt||d.nivelUsos||d.catProt?`<div class="sdiv"></div><div class="metric-grid">
+        ${metric("Grado de protección",d.gradoProt,"amber")}
+        ${metric("Nivel usos y actividades",d.nivelUsos)}
+        ${metric("Nº catálogo (protección)",d.catProt)}
+      </div>`:""}
+      ${planos?`<div class="planos">${planos}</div>`:""}
+      ${sinGrado?`<div class="gis-alert"><i class="ti ti-alert-triangle" aria-hidden="true"></i><p><strong>Nota:</strong> No se ha podido identificar el grado PGOUM desde la denominación GIS "<em>${esc(d.denom||"—")}</em>". Verifica en el visor oficial del Ayuntamiento. Los datos GIS quedan registrados arriba.</p></div>`:""}
+      ${gradoAproximado?`<div class="gis-alert"><i class="ti ti-alert-triangle" aria-hidden="true"></i><p><strong>Grado estimado, no confirmado:</strong> el GIS no devolvió una "Denominación" oficial para esta parcela, así que el grado mostrado (${esc(gd.label)}) se ha inferido de un campo interno que no siempre coincide con el grado PGOUM real. Confirma en el visor oficial antes de usar este dato en una decisión.</p></div>`:""}
+    </div>
+  </div>
+
+  <!-- CARD 1.2: DISTRITO / BARRIO -->
+  ${d.admin?`
+  <div class="card">
+    <div class="card-hdr blue">
+      <div class="card-icon icon-blue"><i class="ti ti-map" aria-hidden="true"></i></div>
+      <div class="card-hdr-text">
+        <div class="card-label">División administrativa · Ayuntamiento de Madrid</div>
+        <div class="card-title">${esc(d.admin.distritoNombre||"—")} · ${esc(d.admin.barrioNombre||"—")}</div>
+      </div>
+      ${ptag("dato")}
+    </div>
+    <div class="card-body">
+      <div class="metric-grid">
+        ${metric("Distrito",d.admin.distritoNombre?`${d.admin.distritoNombre} (${d.admin.distritoCodigo})`:null,"blue")}
+        ${metric("Barrio",d.admin.barrioNombre?`${d.admin.barrioNombre} (${d.admin.barrioCodigo})`:null,"blue")}
+        ${metric("Coordenadas",`${d.lat.toFixed(6)}, ${d.lon.toFixed(6)}`)}
+      </div>
+    </div>
+  </div>`:""}
+
+  <!-- CARD 1.5: FICHA DE PARCELA (VISOR URBANÍSTICO DE MADRID) -->
+  ${d.parcela?`
+  <div class="card">
+    <div class="card-hdr teal">
+      <div class="card-icon icon-teal"><i class="ti ti-map-2" aria-hidden="true"></i></div>
+      <div class="card-hdr-text">
+        <div class="card-label">Ficha de parcela · Visor urbanístico de Madrid</div>
+        <div class="card-title">${esc(d.parcela.denominacion||"Parcela urbanística")}</div>
+      </div>
+      ${ptag("dato")}
+    </div>
+    <div class="card-body">
+      <div class="metric-grid">
+        ${metric("Superficie de parcela",d.parcela.superficieParcela?`${d.parcela.superficieParcela.toLocaleString("es-ES")} m²`:null,"blue")}
+        ${metric("Uso principal (planeamiento)",d.parcela.usoPrincipal)}
+        <div class="metric" style="grid-column:span 1"><div class="metric-lbl" style="display:flex;align-items:center">Sup. patrimonializable (est.)${ptag("concl")}</div>${supPatText?`<div class="metric-val purple">${esc(supPatText)}</div>`:`<div class="metric-val muted">—</div>`}</div>
+      </div>
+      <div class="disc"><i class="ti ti-alert-triangle" aria-hidden="true"></i><p>${supPatNota?esc(supPatNota):"Estimación orientativa: superficie de la parcela urbanística (visor del Ayuntamiento) × coeficiente de edificabilidad de la norma zonal."} No descuenta cesiones, servidumbres, elementos protegidos ni afecciones sectoriales. No sustituye un estudio de detalle ni la consulta al Ayuntamiento.</p></div>
+      ${d.clasificacionSuelo?`<div class="sdiv"></div><div class="metric-grid"><div class="metric" style="grid-column:1/-1"><div class="metric-lbl" style="display:flex;align-items:center">Clasificación del suelo${ptag("interp")}</div><div class="metric-val ${d.clasificacionSuelo.valor?'purple':'muted'}">${d.clasificacionSuelo.valor?esc(d.clasificacionSuelo.valor):"No determinada automáticamente"}</div></div></div><div class="disc"><i class="ti ti-info-circle" aria-hidden="true"></i><p>${esc(d.clasificacionSuelo.base)}</p></div>`:""}
+    </div>
+  </div>`:`
+  <div class="card"><div class="card-body"><div class="disc"><i class="ti ti-info-circle" aria-hidden="true"></i><p>No se ha podido obtener la superficie de parcela del visor urbanístico para este punto. Verifica manualmente en el <a href="https://www.madrid.es" target="_blank" rel="noopener">visor oficial del Ayuntamiento</a>.</p></div></div></div>`}
+
+  <!-- CARD 1.7: EXPEDIENTES DE PLANEAMIENTO (MODIFICACIONES / PLANES ESPECIALES) -->
+  ${d.expedientes&&d.expedientes.length?`
+  <div class="card">
+    <div class="card-hdr purple">
+      <div class="card-icon icon-purple"><i class="ti ti-file-diff" aria-hidden="true"></i></div>
+      <div class="card-hdr-text">
+        <div class="card-label">Expedientes de planeamiento · Ayuntamiento de Madrid</div>
+        <div class="card-title">${d.expedientes.length} expediente${d.expedientes.length===1?"":"s"} sobre este ámbito</div>
+      </div>
+      ${ptag("dato")}
+    </div>
+    <div class="card-body">
+      <div class="exp-list">
+        ${d.expedientes.map(e=>`<div class="exp-item">
+          <div class="exp-top">${e.tipo?`<span class="exp-tipo">${esc(e.tipo)}</span>`:""}<span class="exp-num">${esc(e.numero||e.figura||"")}</span></div>
+          <div class="exp-denom">${esc(e.denominacion||"—")}</div>
+          <div class="exp-meta">
+            ${e.fase?`<span>${esc(e.fase)}</span>`:""}
+            ${e.fechaAprobacion?`<span>${esc(e.fechaAprobacion)}</span>`:""}
+            ${e.organo?`<span>${esc(e.organo)}</span>`:""}
+            ${e.enlace?`<a class="exp-link" href="${esc(e.enlace)}" target="_blank" rel="noopener">Ver expediente <i class="ti ti-external-link" aria-hidden="true"></i></a>`:""}
+          </div>
+        </div>`).join("")}
+      </div>
+      <div class="disc"><i class="ti ti-alert-triangle" aria-hidden="true"></i><p>Algunos expedientes tienen ámbito municipal (p.ej. una Modificación Puntual del PGOUM) y no son exclusivos de esta parcela. Revisa cada enlace para confirmar si afecta directamente al inmueble.</p></div>
+    </div>
+  </div>`:""}
+
+  <!-- CARD 2: EDIFICABILIDAD -->
+  ${gd?`
+  <div class="card">
+    <div class="card-hdr green">
+      <div class="card-icon icon-green"><i class="ti ti-ruler-2" aria-hidden="true"></i></div>
+      <div class="card-hdr-text">
+        <div class="card-label">Edificabilidad · ${esc(nz.cap)} · PGOUM Madrid</div>
+        <div class="card-title">${esc(gd.label)}</div>
+      </div>
+      ${ptag("interp")}
+    </div>
+    <div class="card-body">
+      <div class="param-grid">
+        ${param("Ocupación máxima",gd.ed.oc)}
+        ${param("Altura máxima",gd.ed.alt)}
+        ${param("Fondo edificable",gd.ed.fondo)}
+        ${param("Coef. edificabilidad neta",gd.ed.coef)}
+        ${param("Retranqueos",gd.ed.ret)}
+        ${param("Vuelos permitidos",gd.ed.vuel)}
+      </div>
+      <div class="disc"><i class="ti ti-alert-triangle" aria-hidden="true"></i><p>Los valores exactos de fondo y altura se determinan manzana a manzana en el Plano CE. Verifica en el <a href="https://www.madrid.es" target="_blank" rel="noopener">visor oficial</a>.</p></div>
+    </div>
+  </div>`:""}
+
+  <!-- CARD 3: USOS -->
+  ${gd?`
+  <div class="card">
+    <div class="card-hdr purple">
+      <div class="card-icon icon-purple"><i class="ti ti-home-2" aria-hidden="true"></i></div>
+      <div class="card-hdr-text">
+        <div class="card-label">Régimen de usos · ${esc(nz.cap)}</div>
+        <div class="card-title">Uso global: ${esc(gd.uso)}</div>
+      </div>
+      ${ptag("interp")}
+    </div>
+    <div class="card-body">
+      <div class="use-section">
+        ${ugroup("Permitidos",gd.perm,"u-perm","green")}
+        ${ugroup("Tolerados",gd.tol,"u-tol","amber")}
+        ${ugroup("Autorizables",gd.aut,"u-aut","blue")}
+        ${ugroup("Prohibidos",gd.proh,"u-proh","red")}
+      </div>
+    </div>
+  </div>`:""}
+
+  <!-- CARD 4: CONDICIONES PARTICULARES -->
+  ${gd&&gd.cond&&gd.cond.length?`
+  <div class="card">
+    <div class="card-hdr teal">
+      <div class="card-icon icon-teal"><i class="ti ti-clipboard-list" aria-hidden="true"></i></div>
+      <div class="card-hdr-text">
+        <div class="card-label">Condiciones particulares · ${esc(nz.cap)}</div>
+        <div class="card-title">Determinaciones normativas de aplicación</div>
+      </div>
+      ${ptag("interp")}
+    </div>
+    <div class="card-body">
+      <div class="cond-list">
+        ${gd.cond.map(c=>`<div class="cond-item"><div class="cond-bullet"></div><div class="cond-text">${esc(c)}</div></div>`).join("")}
+      </div>
+    </div>
+  </div>`:""}
+
+  <!-- CARD 5: PROTECCIÓN -->
+  ${pd?`
+  <div class="card">
+    <div class="card-hdr amber">
+      <div class="card-icon icon-amber"><i class="ti ti-shield-check" aria-hidden="true"></i></div>
+      <div class="card-hdr-text">
+        <div class="card-label">Edificio protegido · Catálogo PGOUM</div>
+        <div class="card-title">Protección ${esc(d.gradoProt)} · Nivel ${esc(d.nivelUsos||"—")}</div>
+      </div>
+      ${ptag("interp")}
+    </div>
+    <div class="card-body">
+      <div class="prot-alert">
+        <i class="ti ti-alert-triangle prot-alert-ico" aria-hidden="true"></i>
+        <div class="prot-alert-txt">El régimen de <strong>protección ${esc(d.gradoProt)}</strong> prevalece sobre los parámetros de la norma zonal. Toda intervención requiere consulta previa con el Área de Patrimonio del Ayuntamiento de Madrid.</div>
+      </div>
+      <div class="prot-2col">
+        <div><div class="prot-col-lbl green"><i class="ti ti-check" aria-hidden="true"></i> Obras admitidas</div>
+          <div class="use-tags">${pd.adm.map(o=>`<span class="utag u-perm">${esc(o)}</span>`).join("")}</div></div>
+        <div><div class="prot-col-lbl red"><i class="ti ti-x" aria-hidden="true"></i> Obras prohibidas</div>
+          <div class="use-tags">${pd.proh.map(o=>`<span class="utag u-proh">${esc(o)}</span>`).join("")}</div></div>
+      </div>
+    </div>
+  </div>`:""}
+
+  <!-- FUENTE -->
+  <div class="card">
+    <div class="source-bar">
+      <span class="source-badge">Compendio NNUU</span>
+      <span class="source-txt">PGOUM Madrid 1997 · Actualizado ${esc(NNUU_DATA_VERSION)} · ${esc(nz?nz.cap:"Art. 8 NNUU")} · Consulta orientativa</span>
+    </div>
+  </div>`;
+
+  logEl().appendChild(wrap);wrap.scrollIntoView({behavior:"smooth",block:"end"});
+}
+
+async function geocode(dir){
+  const p=new URLSearchParams({SingleLine:dir.trim(),outSR:"4326",outFields:"*",maxLocations:"5",f:"pjson"});
+  const d=await fj(`${GIS.geo}?${p}`,"Geocodificación");
+  const pt=(d.candidates||[]).find(c=>c.attributes&&c.attributes.Addr_type==="PointAddress"&&c.attributes.AddNum);
+  if(!pt)throw new Error("Portal no localizado. Introduce vía y número exactos: p.ej. Gran Vía 32.");
+  return{lat:pt.location.y,lon:pt.location.x,display_name:pt.address,score:pt.score};
+}
+async function identify(url,lon,lat){
+  const p=new URLSearchParams({geometry:`${lon},${lat}`,geometryType:"esriGeometryPoint",sr:"4326",layers:"all",tolerance:"5",mapExtent:`${lon-.001},${lat-.001},${lon+.001},${lat+.001}`,imageDisplay:"800,600,96",returnGeometry:"false",f:"pjson"});
+  return await fj(`${url}/identify?${p}`,"identify");
+}
+
+// ══════════════════════════════════════════════════════════════
+// COMPENDIO NORMATIVO — antes resuelto por un backend (Cloudflare
+// Worker); esta app de escritorio es 100% local: cruza NNUU/PROT
+// (datos locales) con el GIS público del Ayuntamiento (llamadas
+// directas desde el cliente, igual que normas/cond/prot arriba).
+// ══════════════════════════════════════════════════════════════
+async function getParcelData(lat, lon) {
+  const p = new URLSearchParams({
+    geometry: `${lon},${lat}`, geometryType: "esriGeometryPoint", sr: "4326",
+    layers: "all:3", tolerance: "5",
+    mapExtent: `${lon - 0.001},${lat - 0.001},${lon + 0.001},${lat + 0.001}`,
+    imageDisplay: "800,600,96", returnGeometry: "false", f: "pjson",
+  });
+  const d = await (await fetch(`${GIS.parcelas}?${p}`)).json();
+  const results = d.results || [];
+  const pick = results.find((r) => !/V[IÍ]A P[UÚ]BLICA/i.test(r.attributes?.["Uso Principal :"] || "")) || results[0];
+  if (!pick) return null;
+  const a = pick.attributes || {};
+  const supRaw = a["Superficie m² :"];
+  const superficieParcela = supRaw ? parseFloat(String(supRaw).replace(/\./g, "").replace(",", ".")) : null;
+  if (!superficieParcela) return null;
+  return {
+    ambito: a["Ámbito :"] || null,
+    denominacion: a["Denominación :"] || null,
+    usoPrincipal: (a["Uso Principal :"] || "").trim() || null,
+    superficieParcela,
+  };
+}
+async function getBarrioDistrito(lat, lon) {
+  const p = new URLSearchParams({
+    geometry: `${lon},${lat}`, geometryType: "esriGeometryPoint", inSR: "4326",
+    spatialRel: "esriSpatialRelIntersects", outFields: "COD_DIS_TX,NOMDIS,COD_BAR,NOMBRE",
+    returnGeometry: "false", f: "pjson",
+  });
+  const d = await (await fetch(`${GIS.barrios}?${p}`)).json();
+  const f = (d.features || [])[0];
+  if (!f) return null;
+  const a = f.attributes || {};
+  return {
+    distritoCodigo: a.COD_DIS_TX || null, distritoNombre: a.NOMDIS || null,
+    barrioCodigo: a.COD_BAR || null, barrioNombre: a.NOMBRE || null,
+  };
+}
+async function getExpedientesPlaneamiento(lat, lon) {
+  const p = new URLSearchParams({
+    geometry: `${lon},${lat}`, geometryType: "esriGeometryPoint", inSR: "4326",
+    spatialRel: "esriSpatialRelIntersects",
+    outFields: "EXP_TX_NUMERO,FIG_TX_ETIQ,TFIG_TX_ABREV,EXP_TX_DENOM,FAS_TX_DENOM,FEX_DT_APROB,ORG_TX_DESC,ENLACE",
+    returnGeometry: "false", f: "pjson",
+  });
+  const d = await (await fetch(`${GIS.expedientes}?${p}`)).json();
+  return (d.features || []).map((f) => {
+    const a = f.attributes || {};
+    return {
+      numero: a.EXP_TX_NUMERO || null, figura: a.FIG_TX_ETIQ || null, tipo: a.TFIG_TX_ABREV || null,
+      denominacion: a.EXP_TX_DENOM || null, fase: a.FAS_TX_DENOM || null,
+      fechaAprobacion: a.FEX_DT_APROB ? new Date(a.FEX_DT_APROB).toISOString().slice(0, 10) : null,
+      organo: a.ORG_TX_DESC || null,
+      enlace: /^https:\/\//.test(a.ENLACE || "") ? a.ENLACE : null,
+    };
+  });
+}
+function parseCoefRange(coefStr) {
+  if (!coefStr || !/m²t\/m²s/i.test(coefStr)) return null;
+  if (/plano CE|necesidad funcional/i.test(coefStr)) return null;
+  const nums = [...coefStr.matchAll(/(\d+(?:,\d+)?)/g)].map((m) => parseFloat(m[1].replace(",", ".")));
+  if (!nums.length) return null;
+  return { min: Math.min(...nums), max: Math.max(...nums) };
+}
+function round2(n) { return Math.round(n * 100) / 100; }
+
+async function lookupCompendio({ normaKey, gradoKey, pKey, lat, lon }) {
+  const [pdata, admin, expedientes] = await Promise.all([
+    lat && lon ? getParcelData(lat, lon).catch(() => null) : Promise.resolve(null),
+    lat && lon ? getBarrioDistrito(lat, lon).catch(() => null) : Promise.resolve(null),
+    lat && lon ? getExpedientesPlaneamiento(lat, lon).catch(() => []) : Promise.resolve([]),
+  ]);
+
+  const nzRaw = normaKey ? NNUU[normaKey] : null;
+  const gd = nzRaw && gradoKey ? nzRaw.grados[gradoKey] || null : null;
+  const nz = nzRaw ? { nombre: nzRaw.nombre, cap: nzRaw.cap } : null;
+  const pd = pKey ? PROT[pKey] || null : null;
+
+  let parcela = null;
+  if (pdata) {
+    const coefRange = gd ? parseCoefRange(gd.ed.coef) : null;
+    parcela = {
+      ambito: pdata.ambito, denominacion: pdata.denominacion, usoPrincipal: pdata.usoPrincipal,
+      superficieParcela: pdata.superficieParcela,
+      superficiePatrimonializable: coefRange
+        ? { min: round2(pdata.superficieParcela * coefRange.min), max: round2(pdata.superficieParcela * coefRange.max) }
+        : null,
+    };
+  }
+
+  const clasificacionSuelo = nz
+    ? {
+        valor: "Suelo Urbano Consolidado",
+        base: "La parcela tiene asignada una Norma Zonal del Título 8 PGOUM 1997 (Art. 8.0.1), cuyo ámbito de aplicación es el Suelo Urbano Consolidado.",
+      }
+    : {
+        valor: null,
+        base: "No se ha podido determinar automáticamente al no resolverse una Norma Zonal del Título 8 para este punto. Verifica la clasificación en el Plano de Ordenación General del PGOUM.",
+      };
+
+  return { nz, gd, pd, parcela, admin, expedientes, clasificacionSuelo };
+}
+
+function saveMem(d){
+  const i=MEM.findIndex(p=>p.display_name===d.display_name);
+  if(i>=0){MEM[i]=d;AI=i}else{MEM.unshift(d);AI=0}
+  renderMem();
+}
+function renderMem(){
+  const b=document.getElementById("mbar");
+  if(!MEM.length){b.innerHTML="";return}
+  b.innerHTML=MEM.map((p,i)=>`<button class="mchip${i===AI?" on":""}" data-i="${i}">${esc(p.normaRaw||"?")} · ${esc(p.display_name.split(",")[0])}</button>`).join("")+
+  `<button class="mclr" id="mclrBtn"><i class="ti ti-x" aria-hidden="true"></i> borrar</button>`;
+  b.querySelectorAll(".mchip").forEach(el=>el.addEventListener("click",()=>loadMem(Number(el.dataset.i))));
+  const clrBtn=document.getElementById("mclrBtn");if(clrBtn)clrBtn.addEventListener("click",clearMem);
+}
+function loadMem(i){
+  AI=i;renderMem();const d=MEM[i];
+  logEl().innerHTML="";
+  addStep(`<i class="ti ti-clock" aria-hidden="true"></i>`,"i-warn","Memoria",`Recuperando: <b>${esc(d.display_name)}</b>`);
+  renderResult(d);
+}
+function clearMem(){
+  MEM=[];AI=-1;renderMem();
+  logEl().innerHTML=`<div class="init-screen"><div class="init-ico"><i class="ti ti-building-estate" aria-hidden="true"></i></div><div class="init-title">Historial borrado</div><div class="init-sub">Introduce una nueva dirección para comenzar.</div></div>`;
+}
+
+async function run(){
+  const addr=document.getElementById("addr").value.trim();
+  if(!addr)return;
+  document.getElementById("btn").disabled=true;
+  logEl().innerHTML="";
+  try{
+    const id1="s1";
+    addStep(`<span class="spin"></span>`,"i-run","Geocodificación","Localizando portal en el callejero oficial…",id1);
+    const geo=await geocode(addr);
+    updStep(id1,"i-ok",`<i class="ti ti-check" aria-hidden="true"></i>`,`<b>${esc(geo.display_name)}</b> · confianza ${Math.round(geo.score)}%`);
+
+    const id2="s2";
+    addStep(`<span class="spin"></span>`,"i-run","Consulta GIS · 3 capas","Normas zonales · Condiciones edificación · Edificios protegidos…",id2);
+    const capas=["normas","cond","prot"];
+    const settled=await Promise.allSettled([identify(GIS.normas,geo.lon,geo.lat),identify(GIS.cond,geo.lon,geo.lat),identify(GIS.prot,geo.lon,geo.lat)]);
+    const fallidas=capas.filter((c,i)=>settled[i].status==="rejected");
+    const[rN,rC,rP]=settled.map(s=>s.status==="fulfilled"?s.value:null);
+    if(fallidas.length===capas.length) throw new Error("No se ha podido consultar ninguna capa del GIS. Inténtalo de nuevo en unos segundos.");
+
+    const normaRaw = vv(fa(rN,["Etiqueta"]));
+    const denom    = vv(fa(rN,["Denominación","Denominacion"]));
+    const manz     = vv(fa(rC,["Número de Manzana","Numero de Manzana"]));
+    const catCond  = vv(fa(rC,["Número de Catálogo","Numero de Catalogo"]));
+    const gradoRaw = vv(fa(rC,["Grado Condición Edificación","Grado Condicion Edificacion"]));
+    const coefZ    = vv(fa(rC,["Coeficiente Z"]));
+    const pc       = fa(rC,["PLANO_CE"]);
+    const po       = fa(rC,["Plano Ordenación","Plano Ordenacion"]);
+    const pg       = fa(rC,["Plano Gestión","Plano Gestion"]);
+    const catProt  = vv(fa(rP,["Número de Catálogo","Numero de Catalogo"]));
+    const gradoProt= vv(fa(rP,["Grado de Protección","Grado de Proteccion"]));
+    const nivelUsos= vv(fa(rP,["Nivel de Usos y Actividades"]));
+    const pp       = fa(rP,["Plano"]);
+
+    const parsed = parseDenominacion(denom, normaRaw);
+    const pKey = getPK(gradoProt);
+
+    updStep(id2,fallidas.length?"i-warn":"i-ok",`<i class="ti ${fallidas.length?"ti-alert-triangle":"ti-check"}" aria-hidden="true"></i>`,
+      `Norma <b>${esc(normaRaw||"—")}</b> · Denominación <b>${esc(denom||"—")}</b> → Grado PGOUM <b>${esc(parsed.grado||"no detectado")}</b>${parsed.aproximado&&parsed.grado?" <i>(estimado)</i>":""}${gradoProt?` · Protección <b>${esc(gradoProt)}</b>`:""}${fallidas.length?` · <b>Aviso:</b> no respondió la capa "${esc(fallidas.join(", "))}" — resultado parcial`:""}`);
+
+    const id3="s3";
+    addStep(`<span class="spin"></span>`,"i-run","Compendio normativo","Consultando edificabilidad, usos, protección, distrito/barrio y expedientes de planeamiento…",id3);
+    let lookup;
+    try{
+      lookup=await lookupCompendio({normaKey:parsed.norma,gradoKey:parsed.grado,pKey,lat:geo.lat,lon:geo.lon});
+    }catch(e){
+      updStep(id3,"i-err",`<i class="ti ti-alert-circle" aria-hidden="true"></i>`,esc(e.message));
+      document.getElementById("btn").disabled=false;
+      return;
+    }
+    updStep(id3,"i-ok",`<i class="ti ti-check" aria-hidden="true"></i>`,"Compendio normativo obtenido.");
+
+    const rec={display_name:geo.display_name,lat:geo.lat,lon:geo.lon,score:geo.score,
+      normaRaw,denom,manz,catCond,catProt,gradoRaw,coefZ,gradoProt,nivelUsos,pc,po,pg,pp,
+      aproximado:parsed.aproximado,nz:lookup.nz,gd:lookup.gd,pd:lookup.pd,parcela:lookup.parcela,
+      admin:lookup.admin,expedientes:lookup.expedientes,clasificacionSuelo:lookup.clasificacionSuelo};
+    saveMem(rec);
+    renderResult(rec);
+  }catch(e){
+    addStep(`<i class="ti ti-alert-circle" aria-hidden="true"></i>`,"i-err","Error",esc(e.message));
+  }finally{
+    document.getElementById("btn").disabled=false;
+  }
+}
+
+document.getElementById("btn").addEventListener("click",run);
+document.getElementById("addr").addEventListener("keydown",e=>{if(e.key==="Enter")run()});
+renderMem();
+
+// ══════════════════════════════════════════════════════════════
+// REPOSITORIO NORMATIVO · navegación de la jerarquía documental
+// PGOUM 1997 → Compendio de Normas Urbanísticas → Título 8 → Norma Zonal
+// → grados. Datos locales (import estático), sin llamada de red.
+// ══════════════════════════════════════════════════════════════
+function repoField(lbl,val){
+  if(!val)return"";
+  return`<div><b>${esc(lbl)}</b><br>${esc(Array.isArray(val)?val.join(" · "):val)}</div>`;
+}
+function renderRepoNode(n,children){
+  const kids=children.filter(c=>c.padre===n.id);
+  return`<details class="repo-node">
+    <summary>${esc(n.documento)} <span class="repo-badge">${esc(n.estado||"")}</span></summary>
+    <div class="repo-meta">
+      ${repoField("Título",n.titulo)}
+      ${repoField("Organismo",n.organismo)}
+      ${repoField("Fecha",n.fecha)}
+      ${repoField("Versión",n.version)}
+      ${repoField("Ámbito territorial",n.ambitoTerritorial)}
+      ${repoField("Materias",n.materias)}
+      ${repoField("Artículos / grados",n.articulos)}
+      ${repoField("Prioridad normativa",n.prioridadNormativa)}
+      ${repoField("Posibles modificaciones",n.posiblesModificaciones)}
+      ${repoField("Vigencia",n.vigencia)}
+      ${n.url?`<div><a href="${esc(n.url)}" target="_blank" rel="noopener" class="exp-link">Fuente oficial <i class="ti ti-external-link" aria-hidden="true"></i></a> · consultado ${esc(n.fechaConsulta||"—")}</div>`:""}
+    </div>
+    ${kids.length?`<div class="repo-children">${kids.map(k=>renderRepoNode(k,children)).join("")}</div>`:""}
+  </details>`;
+}
+function renderRepo(){
+  const panel=document.getElementById("repoPanel");
+  const roots=REPOSITORIO.documentos.filter(n=>!n.padre);
+  panel.innerHTML=roots.map(n=>renderRepoNode(n,REPOSITORIO.documentos)).join("")+
+    `<details class="repo-node" open><summary>Fuentes GIS en vivo <span class="repo-badge">dato obtenido</span></summary>
+      <div class="repo-meta">${REPOSITORIO.fuentesVivas.map(f=>`<div><b>${esc(f.documento)}</b><br>${esc(f.organismo)} · <a href="${esc(f.url)}" target="_blank" rel="noopener" class="exp-link">servicio</a></div>`).join("")}</div>
+    </details>`;
+}
+document.getElementById("repoToggle").addEventListener("click",()=>{
+  const panel=document.getElementById("repoPanel");
+  const hidden=panel.hasAttribute("hidden");
+  if(hidden){panel.removeAttribute("hidden");if(!panel.innerHTML)renderRepo()}
+  else panel.setAttribute("hidden","");
+});
+
+// ══════════════════════════════════════════════════════════════
+// AUTO-ACTUALIZACIÓN (expuesto por el proceso principal vía preload)
+// ══════════════════════════════════════════════════════════════
+if(window.urbanAgent){
+  document.getElementById("appVersion").textContent=`v${window.urbanAgent.appVersion}`;
+  const pill=document.getElementById("updatePill"), txt=document.getElementById("updateTxt");
+  window.urbanAgent.onUpdateAvailable(v=>{
+    txt.textContent=`Actualización ${v} disponible — descargando…`;
+    pill.classList.add("show");
+  });
+  window.urbanAgent.onUpdateDownloaded(v=>{
+    txt.textContent=`Actualización ${v} lista — clic para reiniciar`;
+    pill.classList.add("show");
+    pill.onclick=()=>window.urbanAgent.restartToUpdate();
+  });
+}
+</script>
+</body>
+</html>
