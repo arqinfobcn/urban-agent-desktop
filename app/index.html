@@ -207,6 +207,7 @@ body{background:var(--bg);font-family:var(--fs);font-size:14px;color:var(--text)
 .repo-url-edit button[data-repo-save]{background:var(--blue);color:#fff;border-color:var(--blue)}
 
 /* ── ANÁLISIS ART. 7.6.3 BIS ── */
+.a763-section{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;font-family:var(--fm);color:var(--text3);margin-bottom:8px}
 .a763-q{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
 .a763-q label{font-size:11px;font-weight:600;color:var(--text2);line-height:1.4}
 .a763-q select{padding:7px 9px;border-radius:var(--r-sm);border:1px solid var(--border);font-size:12px;font-family:var(--fs);background:var(--surface2);color:var(--text)}
@@ -431,6 +432,14 @@ function rl(lbl,f){
 // ══════════════════════════════════════════════════════════════
 function evaluarArt763bis(inp){
   const cita=(n)=>`Art. 7.6.3 bis, apdo. ${n}`;
+  const cita763=(n)=>`Art. 7.6.3, apdo. ${n}`;
+  // Condiciones generales del Art. 7.6.3 (aplican a CUALQUIER hospedaje,
+  // esté o no en el área central) — se comprueban antes de entrar en el
+  // régimen específico del 7.6.3 bis.
+  if(!inp.reqTecnicos)return{estado:"prohibido",texto:"No cumple los requisitos técnicos mínimos de la normativa sectorial vigente aplicable al hospedaje.",cita:cita763("1")};
+  if(inp.usoIndustrial&&!inp.residencialAlternativo)return{estado:"prohibido",texto:"No se puede implantar en parcelas de uso cualificado industrial (o industrial con terciario de oficinas), salvo que la regulación de la parcela admita el uso residencial en categoría de vivienda colectiva como alternativo o autorizable.",cita:cita763("3")};
+  if(inp.usoExistente==="residencial"&&inp.accesoIndependiente==="no")return{estado:"prohibido",texto:"Los locales integrados en edificios de uso residencial deben contar siempre con acceso independiente.",cita:cita763("4")};
+
   if(!inp.dentroAPE)return{estado:"no_aplica",texto:"El Art. 7.6.3 bis solo se aplica dentro del Área de Planeamiento Específico del Centro Histórico (APE 00.01). Fuera de ese ámbito rige el régimen general de compatibilidad de usos de la norma zonal correspondiente (Art. 8.1.30/8.1.31).",cita:cita("2")};
   if(inp.planeamientoEspecifico)return{estado:"excepcion",texto:"No es de aplicación: la parcela cuenta con un Estudio de Repercusión por Implantación de Usos validado, o con un Plan Especial de hospedaje aprobado definitivamente y vigente, sin haber implantado aún la actividad.",cita:cita("4")};
   const nivel=inp.colonia?"E":inp.nivel;
@@ -466,6 +475,7 @@ function evaluarArt763bis(inp){
 function renderArt763bisCard(d){
   const posibleAPE=d.normaRaw&&/^1(\.|$)/.test(d.normaRaw);
   const nivelDetectado=(d.nivelUsos||"").match(/Nivel\s*([A-E])/i)?.[1]||"";
+  const usoIndustrialDetectado=nk(d.gd?.uso||"").includes("INDUSTRIAL");
   const gp=nk(d.gradoProt||"");
   let protDetectada="";
   if(gp.includes("INTEGRAL"))protDetectada="1";
@@ -476,12 +486,31 @@ function renderArt763bisCard(d){
     <div class="card-hdr amber">
       <div class="card-icon icon-amber"><i class="ti ti-building-arch" aria-hidden="true"></i></div>
       <div class="card-hdr-text">
-        <div class="card-label">Análisis · Art. 7.6.3 bis PGOUM</div>
-        <div class="card-title">Implantación de hospedaje en el área central</div>
+        <div class="card-label">Análisis · Art. 7.6.3 y 7.6.3 bis PGOUM</div>
+        <div class="card-title">Implantación de hospedaje</div>
       </div>
       ${ptag("interp")}
     </div>
     <div class="card-body">
+      <div class="a763-section">Condiciones generales — Art. 7.6.3 (aplican en toda la ciudad)</div>
+      <div class="a763-q"><label>A. ¿Cumple los requisitos técnicos mínimos de la normativa sectorial de hospedaje vigente?</label>
+        <select id="a763_reqTecnicos"><option value="si">Sí</option><option value="no">No</option></select>
+      </div>
+      <div class="a763-q"><label>B. ¿La parcela tiene uso cualificado industrial (o industrial con terciario de oficinas)?</label>
+        <select id="a763_usoIndustrial">
+          <option value="no" ${!usoIndustrialDetectado?"selected":""}>No</option>
+          <option value="si" ${usoIndustrialDetectado?"selected":""}>Sí</option>
+        </select>
+        <div class="a763-cita">${usoIndustrialDetectado?`Prellenado: el uso global de la norma zonal detectada es "${esc(d.gd?.uso||"")}". Verifícalo.`:"No se ha detectado uso industrial en la norma zonal — verifícalo si tienes dudas."}</div>
+      </div>
+      <div class="a763-q"><label>B.1 Si es industrial, ¿la normativa de la parcela admite el uso residencial (vivienda colectiva) como alternativo o autorizable?</label>
+        <select id="a763_residencialAlternativo"><option value="no">No / no aplica</option><option value="si">Sí</option></select>
+      </div>
+      <div class="a763-q"><label>C. ¿El local dispondrá de acceso independiente? (obligatorio si el edificio es de uso residencial)</label>
+        <select id="a763_accesoIndependiente"><option value="si">Sí</option><option value="no">No</option></select>
+      </div>
+      <div class="sdiv"></div>
+      <div class="a763-section">Área central — Art. 7.6.3 bis (solo dentro del APE 00.01)</div>
       <div class="a763-q"><label>1. ¿Qué hospedaje?</label>
         <select id="a763_modalidad">
           <option value="hotel">Hotel</option>
@@ -543,12 +572,16 @@ function renderArt763bisCard(d){
   </div>`;
 }
 function wireArt763bis(container,d){
-  const ids=["a763_modalidad","a763_dentroAPE","a763_colonia","a763_edificio","a763_uso","a763_terciario66","a763_nivel","a763_planta","a763_proteccion","a763_planeamiento"];
+  const ids=["a763_reqTecnicos","a763_usoIndustrial","a763_residencialAlternativo","a763_accesoIndependiente","a763_modalidad","a763_dentroAPE","a763_colonia","a763_edificio","a763_uso","a763_terciario66","a763_nivel","a763_planta","a763_proteccion","a763_planeamiento"];
   const els={};ids.forEach(id=>els[id]=container.querySelector("#"+id));
   if(!els.a763_modalidad)return;
   const colorMap={prohibido:"red",uso_alternativo:"green",uso_alternativo_condicionado:"green",autorizable:"green",complementario:"green",no_aplica:"blue",excepcion:"blue",no_determinado:"amber",incompleto:"amber"};
   function actualizar(){
     const inp={
+      reqTecnicos:els.a763_reqTecnicos.value==="si",
+      usoIndustrial:els.a763_usoIndustrial.value==="si",
+      residencialAlternativo:els.a763_residencialAlternativo.value==="si",
+      accesoIndependiente:els.a763_accesoIndependiente.value,
       modalidad:els.a763_modalidad.value,esTuristica:els.a763_modalidad.value==="vivienda_turistica",
       dentroAPE:els.a763_dentroAPE.value==="si",colonia:els.a763_colonia.value==="si",
       edificioExclusivo:els.a763_edificio.value==="exclusivo",usoExistente:els.a763_uso.value,
