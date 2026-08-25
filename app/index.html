@@ -150,6 +150,7 @@ body{background:var(--bg);font-family:var(--fs);font-size:14px;color:var(--text)
 .source-badge{font-size:10px;font-weight:600;font-family:var(--fm);padding:2px 9px;border-radius:20px;background:var(--purple-bg);color:var(--purple);border:1px solid var(--purple-border);white-space:nowrap}
 .source-txt{font-size:11px;color:var(--text3)}
 
+.corner-version{position:fixed;top:10px;right:12px;font-size:10px;font-family:var(--fm);color:var(--text3);background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:2px 9px;z-index:10}
 .app-footer{text-align:center;margin-top:32px;padding-top:16px;border-top:1px solid var(--border)}
 .footer-txt{font-size:11px;color:var(--text3);font-family:var(--fm);letter-spacing:.02em}
 
@@ -171,6 +172,9 @@ body{background:var(--bg);font-family:var(--fs);font-size:14px;color:var(--text)
 .exp-item{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px}
 .exp-top{display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap}
 .exp-tipo{font-size:10px;font-weight:600;font-family:var(--fm);padding:2px 8px;border-radius:20px;background:var(--teal-bg);color:var(--teal);border:1px solid var(--teal-border)}
+.exp-scope{font-size:10px;font-weight:600;font-family:var(--fm);padding:2px 8px;border-radius:20px}
+.exp-scope-edificio{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+.exp-scope-general{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}
 .exp-num{font-size:11px;color:var(--text3);font-family:var(--fm)}
 .exp-denom{font-size:12px;color:var(--text);font-weight:500;line-height:1.4;margin-bottom:3px}
 .exp-meta{font-size:11px;color:var(--text2);display:flex;gap:10px;flex-wrap:wrap}
@@ -191,10 +195,53 @@ body{background:var(--bg);font-family:var(--fs);font-size:14px;color:var(--text)
 .repo-meta{padding:0 12px 10px 22px;font-size:11px;color:var(--text2);line-height:1.7}
 .repo-meta b{color:var(--text3);font-weight:600;font-family:var(--fm);text-transform:uppercase;font-size:9px;letter-spacing:.05em}
 .repo-badge{font-size:9px;font-family:var(--fm);color:var(--text3);text-transform:uppercase}
+.repo-url-row{margin-top:2px}
+.repo-url-view{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.repo-edit-btn{border:none;background:none;color:var(--text3);cursor:pointer;padding:2px 4px;font-size:11px}
+.repo-edit-btn:hover{color:var(--blue)}
+.repo-reset-btn{border:none;background:none;color:var(--text3);cursor:pointer;font-size:10px;text-decoration:underline;padding:0}
+.repo-reset-btn:hover{color:var(--red)}
+.repo-url-edit{display:flex;gap:6px;margin-top:4px}
+.repo-url-input{flex:1;font-size:11px;font-family:var(--fm);padding:5px 8px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--surface);color:var(--text)}
+.repo-url-edit button{font-size:11px;padding:5px 10px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--surface2);color:var(--text2);cursor:pointer}
+.repo-url-edit button[data-repo-save]{background:var(--blue);color:#fff;border-color:var(--blue)}
+
+/* ── ANÁLISIS ART. 7.6.3 BIS ── */
+.a763-q{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
+.a763-q label{font-size:11px;font-weight:600;color:var(--text2);line-height:1.4}
+.a763-q select{padding:7px 9px;border-radius:var(--r-sm);border:1px solid var(--border);font-size:12px;font-family:var(--fs);background:var(--surface2);color:var(--text)}
+.a763-result{margin-top:6px;padding:12px;border-radius:var(--r-sm);border:1px solid}
+.a763-result.red{background:var(--red-bg);border-color:var(--red-border)}
+.a763-result.green{background:var(--green-bg);border-color:var(--green-border)}
+.a763-result.blue{background:var(--blue-bg);border-color:var(--blue-border)}
+.a763-result.amber{background:var(--amber-bg);border-color:var(--amber-border)}
+.a763-result-lbl{font-size:10px;font-weight:700;text-transform:uppercase;font-family:var(--fm);letter-spacing:.05em;margin-bottom:4px;color:var(--text2)}
+.a763-result-txt{font-size:13px;line-height:1.6;color:var(--text)}
+.a763-cita{font-size:10px;color:var(--text3);font-family:var(--fm);margin-top:4px}
+
+/* ── CHAT IA ── */
+.chat-panel{margin-top:10px}
+.chat-panel[hidden]{display:none}
+.chat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+.chat-log{max-height:420px;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+.chat-msg{max-width:88%;padding:9px 12px;border-radius:12px;font-size:13px;line-height:1.55;white-space:pre-wrap}
+.chat-msg.user{align-self:flex-end;background:var(--blue);color:#fff;border-bottom-right-radius:3px}
+.chat-msg.assistant{align-self:flex-start;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-bottom-left-radius:3px}
+.chat-msg.err{align-self:flex-start;background:var(--red-bg);border:1px solid var(--red-border);color:var(--red)}
+.chat-empty{padding:24px 14px;text-align:center;color:var(--text3);font-size:12px}
+.chat-input-bar{display:flex;gap:8px;padding:10px;border-top:1px solid var(--border);background:var(--surface2)}
+.chat-input{flex:1;resize:none;border:1px solid var(--border);border-radius:var(--r-sm);padding:8px 10px;font-size:13px;font-family:var(--fs);color:var(--text);background:var(--surface);min-height:38px;max-height:100px}
+.chat-send{padding:0 16px;border:none;border-radius:var(--r-sm);background:var(--blue);color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--fs)}
+.chat-send:disabled{opacity:.4;cursor:not-allowed}
+.chat-clear{font-size:10px;color:var(--text3);background:none;border:none;cursor:pointer;padding:4px 8px}
+.chat-clear:hover{color:var(--red)}
+.chat-hdr{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border-bottom:1px solid var(--border);background:var(--surface2)}
+.chat-hdr-lbl{font-size:11px;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:6px}
 </style>
 </head>
 <body>
 
+<div class="corner-version" id="cornerVersion"></div>
 <div class="wrap">
   <div class="app-header">
     <div class="brand-name">Urban Agent · Madrid PGOUM97</div>
@@ -231,12 +278,27 @@ body{background:var(--bg);font-family:var(--fs);font-size:14px;color:var(--text)
       <p>Información orientativa generada a partir de fuentes públicas (GIS del Ayuntamiento de Madrid) y de la compilación de las Normas Urbanísticas del PGOUM 1997. Cada dato indica si procede directamente de una fuente oficial (<b>DATO OBTENIDO</b>), de una lectura razonada de la normativa (<b>INTERPRETACIÓN NORMATIVA</b>) o de un cálculo derivado (<b>CONCLUSIÓN</b>). No sustituye la consulta al Ayuntamiento de Madrid ni el asesoramiento de un técnico competente (arquitecto/aparejador) antes de tomar decisiones urbanísticas, contractuales o de inversión. InmoLab no se responsabiliza de las decisiones adoptadas a partir de esta información.</p>
     </div>
 
+    <button class="repo-toggle" id="chatToggle" type="button"><i class="ti ti-message-chatbot" aria-hidden="true"></i> Chat con la IA</button>
+    <div class="chat-panel" id="chatPanel" hidden>
+      <div class="chat-card">
+        <div class="chat-hdr">
+          <span class="chat-hdr-lbl"><i class="ti ti-message-chatbot" aria-hidden="true"></i> Analista urbanístico IA</span>
+          <button class="chat-clear" id="chatClear" type="button">Borrar conversación</button>
+        </div>
+        <div class="chat-log" id="chatLog"><div class="chat-empty">Pregunta sobre el PGOUM, la última dirección consultada, o cualquier duda de las Normas Urbanísticas.</div></div>
+        <div class="chat-input-bar">
+          <textarea class="chat-input" id="chatInput" placeholder="Escribe tu pregunta…" rows="1"></textarea>
+          <button class="chat-send" id="chatSend" type="button">Enviar</button>
+        </div>
+      </div>
+    </div>
+
     <button class="repo-toggle" id="repoToggle" type="button"><i class="ti ti-books" aria-hidden="true"></i> Repositorio normativo</button>
     <div class="repo-panel" id="repoPanel" hidden></div>
   </div>
 
   <div class="app-footer">
-    <div class="footer-txt">InmoLab · Urban Agent · <span id="appVersion"></span></div>
+    <div class="footer-txt">InmoLab · Urban Agent · Creada por Pedro Ojesto Vallina</div>
   </div>
 </div>
 
@@ -256,7 +318,11 @@ const GIS={
 };
 // Fecha de la última revisión manual del compendio NNUU/PROT contra el texto oficial del PGOUM.
 const NNUU_DATA_VERSION="24/09/2025";
-let MEM=[],AI=-1;
+let MEM=[],AI=-1,LAST_RESULT=null;
+// URL del backend con el chat IA (Cloudflare Worker). La app de escritorio es
+// local, pero el chat necesita un servidor porque llama a la API de Claude
+// con una clave que nunca debe viajar dentro de la app distribuible.
+const CHAT_API_URL="https://urban-agent.PENDIENTE-DE-DESPLIEGUE.workers.dev";
 
 // ══════════════════════════════════════════════════════════════
 // TABLA DE EQUIVALENCIA GIS → NORMA ZONAL + GRADO REAL PGOUM
@@ -293,6 +359,17 @@ function parseDenominacion(denom, etiqueta){
 // ─── HELPERS ───
 function esc(s){return String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
 function nk(s){return String(s).normalize("NFD").replace(/[̀-ͯ]/g,"").toUpperCase().replace(/[^A-Z0-9]+/g," ").trim()}
+// Heurística: un expediente es "del edificio" si su denominación menciona el
+// número de portal de la dirección consultada como palabra suelta (p.ej.
+// "C/ Preciados, 36"). Si no, se asume de ámbito más amplio (una MPG o un
+// PE citywide no suelen citar un portal concreto en su título).
+function esExpedienteEspecifico(denominacion, displayName){
+  if(!denominacion||!displayName)return false;
+  const num=(displayName.match(/\d+/)||[])[0];
+  if(!num)return false;
+  const dn=nk(denominacion);
+  return new RegExp(`(^|\\s)${num}(\\s|$)`).test(dn);
+}
 function fa(res,al){
   if(!res||!Array.isArray(res.results))return null;
   const na=al.map(nk);
@@ -343,6 +420,150 @@ function rl(lbl,f){
   if(!vv(f))return"";let u;try{u=new URL(f.value)}catch{return""}
   if(u.protocol!=="https:")return"";
   return`<a href="${esc(u.href)}" class="plano-a" target="_blank" rel="noopener"><i class="ti ti-external-link" aria-hidden="true"></i>${esc(lbl)}</a>`;
+}
+
+// ══════════════════════════════════════════════════════════════
+// ANÁLISIS ART. 7.6.3 BIS · Condiciones de implantación de hospedaje
+// en el área central de la ciudad (APE 00.01). Lógica fiel al texto
+// literal del compendio NNUU (ed. 24/09/2025) — ver data/art763bis-texto.js.
+// Flujo: qué hospedaje → dónde → qué edificio → uso existente → % →
+// nivel → planta → protección → planeamiento específico → CONCLUSIÓN.
+// ══════════════════════════════════════════════════════════════
+function evaluarArt763bis(inp){
+  const cita=(n)=>`Art. 7.6.3 bis, apdo. ${n}`;
+  if(!inp.dentroAPE)return{estado:"no_aplica",texto:"El Art. 7.6.3 bis solo se aplica dentro del Área de Planeamiento Específico del Centro Histórico (APE 00.01). Fuera de ese ámbito rige el régimen general de compatibilidad de usos de la norma zonal correspondiente (Art. 8.1.30/8.1.31).",cita:cita("2")};
+  if(inp.planeamientoEspecifico)return{estado:"excepcion",texto:"No es de aplicación: la parcela cuenta con un Estudio de Repercusión por Implantación de Usos validado, o con un Plan Especial de hospedaje aprobado definitivamente y vigente, sin haber implantado aún la actividad.",cita:cita("4")};
+  const nivel=inp.colonia?"E":inp.nivel;
+  if(nivel==="E")return{estado:"prohibido",texto:"Prohibido: en el nivel E (Colonias Históricas) no se admite la implantación de hospedaje.",cita:cita("6.b y 11")};
+  if(!nivel)return{estado:"incompleto",texto:"Indica el nivel de compatibilidad de usos (A-D) para continuar."};
+
+  let usoEfectivo=inp.usoExistente;
+  if(usoEfectivo==="residencial"&&inp.terciarioSuperior66)usoEfectivo="no_residencial";
+
+  if(inp.edificioExclusivo){
+    if(nivel==="A"||nivel==="B"){
+      if(usoEfectivo==="no_residencial"){
+        const req=inp.proteccion==="1"||inp.proteccion==="2";
+        return{estado:"uso_alternativo",texto:"Uso alternativo."+(req?` Al estar el edificio catalogado con nivel de protección ${inp.proteccion}, será necesario Plan Especial de Protección.`:""),cita:cita("8.a")};
+      }
+      if(usoEfectivo==="sin_edificar")return{estado:"prohibido",texto:"Prohibido: en parcelas sin edificar, el hospedaje en edificio exclusivo está prohibido.",cita:cita("8.b.iii")};
+      if(inp.proteccion==="3"){
+        if(!inp.esTuristica)return{estado:"no_determinado",texto:'El apdo. 8.b.i solo autoriza expresamente la modalidad de "vivienda de uso turístico" en edificios con protección nivel 3. Para otras modalidades de hospedaje en este supuesto, el artículo no da una regla expresa — se recomienda consulta previa al Ayuntamiento.',cita:cita("8.b.i")};
+        return{estado:"uso_alternativo_condicionado",texto:"Uso alternativo, solo como vivienda de uso turístico. Requiere las obras de restauración/rehabilitación necesarias; la licencia caduca a los 15 años y el edificio vuelve al uso residencial (vivienda colectiva).",cita:cita("8.b.i")};
+      }
+      if(inp.proteccion==="1"||inp.proteccion==="2")return{estado:"autorizable",texto:"Autorizable, con Plan Especial de Protección.",cita:cita("8.b.ii")};
+      return{estado:"prohibido",texto:"Prohibido: en edificios de uso residencial no catalogados, el hospedaje en edificio exclusivo está prohibido.",cita:cita("8.b.iii")};
+    }
+    const req=inp.proteccion==="1"||inp.proteccion==="2";
+    return{estado:"uso_alternativo",texto:"Uso alternativo."+(req?` Al estar el edificio catalogado con nivel de protección ${inp.proteccion}, será necesario Plan Especial de Protección.`:""),cita:cita("9")};
+  }
+  if(usoEfectivo==="sin_edificar")usoEfectivo="no_residencial";
+  if(usoEfectivo==="residencial")return{estado:"prohibido",texto:"Prohibido: en edificios de uso existente residencial no se admite el hospedaje como uso parcial en ninguna planta.",cita:cita("10.b")};
+  if(nivel==="A"||nivel==="B")return{estado:"complementario",texto:"Complementario, en cualquier situación de planta.",cita:cita("10.a.i")};
+  if(inp.planta==="piso")return{estado:"complementario",texto:"Complementario, solo en situación de planta de piso.",cita:cita("10.a.ii")};
+  return{estado:"prohibido",texto:"Prohibido en planta baja/inferior a la baja: en niveles C/D el uso complementario de hospedaje solo se admite en planta de piso.",cita:cita("10.a.ii")};
+}
+function renderArt763bisCard(d){
+  const posibleAPE=d.normaRaw&&/^1(\.|$)/.test(d.normaRaw);
+  const nivelDetectado=(d.nivelUsos||"").match(/Nivel\s*([A-E])/i)?.[1]||"";
+  const gp=nk(d.gradoProt||"");
+  let protDetectada="";
+  if(gp.includes("INTEGRAL"))protDetectada="1";
+  else if(gp.includes("ESTRUCTURAL"))protDetectada="2";
+  else if(gp.includes("AMBIENTAL"))protDetectada="3";
+  return`
+  <div class="card" id="a763card">
+    <div class="card-hdr amber">
+      <div class="card-icon icon-amber"><i class="ti ti-building-arch" aria-hidden="true"></i></div>
+      <div class="card-hdr-text">
+        <div class="card-label">Análisis · Art. 7.6.3 bis PGOUM</div>
+        <div class="card-title">Implantación de hospedaje en el área central</div>
+      </div>
+      ${ptag("interp")}
+    </div>
+    <div class="card-body">
+      <div class="a763-q"><label>1. ¿Qué hospedaje?</label>
+        <select id="a763_modalidad">
+          <option value="hotel">Hotel</option>
+          <option value="apartamentos">Apartamentos turísticos / hoteles-apartamentos</option>
+          <option value="hostales_pensiones">Pensión / hostal / casa de huéspedes</option>
+          <option value="vivienda_turistica">Vivienda de uso turístico</option>
+        </select>
+      </div>
+      <div class="a763-q"><label>2. ¿Dónde? — ¿Dentro del Área de Planeamiento Específico del Centro Histórico (APE 00.01)?</label>
+        <select id="a763_dentroAPE">
+          <option value="si" ${posibleAPE?"selected":""}>Sí</option>
+          <option value="no" ${!posibleAPE?"selected":""}>No</option>
+        </select>
+        <div class="a763-cita">${posibleAPE?"Prellenado: la norma zonal detectada es Norma Zonal 1 (Centro Histórico). Verifica el ámbito exacto del APE 00.01.":"Prellenado: la norma zonal detectada no es la Norma Zonal 1. Verifica igualmente si la parcela cae dentro del APE 00.01."}</div>
+      </div>
+      <div class="a763-q"><label>¿Es una Colonia Histórica?</label>
+        <select id="a763_colonia"><option value="no">No</option><option value="si">Sí</option></select>
+      </div>
+      <div class="a763-q"><label>3. ¿Qué edificio? — ¿Edificio exclusivo o parte de la edificación?</label>
+        <select id="a763_edificio"><option value="exclusivo">Edificio exclusivo</option><option value="parcial">Parte de la edificación (uso complementario)</option></select>
+      </div>
+      <div class="a763-q"><label>4. ¿Qué uso existente tiene el edificio?</label>
+        <select id="a763_uso">
+          <option value="residencial">Residencial</option>
+          <option value="no_residencial">No residencial</option>
+          <option value="sin_edificar">Parcela sin edificar</option>
+        </select>
+      </div>
+      <div class="a763-q"><label>5. ¿Qué porcentaje? — Si conviven usos residencial y terciario, ¿el terciario supera el 66% de la superficie edificada?</label>
+        <select id="a763_terciario66"><option value="no">No / no aplica</option><option value="si">Sí, supera el 66%</option></select>
+      </div>
+      <div class="a763-q"><label>6. ¿Qué nivel de compatibilidad de usos (Art. 8.1.29)?</label>
+        <select id="a763_nivel">
+          <option value="A" ${nivelDetectado==="A"?"selected":""}>A</option>
+          <option value="B" ${nivelDetectado==="B"?"selected":""}>B</option>
+          <option value="C" ${nivelDetectado==="C"?"selected":""}>C</option>
+          <option value="D" ${nivelDetectado==="D"?"selected":""}>D</option>
+        </select>
+        <div class="a763-cita">${nivelDetectado?`Prellenado desde el GIS ("Nivel de Usos y Actividades" = Nivel ${esc(nivelDetectado)}). Verifícalo.`:"No se ha detectado automáticamente — selecciónalo manualmente."}</div>
+      </div>
+      <div class="a763-q"><label>7. ¿Qué planta? — Si es uso parcial, ¿en qué planta se implanta?</label>
+        <select id="a763_planta"><option value="baja_inferior">Planta baja / inferior a la baja</option><option value="piso">Planta de piso (primera o superior)</option></select>
+      </div>
+      <div class="a763-q"><label>8. ¿Qué protección? — Nivel de catalogación del edificio</label>
+        <select id="a763_proteccion">
+          <option value="no_catalogado" ${!protDetectada?"selected":""}>No catalogado</option>
+          <option value="1" ${protDetectada==="1"?"selected":""}>Nivel 1 (Integral)</option>
+          <option value="2" ${protDetectada==="2"?"selected":""}>Nivel 2 (Estructural)</option>
+          <option value="3" ${protDetectada==="3"?"selected":""}>Nivel 3 (Ambiental)</option>
+        </select>
+        <div class="a763-cita">${protDetectada?`Sugerido a partir del grado de protección GIS ("${esc(d.gradoProt||"")}"). Verifícalo en el Catálogo de Protección.`:`No se ha podido inferir del dato GIS ("${esc(d.gradoProt||"—")}") — confírmalo en el Catálogo de Protección.`}</div>
+      </div>
+      <div class="a763-q"><label>9. ¿Existe planeamiento específico vigente? — Estudio de Repercusión validado o Plan Especial de hospedaje aprobado sin ejecutar</label>
+        <select id="a763_planeamiento"><option value="no">No</option><option value="si">Sí</option></select>
+      </div>
+      <div class="a763-result" id="a763result"></div>
+      <div class="disc"><i class="ti ti-alert-triangle" aria-hidden="true"></i><p>Herramienta de apoyo basada en el texto literal del Art. 7.6.3 bis (Compendio NNUU, ed. 24/09/2025). No sustituye la consulta urbanística oficial al Ayuntamiento de Madrid ni el informe de un técnico competente antes de solicitar una licencia.</p></div>
+    </div>
+  </div>`;
+}
+function wireArt763bis(container,d){
+  const ids=["a763_modalidad","a763_dentroAPE","a763_colonia","a763_edificio","a763_uso","a763_terciario66","a763_nivel","a763_planta","a763_proteccion","a763_planeamiento"];
+  const els={};ids.forEach(id=>els[id]=container.querySelector("#"+id));
+  if(!els.a763_modalidad)return;
+  const colorMap={prohibido:"red",uso_alternativo:"green",uso_alternativo_condicionado:"green",autorizable:"green",complementario:"green",no_aplica:"blue",excepcion:"blue",no_determinado:"amber",incompleto:"amber"};
+  function actualizar(){
+    const inp={
+      modalidad:els.a763_modalidad.value,esTuristica:els.a763_modalidad.value==="vivienda_turistica",
+      dentroAPE:els.a763_dentroAPE.value==="si",colonia:els.a763_colonia.value==="si",
+      edificioExclusivo:els.a763_edificio.value==="exclusivo",usoExistente:els.a763_uso.value,
+      terciarioSuperior66:els.a763_terciario66.value==="si",nivel:els.a763_nivel.value,
+      planta:els.a763_planta.value,proteccion:els.a763_proteccion.value,
+      planeamientoEspecifico:els.a763_planeamiento.value==="si",
+    };
+    const r=evaluarArt763bis(inp);
+    const cls=colorMap[r.estado]||"amber";
+    const resEl=container.querySelector("#a763result");
+    resEl.className=`a763-result ${cls}`;
+    resEl.innerHTML=`<div class="a763-result-lbl">Conclusión</div><div class="a763-result-txt">${esc(r.texto)}</div>${r.cita?`<div class="a763-cita">${esc(r.cita)}</div>`:""}`;
+  }
+  ids.forEach(id=>els[id].addEventListener("change",actualizar));
+  actualizar();
 }
 
 function renderResult(d){
@@ -429,6 +650,7 @@ function renderResult(d){
         ${metric("Uso principal (planeamiento)",d.parcela.usoPrincipal)}
       </div>
       ${!d.parcela.superficieParcela?`<div class="disc"><i class="ti ti-alert-triangle" aria-hidden="true"></i><p>No se ha podido obtener la superficie real de la parcela desde el Catastro para este punto. Verifica en la <a href="https://www1.sedecatastro.gob.es" target="_blank" rel="noopener">Sede Electrónica del Catastro</a>.</p></div>`:""}
+      ${d.parcela.fichaEspecifica?`<div class="sdiv"></div><div class="disc"><i class="ti ti-file-text" aria-hidden="true"></i><p><strong>Ficha específica${d.parcela.fichaEspecifica.numeroCatalogo?` · Nº catálogo ${esc(d.parcela.fichaEspecifica.numeroCatalogo)}`:""}:</strong> ${esc(d.parcela.fichaEspecifica.texto)}</p></div>`:""}
       ${d.clasificacionSuelo?`<div class="sdiv"></div><div class="metric-grid"><div class="metric" style="grid-column:1/-1"><div class="metric-lbl" style="display:flex;align-items:center">Clasificación del suelo${ptag("interp")}</div><div class="metric-val ${d.clasificacionSuelo.valor?'purple':'muted'}">${d.clasificacionSuelo.valor?esc(d.clasificacionSuelo.valor):"No determinada automáticamente"}</div></div></div><div class="disc"><i class="ti ti-info-circle" aria-hidden="true"></i><p>${esc(d.clasificacionSuelo.base)}</p></div>`:""}
     </div>
   </div>`:`
@@ -447,8 +669,8 @@ function renderResult(d){
     </div>
     <div class="card-body">
       <div class="exp-list">
-        ${d.expedientes.map(e=>`<div class="exp-item">
-          <div class="exp-top">${e.tipo?`<span class="exp-tipo">${esc(e.tipo)}</span>`:""}<span class="exp-num">${esc(e.numero||e.figura||"")}</span></div>
+        ${d.expedientes.map(e=>{const esp=esExpedienteEspecifico(e.denominacion,d.display_name);return`<div class="exp-item">
+          <div class="exp-top">${e.tipo?`<span class="exp-tipo">${esc(e.tipo)}</span>`:""}<span class="exp-scope ${esp?"exp-scope-edificio":"exp-scope-general"}">${esp?"Este edificio":"Ámbito general"}</span><span class="exp-num">${esc(e.numero||e.figura||"")}</span></div>
           <div class="exp-denom">${esc(e.denominacion||"—")}</div>
           <div class="exp-meta">
             ${e.fase?`<span>${esc(e.fase)}</span>`:""}
@@ -456,9 +678,9 @@ function renderResult(d){
             ${e.organo?`<span>${esc(e.organo)}</span>`:""}
             ${e.enlace?`<a class="exp-link" href="${esc(e.enlace)}" target="_blank" rel="noopener">Ver expediente <i class="ti ti-external-link" aria-hidden="true"></i></a>`:""}
           </div>
-        </div>`).join("")}
+        </div>`}).join("")}
       </div>
-      <div class="disc"><i class="ti ti-alert-triangle" aria-hidden="true"></i><p>Algunos expedientes tienen ámbito municipal (p.ej. una Modificación Puntual del PGOUM) y no son exclusivos de esta parcela. Revisa cada enlace para confirmar si afecta directamente al inmueble.</p></div>
+      <div class="disc"><i class="ti ti-alert-triangle" aria-hidden="true"></i><p>Ordenados por fecha (más recientes primero). El color es una estimación automática: <span style="color:var(--green)">verde</span> si el título del expediente cita el número de portal consultado (probablemente específico de este edificio, p.ej. un Plan Especial); <span style="color:var(--red)">rojo</span> si no lo cita (probablemente de ámbito más amplio, p.ej. una Modificación Puntual del PGOUM o una normativa como la de cubiertas verdes). Revisa cada enlace para confirmarlo.</p></div>
     </div>
   </div>`:""}
 
@@ -510,7 +732,7 @@ function renderResult(d){
         ${param("Fondo edificable",gd.ed.fondo)}
       </div>
       <div class="disc"><i class="ti ti-alert-triangle" aria-hidden="true"></i><p>Simulación de anteproyecto: techo edificable = superficie de parcela (Catastro) × coeficiente de edificabilidad neta; ocupación = parcela × % de ocupación máxima; nº de plantas = techo ÷ ocupación (aprox., valores medios del rango). No descuenta patios, retranqueos, cesiones, núcleos de comunicación, elementos protegidos ni normativa sectorial (accesibilidad, incendios, aparcamiento). No sustituye un estudio de detalle ni un anteproyecto firmado por un técnico competente.</p></div>
-      ${!techoText||!ocupText?`<div class="disc"><i class="ti ti-info-circle" aria-hidden="true"></i><p>${!techoText?"El coeficiente de edificabilidad de esta norma/grado se fija en el Plano CE de la manzana (no es un valor único), así que no se puede calcular el techo edificable automáticamente. ":""}${!ocupText?"La ocupación máxima de esta norma/grado se fija en el Plano CE de la manzana, así que no se puede calcular la ocupación en planta automáticamente.":""}</p></div>`:""}
+      ${!techoText||!ocupText?`<div class="disc"><i class="ti ti-info-circle" aria-hidden="true"></i><p>${!techoText?"El coeficiente de edificabilidad de esta norma/grado se fija en el Plano CE de la manzana (no es un valor único), así que no se puede calcular el techo edificable automáticamente. ":""}${!ocupText?"La ocupación máxima de esta norma/grado se fija en el Plano CE de la manzana, así que no se puede calcular la ocupación en planta automáticamente. ":""}Esto no es un fallo de la app: en estas normas (típicamente Centro Histórico) el PGOUM no publica un valor citywide, sino que remite al plano CE de cada manzana concreta — usa el enlace "Plano condiciones" de la tarjeta de Localización para verlo, o solicita la <a href="https://sede.madrid.es/portal/site/tramites/menuitem.62876cb64654a55e2dbd7003a8a409a0/?vgnextoid=a2f3d02460f2f510VgnVCM2000001f4a900aRCRD&vgnextchannel=92e637c190180210VgnVCM100000c90da8c0RCRD" target="_blank" rel="noopener">Cédula Urbanística</a> oficial (documento de pago, Sede Electrónica del Ayuntamiento) para el dato definitivo.</p></div>`:""}
     </div>
   </div>`:""}
 
@@ -578,6 +800,8 @@ function renderResult(d){
     </div>
   </div>`:""}
 
+  ${renderArt763bisCard(d)}
+
   <!-- FUENTE -->
   <div class="card">
     <div class="source-bar">
@@ -586,7 +810,7 @@ function renderResult(d){
     </div>
   </div>`;
 
-  logEl().appendChild(wrap);wrap.scrollIntoView({behavior:"smooth",block:"end"});
+  logEl().appendChild(wrap);wireArt763bis(wrap,d);wrap.scrollIntoView({behavior:"smooth",block:"end"});
 }
 
 async function geocode(dir){
@@ -629,6 +853,24 @@ async function getParcelData(lat, lon) {
     superficieParcela,
   };
 }
+// Ficha Específica (PG_CONDICIONES_EDIFICACION, capa 1): solo existe para
+// parcelas con condiciones singulares (fuera de la norma general del
+// Grado/Coeficiente Z). Cuando aparece, es la referencia más concreta
+// disponible por API para esa parcela.
+async function getFichaEspecifica(lat, lon) {
+  const p = new URLSearchParams({
+    geometry: `${lon},${lat}`, geometryType: "esriGeometryPoint", inSR: "4326",
+    spatialRel: "esriSpatialRelIntersects", outFields: "NNUMORD,FESPECIFICA",
+    returnGeometry: "false", f: "pjson",
+  });
+  const d = await (await fetch(`https://sigma.madrid.es/hosted/rest/services/PGOUM97/PG_CONDICIONES_EDIFICACION/MapServer/1/query?${p}`)).json();
+  const f = (d.features || [])[0];
+  if (!f) return null;
+  const a = f.attributes || {};
+  const texto = (a.FESPECIFICA || "").trim();
+  if (!texto) return null;
+  return { numeroCatalogo: a.NNUMORD || null, texto };
+}
 async function getBarrioDistrito(lat, lon) {
   const p = new URLSearchParams({
     geometry: `${lon},${lat}`, geometryType: "esriGeometryPoint", inSR: "4326",
@@ -652,7 +894,7 @@ async function getExpedientesPlaneamiento(lat, lon) {
     returnGeometry: "false", f: "pjson",
   });
   const d = await (await fetch(`${GIS.expedientes}?${p}`)).json();
-  return (d.features || []).map((f) => {
+  const expedientes = (d.features || []).map((f) => {
     const a = f.attributes || {};
     return {
       numero: a.EXP_TX_NUMERO || null, figura: a.FIG_TX_ETIQ || null, tipo: a.TFIG_TX_ABREV || null,
@@ -662,6 +904,8 @@ async function getExpedientesPlaneamiento(lat, lon) {
       enlace: /^https:\/\//.test(a.ENLACE || "") ? a.ENLACE : null,
     };
   });
+  expedientes.sort((a, b) => (b.fechaAprobacion || "").localeCompare(a.fechaAprobacion || ""));
+  return expedientes;
 }
 // Referencia catastral y superficie REAL de la parcela (Dirección General
 // del Catastro). La capa "Parcelas Urbanísticas" del visor de planeamiento
@@ -705,11 +949,12 @@ function parsePercentRange(ocStr) {
 function round2(n) { return Math.round(n * 100) / 100; }
 
 async function lookupCompendio({ normaKey, gradoKey, pKey, lat, lon }) {
-  const [pdata, admin, expedientes, catastro] = await Promise.all([
+  const [pdata, admin, expedientes, catastro, fichaEspecifica] = await Promise.all([
     lat && lon ? getParcelData(lat, lon).catch(() => null) : Promise.resolve(null),
     lat && lon ? getBarrioDistrito(lat, lon).catch(() => null) : Promise.resolve(null),
     lat && lon ? getExpedientesPlaneamiento(lat, lon).catch(() => []) : Promise.resolve([]),
     lat && lon ? getCatastro(lat, lon).catch(() => null) : Promise.resolve(null),
+    lat && lon ? getFichaEspecifica(lat, lon).catch(() => null) : Promise.resolve(null),
   ]);
 
   const nzRaw = normaKey ? NNUU[normaKey] : null;
@@ -726,6 +971,7 @@ async function lookupCompendio({ normaKey, gradoKey, pKey, lat, lon }) {
       superficieParcela: catastro?.superficieParcelaCatastral ?? null,
       refCatastral: catastro?.refcat ?? null,
       direccionCatastral: catastro?.direccion ?? null,
+      fichaEspecifica: fichaEspecifica ?? null,
     };
   }
 
@@ -779,6 +1025,7 @@ function loadMem(i){
   logEl().innerHTML="";
   addStep(`<i class="ti ti-clock" aria-hidden="true"></i>`,"i-warn","Memoria",`Recuperando: <b>${esc(d.display_name)}</b>`);
   renderResult(d);
+  LAST_RESULT=d;
 }
 function clearMem(){
   MEM=[];AI=-1;renderMem();
@@ -842,6 +1089,7 @@ async function run(){
       admin:lookup.admin,expedientes:lookup.expedientes,clasificacionSuelo:lookup.clasificacionSuelo,obraNueva:lookup.obraNueva};
     saveMem(rec);
     renderResult(rec);
+    LAST_RESULT=rec;
   }catch(e){
     addStep(`<i class="ti ti-alert-circle" aria-hidden="true"></i>`,"i-err","Error",esc(e.message));
   }finally{
@@ -857,10 +1105,33 @@ renderMem();
 // REPOSITORIO NORMATIVO · navegación de la jerarquía documental
 // PGOUM 1997 → Compendio de Normas Urbanísticas → Título 8 → Norma Zonal
 // → grados. Datos locales (import estático), sin llamada de red.
+// Los enlaces son editables: los cambios se guardan en localStorage y se
+// superponen a los valores por defecto de repositorio.js (que no se tocan).
 // ══════════════════════════════════════════════════════════════
+const REPO_OVERRIDES_KEY="urbanagent_repo_overrides";
+function loadRepoOverrides(){try{return JSON.parse(localStorage.getItem(REPO_OVERRIDES_KEY)||"{}")}catch{return{}}}
+function saveRepoOverrides(o){try{localStorage.setItem(REPO_OVERRIDES_KEY,JSON.stringify(o))}catch{}}
+let REPO_OVERRIDES=loadRepoOverrides();
 function repoField(lbl,val){
   if(!val)return"";
   return`<div><b>${esc(lbl)}</b><br>${esc(Array.isArray(val)?val.join(" · "):val)}</div>`;
+}
+function repoUrlRow(id,defaultUrl,fechaConsulta){
+  const override=REPO_OVERRIDES[id];
+  const url=override?.url??defaultUrl;
+  if(!url&&!override)return"";
+  return`<div class="repo-url-row" data-repo-id="${esc(id)}">
+    <div class="repo-url-view">
+      ${url?`<a href="${esc(url)}" target="_blank" rel="noopener" class="exp-link">Fuente oficial <i class="ti ti-external-link" aria-hidden="true"></i></a> · consultado ${esc(fechaConsulta||"—")}`:`<span class="repo-cita" style="color:var(--text3)">Sin enlace</span>`}
+      <button class="repo-edit-btn" data-repo-edit="${esc(id)}" type="button" title="Editar enlace"><i class="ti ti-pencil" aria-hidden="true"></i></button>
+      ${override?`<button class="repo-reset-btn" data-repo-reset="${esc(id)}" type="button">restablecer</button>`:""}
+    </div>
+    <div class="repo-url-edit" hidden>
+      <input type="text" class="repo-url-input" value="${esc(url||"")}" placeholder="https://…">
+      <button data-repo-save="${esc(id)}" type="button">Guardar</button>
+      <button data-repo-cancel="${esc(id)}" type="button">Cancelar</button>
+    </div>
+  </div>`;
 }
 function renderRepoNode(n,children){
   const kids=children.filter(c=>c.padre===n.id);
@@ -877,7 +1148,7 @@ function renderRepoNode(n,children){
       ${repoField("Prioridad normativa",n.prioridadNormativa)}
       ${repoField("Posibles modificaciones",n.posiblesModificaciones)}
       ${repoField("Vigencia",n.vigencia)}
-      ${n.url?`<div><a href="${esc(n.url)}" target="_blank" rel="noopener" class="exp-link">Fuente oficial <i class="ti ti-external-link" aria-hidden="true"></i></a> · consultado ${esc(n.fechaConsulta||"—")}</div>`:""}
+      ${repoUrlRow(n.id,n.url,n.fechaConsulta)}
     </div>
     ${kids.length?`<div class="repo-children">${kids.map(k=>renderRepoNode(k,children)).join("")}</div>`:""}
   </details>`;
@@ -887,9 +1158,37 @@ function renderRepo(){
   const roots=REPOSITORIO.documentos.filter(n=>!n.padre);
   panel.innerHTML=roots.map(n=>renderRepoNode(n,REPOSITORIO.documentos)).join("")+
     `<details class="repo-node" open><summary>Fuentes GIS en vivo <span class="repo-badge">dato obtenido</span></summary>
-      <div class="repo-meta">${REPOSITORIO.fuentesVivas.map(f=>`<div><b>${esc(f.documento)}</b><br>${esc(f.organismo)} · <a href="${esc(f.url)}" target="_blank" rel="noopener" class="exp-link">servicio</a></div>`).join("")}</div>
+      <div class="repo-meta">${REPOSITORIO.fuentesVivas.map(f=>`<div><b>${esc(f.documento)}</b><br>${esc(f.organismo)}${repoUrlRow(f.id,f.url,null)}</div>`).join("")}</div>
     </details>`;
 }
+document.getElementById("repoPanel").addEventListener("click",(e)=>{
+  const editBtn=e.target.closest("[data-repo-edit]");
+  const cancelBtn=e.target.closest("[data-repo-cancel]");
+  const saveBtn=e.target.closest("[data-repo-save]");
+  const resetBtn=e.target.closest("[data-repo-reset]");
+  if(editBtn){
+    const row=editBtn.closest(".repo-url-row");
+    row.querySelector(".repo-url-view").hidden=true;
+    row.querySelector(".repo-url-edit").hidden=false;
+    row.querySelector(".repo-url-input").focus();
+  }else if(cancelBtn){
+    const row=cancelBtn.closest(".repo-url-row");
+    row.querySelector(".repo-url-view").hidden=false;
+    row.querySelector(".repo-url-edit").hidden=true;
+  }else if(saveBtn){
+    const id=saveBtn.dataset.repoSave;
+    const row=saveBtn.closest(".repo-url-row");
+    const val=row.querySelector(".repo-url-input").value.trim();
+    if(val){REPO_OVERRIDES[id]={url:val};}else{delete REPO_OVERRIDES[id];}
+    saveRepoOverrides(REPO_OVERRIDES);
+    renderRepo();
+  }else if(resetBtn){
+    const id=resetBtn.dataset.repoReset;
+    delete REPO_OVERRIDES[id];
+    saveRepoOverrides(REPO_OVERRIDES);
+    renderRepo();
+  }
+});
 document.getElementById("repoToggle").addEventListener("click",()=>{
   const panel=document.getElementById("repoPanel");
   const hidden=panel.hasAttribute("hidden");
@@ -898,10 +1197,55 @@ document.getElementById("repoToggle").addEventListener("click",()=>{
 });
 
 // ══════════════════════════════════════════════════════════════
+// CHAT IA · analista urbanístico. Llama a /api/chat del Worker
+// (compendio NNUU/PROT + texto del Art. 7.6.3/7.6.3 bis como
+// contexto, más la última dirección consultada en la app si existe).
+// ══════════════════════════════════════════════════════════════
+let CHAT_MSGS=[];
+function chatLogEl(){return document.getElementById("chatLog")}
+function renderChat(){
+  const el=chatLogEl();
+  if(!CHAT_MSGS.length){el.innerHTML=`<div class="chat-empty">Pregunta sobre el PGOUM, la última dirección consultada, o cualquier duda de las Normas Urbanísticas.</div>`;return}
+  el.innerHTML=CHAT_MSGS.map(m=>`<div class="chat-msg ${m.role==="user"?"user":m.err?"err":"assistant"}">${esc(m.content)}</div>`).join("");
+  el.scrollTop=el.scrollHeight;
+}
+async function enviarChat(){
+  const input=document.getElementById("chatInput");
+  const texto=input.value.trim();
+  if(!texto)return;
+  const btn=document.getElementById("chatSend");
+  input.value="";input.disabled=true;btn.disabled=true;
+  CHAT_MSGS.push({role:"user",content:texto});
+  renderChat();
+  try{
+    const r=await fetch(`${CHAT_API_URL}/api/chat`,{
+      method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({messages:CHAT_MSGS.map(m=>({role:m.role,content:m.content})),contexto:LAST_RESULT}),
+    });
+    const d=await r.json().catch(()=>({}));
+    if(!r.ok)throw new Error(d.error||"No se ha podido contactar con el chat IA.");
+    CHAT_MSGS.push({role:"assistant",content:d.respuesta||"Sin respuesta."});
+  }catch(e){
+    CHAT_MSGS.push({role:"assistant",content:e.message,err:true});
+  }finally{
+    input.disabled=false;btn.disabled=false;input.focus();
+    renderChat();
+  }
+}
+document.getElementById("chatSend").addEventListener("click",enviarChat);
+document.getElementById("chatInput").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();enviarChat()}});
+document.getElementById("chatClear").addEventListener("click",()=>{CHAT_MSGS=[];renderChat()});
+document.getElementById("chatToggle").addEventListener("click",()=>{
+  const panel=document.getElementById("chatPanel");
+  const hidden=panel.hasAttribute("hidden");
+  if(hidden)panel.removeAttribute("hidden");else panel.setAttribute("hidden","");
+});
+
+// ══════════════════════════════════════════════════════════════
 // AUTO-ACTUALIZACIÓN (expuesto por el proceso principal vía preload)
 // ══════════════════════════════════════════════════════════════
 if(window.urbanAgent){
-  document.getElementById("appVersion").textContent=`v${window.urbanAgent.appVersion}`;
+  document.getElementById("cornerVersion").textContent=`v${window.urbanAgent.appVersion}`;
   const pill=document.getElementById("updatePill"), txt=document.getElementById("updateTxt");
   window.urbanAgent.onUpdateAvailable(v=>{
     txt.textContent=`Actualización ${v} disponible — descargando…`;
