@@ -354,15 +354,9 @@ function renderResult(d){
   const sinGrado = !gd;
   const gradoAproximado = !!(gd && d.aproximado);
 
-  let supPatText = null, supPatNota = null;
-  if(d.parcela){
-    const sp = d.parcela.superficiePatrimonializable;
-    if(sp){
-      supPatText = sp.min===sp.max ? `${sp.min.toLocaleString("es-ES")} m²t` : `${sp.min.toLocaleString("es-ES")}–${sp.max.toLocaleString("es-ES")} m²t`;
-    }else if(gd){
-      supPatNota = "El coeficiente de edificabilidad de esta norma/grado se fija en el Plano CE de la manzana, no es un valor único — no se puede calcular una superficie patrimonializable automática.";
-    }
-  }
+  function rangeText(r,suf){return r?(r.min===r.max?`${r.min.toLocaleString("es-ES")}${suf}`:`${r.min.toLocaleString("es-ES")}–${r.max.toLocaleString("es-ES")}${suf}`):null}
+  const techoText = d.obraNueva?rangeText(d.obraNueva.techo," m²t"):null;
+  const ocupText = d.obraNueva?rangeText(d.obraNueva.ocupacion," m²"):null;
 
   const wrap=document.createElement("div");wrap.className="result-stack";
   wrap.innerHTML=`
@@ -417,28 +411,28 @@ function renderResult(d){
     </div>
   </div>`:""}
 
-  <!-- CARD 1.5: FICHA DE PARCELA (VISOR URBANÍSTICO DE MADRID) -->
+  <!-- CARD 1.5: FICHA DE PARCELA (CATASTRO + VISOR URBANÍSTICO DE MADRID) -->
   ${d.parcela?`
   <div class="card">
     <div class="card-hdr teal">
       <div class="card-icon icon-teal"><i class="ti ti-map-2" aria-hidden="true"></i></div>
       <div class="card-hdr-text">
-        <div class="card-label">Ficha de parcela · Visor urbanístico de Madrid</div>
-        <div class="card-title">${esc(d.parcela.denominacion||"Parcela urbanística")}</div>
+        <div class="card-label">Ficha de parcela · Catastro + visor urbanístico</div>
+        <div class="card-title">${esc(d.parcela.refCatastral||d.parcela.denominacion||"Parcela")}</div>
       </div>
       ${ptag("dato")}
     </div>
     <div class="card-body">
       <div class="metric-grid">
-        ${metric("Superficie de parcela",d.parcela.superficieParcela?`${d.parcela.superficieParcela.toLocaleString("es-ES")} m²`:null,"blue")}
+        ${metric("Superficie de parcela (Catastro)",d.parcela.superficieParcela?`${d.parcela.superficieParcela.toLocaleString("es-ES")} m²`:null,"blue")}
+        ${metric("Referencia catastral",d.parcela.refCatastral)}
         ${metric("Uso principal (planeamiento)",d.parcela.usoPrincipal)}
-        <div class="metric" style="grid-column:span 1"><div class="metric-lbl" style="display:flex;align-items:center">Sup. patrimonializable (est.)${ptag("concl")}</div>${supPatText?`<div class="metric-val purple">${esc(supPatText)}</div>`:`<div class="metric-val muted">—</div>`}</div>
       </div>
-      <div class="disc"><i class="ti ti-alert-triangle" aria-hidden="true"></i><p>${supPatNota?esc(supPatNota):"Estimación orientativa: superficie de la parcela urbanística (visor del Ayuntamiento) × coeficiente de edificabilidad de la norma zonal."} No descuenta cesiones, servidumbres, elementos protegidos ni afecciones sectoriales. No sustituye un estudio de detalle ni la consulta al Ayuntamiento.</p></div>
+      ${!d.parcela.superficieParcela?`<div class="disc"><i class="ti ti-alert-triangle" aria-hidden="true"></i><p>No se ha podido obtener la superficie real de la parcela desde el Catastro para este punto. Verifica en la <a href="https://www1.sedecatastro.gob.es" target="_blank" rel="noopener">Sede Electrónica del Catastro</a>.</p></div>`:""}
       ${d.clasificacionSuelo?`<div class="sdiv"></div><div class="metric-grid"><div class="metric" style="grid-column:1/-1"><div class="metric-lbl" style="display:flex;align-items:center">Clasificación del suelo${ptag("interp")}</div><div class="metric-val ${d.clasificacionSuelo.valor?'purple':'muted'}">${d.clasificacionSuelo.valor?esc(d.clasificacionSuelo.valor):"No determinada automáticamente"}</div></div></div><div class="disc"><i class="ti ti-info-circle" aria-hidden="true"></i><p>${esc(d.clasificacionSuelo.base)}</p></div>`:""}
     </div>
   </div>`:`
-  <div class="card"><div class="card-body"><div class="disc"><i class="ti ti-info-circle" aria-hidden="true"></i><p>No se ha podido obtener la superficie de parcela del visor urbanístico para este punto. Verifica manualmente en el <a href="https://www.madrid.es" target="_blank" rel="noopener">visor oficial del Ayuntamiento</a>.</p></div></div></div>`}
+  <div class="card"><div class="card-body"><div class="disc"><i class="ti ti-info-circle" aria-hidden="true"></i><p>No se ha podido obtener la superficie de parcela para este punto. Verifica manualmente en la <a href="https://www1.sedecatastro.gob.es" target="_blank" rel="noopener">Sede Electrónica del Catastro</a>.</p></div></div></div>`}
 
   <!-- CARD 1.7: EXPEDIENTES DE PLANEAMIENTO (MODIFICACIONES / PLANES ESPECIALES) -->
   ${d.expedientes&&d.expedientes.length?`
@@ -489,6 +483,34 @@ function renderResult(d){
         ${param("Vuelos permitidos",gd.ed.vuel)}
       </div>
       <div class="disc"><i class="ti ti-alert-triangle" aria-hidden="true"></i><p>Los valores exactos de fondo y altura se determinan manzana a manzana en el Plano CE. Verifica en el <a href="https://www.madrid.es" target="_blank" rel="noopener">visor oficial</a>.</p></div>
+    </div>
+  </div>`:""}
+
+  <!-- CARD 2.5: EDIFICABILIDAD COMO OBRA NUEVA (SIMULACIÓN) -->
+  ${gd&&d.obraNueva?`
+  <div class="card">
+    <div class="card-hdr green">
+      <div class="card-icon icon-green"><i class="ti ti-building-skyscraper" aria-hidden="true"></i></div>
+      <div class="card-hdr-text">
+        <div class="card-label">Simulación · Edificabilidad como obra nueva</div>
+        <div class="card-title">Aprovechamiento máximo sobre parcela vacía</div>
+      </div>
+      ${ptag("concl")}
+    </div>
+    <div class="card-body">
+      <div class="metric-grid">
+        ${metric("Superficie de parcela",d.parcela.superficieParcela?`${d.parcela.superficieParcela.toLocaleString("es-ES")} m²`:null,"blue")}
+        ${metric("Techo edificable máximo",techoText,"purple")}
+        ${metric("Ocupación máx. en planta",ocupText,"purple")}
+      </div>
+      <div class="sdiv"></div>
+      <div class="metric-grid">
+        ${metric("Nº plantas estimado (aprox.)",d.obraNueva.plantasEst!=null?`${d.obraNueva.plantasEst} plantas`:null,"amber")}
+        ${param("Altura máxima permitida",gd.ed.alt)}
+        ${param("Fondo edificable",gd.ed.fondo)}
+      </div>
+      <div class="disc"><i class="ti ti-alert-triangle" aria-hidden="true"></i><p>Simulación de anteproyecto: techo edificable = superficie de parcela (Catastro) × coeficiente de edificabilidad neta; ocupación = parcela × % de ocupación máxima; nº de plantas = techo ÷ ocupación (aprox., valores medios del rango). No descuenta patios, retranqueos, cesiones, núcleos de comunicación, elementos protegidos ni normativa sectorial (accesibilidad, incendios, aparcamiento). No sustituye un estudio de detalle ni un anteproyecto firmado por un técnico competente.</p></div>
+      ${!techoText||!ocupText?`<div class="disc"><i class="ti ti-info-circle" aria-hidden="true"></i><p>${!techoText?"El coeficiente de edificabilidad de esta norma/grado se fija en el Plano CE de la manzana (no es un valor único), así que no se puede calcular el techo edificable automáticamente. ":""}${!ocupText?"La ocupación máxima de esta norma/grado se fija en el Plano CE de la manzana, así que no se puede calcular la ocupación en planta automáticamente.":""}</p></div>`:""}
     </div>
   </div>`:""}
 
@@ -641,6 +663,31 @@ async function getExpedientesPlaneamiento(lat, lon) {
     };
   });
 }
+// Referencia catastral y superficie REAL de la parcela (Dirección General
+// del Catastro). La capa "Parcelas Urbanísticas" del visor de planeamiento
+// (getParcelData) devuelve recintos/ámbitos agregados, no la finca real —
+// su "Superficie m²" puede confundirse con superficie construida. Por eso
+// la superficie de parcela SIEMPRE sale de aquí, nunca de getParcelData.
+async function getCatastro(lat, lon) {
+  const p1 = new URLSearchParams({ SRS: "EPSG:4326", Coordenada_X: String(lon), Coordenada_Y: String(lat) });
+  const xml1 = await (await fetch(`https://ovc.catastro.meh.es/ovcservweb/OVCSWLocalizacionRC/OVCCoordenadas.asmx/Consulta_RCCOOR?${p1}`)).text();
+  const pc1 = xml1.match(/<pc1>([^<]+)<\/pc1>/)?.[1];
+  const pc2 = xml1.match(/<pc2>([^<]+)<\/pc2>/)?.[1];
+  if (!pc1 || !pc2) return null;
+  const refcat = pc1 + pc2;
+  const direccion = xml1.match(/<ldt>([^<]+)<\/ldt>/)?.[1] || null;
+
+  let superficieParcelaCatastral = null;
+  try {
+    const p2 = new URLSearchParams({ service: "WFS", request: "GetFeature", STOREDQUERIE_ID: "GetParcel", srsname: "urn:ogc:def:crs:EPSG::4326", refcat });
+    const xml2 = await (await fetch(`https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?${p2}`)).text();
+    const areaStr = xml2.match(/<cp:areaValue[^>]*>([^<]+)<\/cp:areaValue>/)?.[1];
+    superficieParcelaCatastral = areaStr ? parseFloat(areaStr) : null;
+  } catch {
+    // sin geometría catastral disponible — seguimos con referencia y dirección igualmente
+  }
+  return { refcat, direccion, superficieParcelaCatastral };
+}
 function parseCoefRange(coefStr) {
   if (!coefStr || !/m²t\/m²s/i.test(coefStr)) return null;
   if (/plano CE|necesidad funcional/i.test(coefStr)) return null;
@@ -648,13 +695,21 @@ function parseCoefRange(coefStr) {
   if (!nums.length) return null;
   return { min: Math.min(...nums), max: Math.max(...nums) };
 }
+function parsePercentRange(ocStr) {
+  if (!ocStr || !/%/.test(ocStr)) return null;
+  if (/plano CE|necesidad funcional/i.test(ocStr)) return null;
+  const nums = [...ocStr.matchAll(/(\d+(?:,\d+)?)/g)].map((m) => parseFloat(m[1].replace(",", ".")));
+  if (!nums.length) return null;
+  return { min: Math.min(...nums), max: Math.max(...nums) };
+}
 function round2(n) { return Math.round(n * 100) / 100; }
 
 async function lookupCompendio({ normaKey, gradoKey, pKey, lat, lon }) {
-  const [pdata, admin, expedientes] = await Promise.all([
+  const [pdata, admin, expedientes, catastro] = await Promise.all([
     lat && lon ? getParcelData(lat, lon).catch(() => null) : Promise.resolve(null),
     lat && lon ? getBarrioDistrito(lat, lon).catch(() => null) : Promise.resolve(null),
     lat && lon ? getExpedientesPlaneamiento(lat, lon).catch(() => []) : Promise.resolve([]),
+    lat && lon ? getCatastro(lat, lon).catch(() => null) : Promise.resolve(null),
   ]);
 
   const nzRaw = normaKey ? NNUU[normaKey] : null;
@@ -663,15 +718,34 @@ async function lookupCompendio({ normaKey, gradoKey, pKey, lat, lon }) {
   const pd = pKey ? PROT[pKey] || null : null;
 
   let parcela = null;
-  if (pdata) {
-    const coefRange = gd ? parseCoefRange(gd.ed.coef) : null;
+  if (pdata || catastro) {
     parcela = {
-      ambito: pdata.ambito, denominacion: pdata.denominacion, usoPrincipal: pdata.usoPrincipal,
-      superficieParcela: pdata.superficieParcela,
-      superficiePatrimonializable: coefRange
-        ? { min: round2(pdata.superficieParcela * coefRange.min), max: round2(pdata.superficieParcela * coefRange.max) }
-        : null,
+      ambito: pdata?.ambito ?? null,
+      denominacion: pdata?.denominacion ?? null,
+      usoPrincipal: pdata?.usoPrincipal ?? null,
+      superficieParcela: catastro?.superficieParcelaCatastral ?? null,
+      refCatastral: catastro?.refcat ?? null,
+      direccionCatastral: catastro?.direccion ?? null,
     };
+  }
+
+  let obraNueva = null;
+  if (gd && parcela?.superficieParcela) {
+    const coefRange = parseCoefRange(gd.ed.coef);
+    const ocRange = parsePercentRange(gd.ed.oc);
+    const techo = coefRange
+      ? { min: round2(parcela.superficieParcela * coefRange.min), max: round2(parcela.superficieParcela * coefRange.max) }
+      : null;
+    const ocupacion = ocRange
+      ? { min: round2((parcela.superficieParcela * ocRange.min) / 100), max: round2((parcela.superficieParcela * ocRange.max) / 100) }
+      : null;
+    let plantasEst = null;
+    if (techo && ocupacion && ocupacion.min + ocupacion.max > 0) {
+      const techoMid = (techo.min + techo.max) / 2;
+      const ocupMid = (ocupacion.min + ocupacion.max) / 2;
+      plantasEst = Math.floor(techoMid / ocupMid);
+    }
+    obraNueva = { techo, ocupacion, plantasEst };
   }
 
   const clasificacionSuelo = nz
@@ -684,7 +758,7 @@ async function lookupCompendio({ normaKey, gradoKey, pKey, lat, lon }) {
         base: "No se ha podido determinar automáticamente al no resolverse una Norma Zonal del Título 8 para este punto. Verifica la clasificación en el Plano de Ordenación General del PGOUM.",
       };
 
-  return { nz, gd, pd, parcela, admin, expedientes, clasificacionSuelo };
+  return { nz, gd, pd, parcela, admin, expedientes, clasificacionSuelo, obraNueva };
 }
 
 function saveMem(d){
@@ -765,7 +839,7 @@ async function run(){
     const rec={display_name:geo.display_name,lat:geo.lat,lon:geo.lon,score:geo.score,
       normaRaw,denom,manz,catCond,catProt,gradoRaw,coefZ,gradoProt,nivelUsos,pc,po,pg,pp,
       aproximado:parsed.aproximado,nz:lookup.nz,gd:lookup.gd,pd:lookup.pd,parcela:lookup.parcela,
-      admin:lookup.admin,expedientes:lookup.expedientes,clasificacionSuelo:lookup.clasificacionSuelo};
+      admin:lookup.admin,expedientes:lookup.expedientes,clasificacionSuelo:lookup.clasificacionSuelo,obraNueva:lookup.obraNueva};
     saveMem(rec);
     renderResult(rec);
   }catch(e){
