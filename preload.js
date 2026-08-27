@@ -5,4 +5,5 @@ contextBridge.exposeInMainWorld("urbanAgent", {
   onUpdateAvailable: (cb) => ipcRenderer.on("update-available", (_e, version) => cb(version)),
   onUpdateDownloaded: (cb) => ipcRenderer.on("update-downloaded", (_e, version) => cb(version)),
   restartToUpdate: () => ipcRenderer.send("restart-to-update"),
+  pickAndParseFicha: () => ipcRenderer.invoke("pick-and-parse-ficha"),
 });

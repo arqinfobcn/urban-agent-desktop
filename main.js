@@ -1,8 +1,9 @@
-const { app, BrowserWindow, shell, ipcMain } = require("electron");
+const { app, BrowserWindow, shell, ipcMain, dialog } = require("electron");
 const path = require("path");
 const http = require("http");
 const fs = require("fs");
 const { autoUpdater } = require("electron-updater");
+const { PDFParse } = require("pdf-parse");
 
 // Servimos app/ por http://127.0.0.1:<puerto> en vez de file:// — evita las
 // particularidades de CORS/módulos ES de file:// y le da a fetch() un origen
@@ -65,6 +66,28 @@ function wireAutoUpdater() {
 }
 
 ipcMain.on("restart-to-update", () => autoUpdater.quitAndInstall());
+
+// Ficha de Condiciones Urbanísticas (PDF oficial que el usuario descarga a
+// mano del Visor Urbanístico del Ayuntamiento) — no hemos encontrado un
+// endpoint público para pedirla por dirección, así que el usuario la adjunta
+// y aquí solo se extrae el texto crudo. La extracción de campos concretos
+// (regex) vive en el renderer, junto al resto de la lógica de la app.
+ipcMain.handle("pick-and-parse-ficha", async () => {
+  const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
+    title: "Selecciona la Ficha de Condiciones Urbanísticas (PDF)",
+    filters: [{ name: "PDF", extensions: ["pdf"] }],
+    properties: ["openFile"],
+  });
+  if (canceled || !filePaths.length) return null;
+  const buffer = fs.readFileSync(filePaths[0]);
+  const parser = new PDFParse({ data: buffer });
+  try {
+    const result = await parser.getText();
+    return { texto: result.text, nombreArchivo: path.basename(filePaths[0]) };
+  } finally {
+    await parser.destroy();
+  }
+});
 
 app.whenReady().then(async () => {
   await createWindow();
