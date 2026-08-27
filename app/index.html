@@ -47,6 +47,7 @@ body{background:var(--bg);font-family:var(--fs);font-size:14px;color:var(--text)
 
 .app-header{text-align:center;margin-bottom:28px}
 .brand-name{font-size:13px;font-weight:600;font-family:var(--fm);letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-bottom:6px}
+.brand-name #brandVersion{font-weight:400;color:var(--text3);opacity:.7}
 .app-title{font-size:22px;font-weight:600;letter-spacing:-.03em;color:var(--text);margin-bottom:10px}
 .live-pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-family:var(--fm);color:var(--text2);padding:4px 12px;background:var(--surface);border:1px solid var(--border);border-radius:20px;box-shadow:var(--shadow-sm)}
 .live-dot{width:6px;height:6px;border-radius:50%;background:#34C759;box-shadow:0 0 0 2px #34C75930;animation:pulse 2s infinite}
@@ -258,14 +259,35 @@ body{background:var(--bg);font-family:var(--fs);font-size:14px;color:var(--text)
 .chat-msg.assistant{align-self:flex-start;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-bottom-left-radius:3px}
 .chat-msg.err{align-self:flex-start;background:var(--red-bg);border:1px solid var(--red-border);color:var(--red)}
 .chat-empty{padding:24px 14px;text-align:center;color:var(--text3);font-size:12px}
-.chat-input-bar{display:flex;gap:8px;padding:10px;border-top:1px solid var(--border);background:var(--surface2)}
-.chat-input{flex:1;resize:none;border:1px solid var(--border);border-radius:var(--r-sm);padding:8px 10px;font-size:13px;font-family:var(--fs);color:var(--text);background:var(--surface);min-height:38px;max-height:100px}
+.chat-input-bar{display:flex;flex-direction:column;gap:8px;padding:10px;border-top:1px solid var(--border);background:var(--surface2)}
+.chat-send{align-self:flex-end;height:34px}
+.chat-input{flex:1;resize:vertical;border:1px solid var(--border);border-radius:var(--r-sm);padding:8px 10px;font-size:13px;font-family:var(--fs);color:var(--text);background:var(--surface);min-height:130px;max-height:320px;line-height:1.5}
 .chat-send{padding:0 16px;border:none;border-radius:var(--r-sm);background:var(--blue);color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--fs)}
 .chat-send:disabled{opacity:.4;cursor:not-allowed}
 .chat-clear{font-size:10px;color:var(--text3);background:none;border:none;cursor:pointer;padding:4px 8px}
 .chat-clear:hover{color:var(--red)}
 .chat-hdr{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border-bottom:1px solid var(--border);background:var(--surface2)}
 .chat-hdr-lbl{font-size:11px;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:6px}
+
+/* ── DESCARGAR PDF ── */
+.pdf-bar{display:flex;justify-content:flex-end;margin-bottom:6px}
+.pdf-btn{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--text2);font-size:12px;font-family:var(--fs);cursor:pointer;box-shadow:var(--shadow-sm)}
+.pdf-btn:hover:not(:disabled){background:var(--blue-bg);color:var(--blue);border-color:var(--blue-border)}
+.pdf-btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* Solo se imprimen/exportan las tarjetas de datos (result-stack) — nunca el
+   buscador, el histórico de pasos, la barra lateral de chat con la IA, el
+   repositorio, la cabecera ni el pie de página. */
+@media print{
+  body{background:#fff}
+  .page-grid{display:block}
+  .side-col,.search-wrap,.mbar,.legal-disc,.repo-toggle,.repo-panel,
+  .app-header,.app-footer,.corner-version,.pdf-bar,.srow,
+  .ficha-upload-btn,#fichaUploadResult{display:none!important}
+  .a763-q select{border:none;background:none;padding:2px 0;-webkit-appearance:none;appearance:none;font-weight:600}
+  .card{box-shadow:none;border:1px solid #ccc;break-inside:avoid;margin-bottom:10px}
+  .wrap{max-width:100%;padding:0}
+}
 </style>
 </head>
 <body>
@@ -273,7 +295,7 @@ body{background:var(--bg);font-family:var(--fs);font-size:14px;color:var(--text)
 <div class="corner-version" id="cornerVersion"></div>
 <div class="wrap">
   <div class="app-header">
-    <div class="brand-name">Urban Agent · Madrid PGOUM97</div>
+    <div class="brand-name">Urban Agent · Madrid PGOUM97<span id="brandVersion"></span></div>
     <div class="app-title">Consulta urbanística GIS y análisis PGOUM</div>
     <div class="live-pill"><div class="live-dot"></div>GIS Ayuntamiento de Madrid · en tiempo real</div>
     <div><button class="update-pill" id="updatePill" type="button"><i class="ti ti-download" aria-hidden="true"></i> <span id="updateTxt">Actualización disponible</span></button></div>
@@ -320,7 +342,7 @@ body{background:var(--bg);font-family:var(--fs);font-size:14px;color:var(--text)
         </div>
         <div class="chat-log" id="chatLog"><div class="chat-empty">Pregunta sobre el PGOUM, la última dirección consultada, o cualquier duda de las Normas Urbanísticas.</div></div>
         <div class="chat-input-bar">
-          <textarea class="chat-input" id="chatInput" placeholder="Escribe tu pregunta…" rows="1"></textarea>
+          <textarea class="chat-input" id="chatInput" placeholder="Escribe tu pregunta…" rows="6"></textarea>
           <button class="chat-send" id="chatSend" type="button">Enviar</button>
         </div>
       </div>
@@ -544,10 +566,22 @@ function renderArt763bisCard(d){
   const nivelDetectado=(d.nivelUsos||"").match(/Nivel\s*([A-E])/i)?.[1]||"";
   const usoIndustrialDetectado=nk(d.gd?.uso||"").includes("INDUSTRIAL");
   const gp=nk(d.gradoProt||"");
+  // El catálogo real de Madrid (capa CAT_CEP) usa 8 categorías, no solo las
+  // 3 que regula el Art. 7.6.3 bis (Integral/Estructural/Ambiental): también
+  // existen Parcial, Singular, Volumétrico, Remitido y Sin Catalogar
+  // (verificado en vivo contra el dataset completo — "Parcial" es de hecho
+  // la categoría más frecuente). Solo prellenamos cuando el valor GIS
+  // coincide con uno de los 3 niveles que el artículo define, o cuando
+  // explícitamente no hay catalogación — el resto de categorías reales
+  // (Parcial, Singular, Volumétrico, Remitido) no tienen una correspondencia
+  // clara y documentada con Nivel 1/2/3, así que NO se adivina: se muestra
+  // el valor real de todos modos, para que el usuario decida.
   let protDetectada="";
   if(gp.includes("INTEGRAL"))protDetectada="1";
   else if(gp.includes("ESTRUCTURAL"))protDetectada="2";
   else if(gp.includes("AMBIENTAL"))protDetectada="3";
+  else if(gp.includes("SIN CATALOGAR"))protDetectada="no_catalogado";
+  const protNoMapeable=d.gradoProt&&!protDetectada;
   // Prellenado: SOLO en las celdas donde hay un dato GIS real que lo
   // sustente (nunca un valor inventado). El resto queda "— Sin responder —"
   // como antes. Cada prellenado se marca visualmente (ámbar, "sugerido por
@@ -585,6 +619,7 @@ function renderArt763bisCard(d){
       <div class="a763-section">Condiciones generales — Art. 7.6.3 (aplican en toda la ciudad)</div>
       <div class="a763-q"><label>A. ¿Cumple los requisitos técnicos mínimos de la normativa sectorial de hospedaje vigente?</label>
         <select id="a763_reqTecnicos"><option value="" selected>— Sin responder —</option><option value="si">Sí</option><option value="no">No</option></select>
+        <div class="a763-cita">Esta "normativa sectorial de hospedaje" es el <a href="https://gestiona.comunidad.madrid/wleg_pub/secure/normativas/contenidoNormativa.jsf?opcion=VerHtml&nmnorma=13158&eli=true" target="_blank" rel="noopener">Decreto 19/2023, de 15 de marzo</a> (Comunidad de Madrid, ordenación de establecimientos hoteleros) — no forma parte del PGOUM, así que no se puede verificar el cumplimiento automáticamente.</div>
       </div>
       <div class="a763-q"><label>B. ¿La parcela tiene uso cualificado industrial (o industrial con terciario de oficinas)?</label>
         ${aselect("a763_usoIndustrial",[["","— Sin responder —"],["no","No"],["si","Sí"]],preUsoIndustrial)}
@@ -640,7 +675,7 @@ function renderArt763bisCard(d){
       </div>
       <div class="a763-q"><label>8. ¿Qué protección? — Nivel de catalogación del edificio</label>
         ${aselect("a763_proteccion",[["","— Sin responder —"],["no_catalogado","No catalogado"],["1","Nivel 1 (Integral)"],["2","Nivel 2 (Estructural)"],["3","Nivel 3 (Ambiental)"]],preProteccion)}
-        ${preProteccion?`<div class="a763-cita">${protDetectada?`Prellenado a partir del grado de protección GIS ("${esc(d.gradoProt||"")}"). Revísalo en el Catálogo de Protección y corrígelo si no es correcto.`:"Prellenado: el GIS no devuelve ningún grado de protección para esta parcela, así que se asume no catalogado — confírmalo en el Catálogo de Protección."}</div>`:`<div class="a763-cita">No se ha podido inferir del dato GIS ("${esc(d.gradoProt||"—")}") — confírmalo en el Catálogo de Protección.</div>`}
+        ${preProteccion?`<div class="a763-cita">${protDetectada!=="no_catalogado"?`Prellenado a partir del grado de protección GIS ("${esc(d.gradoProt||"")}"). Revísalo en el Catálogo de Protección y corrígelo si no es correcto.`:d.gradoProt?`Prellenado: el GIS clasifica esta parcela como "${esc(d.gradoProt)}" (sin catalogar). Confírmalo en el Catálogo de Protección.`:"Prellenado: el GIS no devuelve ningún grado de protección para esta parcela, así que se asume no catalogado — confírmalo en el Catálogo de Protección."}</div>`:protNoMapeable?`<div class="a763-cita">El GIS clasifica esta parcela como "${esc(d.gradoProt)}", una categoría real del catálogo (junto a Integral/Estructural/Ambiental hay también Parcial, Singular, Volumétrico y Remitido) que no tiene una correspondencia clara y documentada con los niveles 1/2/3 de este artículo — no se adivina cuál marcar. Consulta el Catálogo de Protección y responde tú.</div>`:`<div class="a763-cita">No se ha podido inferir del dato GIS ("${esc(d.gradoProt||"—")}") — confírmalo en el Catálogo de Protección.</div>`}
       </div>
       <div class="a763-q"><label>9. ¿Existe planeamiento específico vigente? — Estudio de Repercusión validado o Plan Especial de hospedaje aprobado sin ejecutar</label>
         <select id="a763_planeamiento"><option value="" selected>— Sin responder —</option><option value="no">No</option><option value="si">Sí</option></select>
@@ -741,6 +776,32 @@ function aplicarFichaAObraNueva(container,c){
   const disc2=container.querySelector("#on_disc2");
   if(disc2)disc2.remove();
 }
+// ══════════════════════════════════════════════════════════════
+// DESCARGAR PDF — exporta solo las tarjetas de datos (result-stack), nunca
+// el chat con la IA. En desktop usa webContents.printToPDF() del proceso
+// principal (control total del guardado); en la versión web, a falta de
+// esa API, recae en window.print() nativo del navegador ("Guardar como
+// PDF" en el diálogo de impresión) — misma regla @media print en ambos
+// casos, así que el resultado visual es el mismo.
+// ══════════════════════════════════════════════════════════════
+function wirePdfExport(container,d){
+  const btn=container.querySelector("#pdfExportBtn");
+  if(!btn)return;
+  const originalLabel=btn.innerHTML;
+  btn.addEventListener("click",async()=>{
+    if(!window.urbanAgent?.exportarPDF){ window.print(); return; }
+    btn.disabled=true;btn.innerHTML=`<span class="spin"></span> Generando PDF…`;
+    try{
+      const nombreSugerido=`Urban-Agent_${(d.display_name||"informe").replace(/[^\p{L}\p{N}]+/gu,"_")}.pdf`;
+      const r=await window.urbanAgent.exportarPDF(nombreSugerido);
+      if(r&&r.error)throw new Error(r.error);
+    }catch(e){
+      alert(`No se ha podido generar el PDF: ${e.message}`);
+    }finally{
+      btn.disabled=false;btn.innerHTML=originalLabel;
+    }
+  });
+}
 function wireFichaUpload(container,d){
   const btn=container.querySelector("#fichaUploadBtn");
   if(!btn)return;
@@ -815,6 +876,8 @@ function renderResult(d){
 
   const wrap=document.createElement("div");wrap.className="result-stack";
   wrap.innerHTML=`
+
+  <div class="pdf-bar"><button class="pdf-btn" id="pdfExportBtn" type="button"><i class="ti ti-file-type-pdf" aria-hidden="true"></i> Descargar PDF</button></div>
 
   <!-- CARD 1: LOCALIZACIÓN GIS -->
   <div class="card">
@@ -1102,7 +1165,7 @@ function renderResult(d){
     </div>
   </div>`;
 
-  logEl().appendChild(wrap);wireArt763bis(wrap,d);wireFichaUpload(wrap,d);wrap.scrollIntoView({behavior:"smooth",block:"end"});
+  logEl().appendChild(wrap);wireArt763bis(wrap,d);wireFichaUpload(wrap,d);wirePdfExport(wrap,d);wrap.scrollIntoView({behavior:"smooth",block:"end"});
 }
 
 async function geocode(dir){
@@ -1580,6 +1643,7 @@ document.getElementById("chatClear").addEventListener("click",()=>{CHAT_MSGS=[];
 if(window.urbanAgent){
   document.getElementById("cornerVersion").textContent=`v${window.urbanAgent.appVersion}`;
   document.getElementById("footerVersion").textContent=`v${window.urbanAgent.appVersion}`;
+  document.getElementById("brandVersion").textContent=` · Version ${window.urbanAgent.appVersion}`;
   const pill=document.getElementById("updatePill"), txt=document.getElementById("updateTxt");
   window.urbanAgent.onUpdateAvailable(v=>{
     txt.textContent=`Actualización ${v} disponible — descargando…`;
@@ -1590,6 +1654,8 @@ if(window.urbanAgent){
     pill.classList.add("show");
     pill.onclick=()=>window.urbanAgent.restartToUpdate();
   });
+}else{
+  console.error("window.urbanAgent no está disponible: el preload script de Electron no se ha cargado. La app no podrá mostrar la versión, actualizarse ni usar Adjuntar Ficha o Últimas Licencias.");
 }
 </script>
 </body>

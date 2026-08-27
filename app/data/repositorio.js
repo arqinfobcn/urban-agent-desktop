@@ -118,6 +118,32 @@ const documentos = [
     vigencia: "vigente",
     padre: "compendio-nnuu",
   },
+  {
+    id: "decreto-19-2023",
+    tipo: "normativa-sectorial",
+    documento: "Decreto 19/2023, de 15 de marzo — Ordenación de establecimientos hoteleros",
+    titulo: "Normativa sectorial de hospedaje (Comunidad de Madrid)",
+    organismo: "Comunidad de Madrid — Consejo de Gobierno",
+    fecha: "2023-03-15",
+    version: "BOCM nº 69, 22/03/2023 — sustituye al Decreto 159/2003",
+    estado: "vigente",
+    url: "https://gestiona.comunidad.madrid/wleg_pub/secure/normativas/contenidoNormativa.jsf?opcion=VerHtml&nmnorma=13158&eli=true",
+    fechaConsulta: FECHA_CONSULTA,
+    ambitoTerritorial: "Comunidad de Madrid",
+    articulos: [],
+    materias: ["Establecimientos hoteleros", "Alojamiento turístico", "Requisitos técnicos mínimos de hospedaje"],
+    // Es la "normativa sectorial de hospedaje vigente" a la que remite
+    // directamente la pregunta A del Art. 7.6.3 del PGOUM ("¿Cumple los
+    // requisitos técnicos mínimos de la normativa sectorial de hospedaje
+    // vigente?") — no forma parte del PGOUM, es una norma autonómica
+    // (Comunidad de Madrid) distinta y complementaria al planeamiento
+    // municipal.
+    relacionConOtrosDocumentos: ["compendio-nnuu"],
+    prioridadNormativa: 2,
+    posiblesModificaciones: "Verificar en el BOCM si existe una modificación o sustitución posterior de este decreto.",
+    vigencia: "vigente",
+    padre: null,
+  },
   ...normasZonales,
   ...catalogoProteccion,
 ];

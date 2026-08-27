@@ -171,6 +171,30 @@ ipcMain.handle("buscar-licencias", async (_event, { via, numero } = {}) => {
   }));
 });
 
+// Descargar PDF — el renderer aplica @media print para dejar visibles solo
+// las tarjetas de datos (nunca el chat con la IA) antes de imprimir; aquí
+// solo pedimos la ruta de guardado e imprimimos el estado actual de la
+// página a PDF con la impresión nativa de Chromium.
+ipcMain.handle("exportar-pdf", async (_event, nombreSugerido) => {
+  const { canceled, filePath } = await dialog.showSaveDialog(mainWindow, {
+    title: "Guardar informe en PDF",
+    defaultPath: nombreSugerido || "Urban-Agent-informe.pdf",
+    filters: [{ name: "PDF", extensions: ["pdf"] }],
+  });
+  if (canceled || !filePath) return { canceled: true };
+  try {
+    const data = await mainWindow.webContents.printToPDF({
+      printBackground: true,
+      margins: { marginType: "default" },
+      pageSize: "A4",
+    });
+    fs.writeFileSync(filePath, data);
+    return { filePath };
+  } catch (err) {
+    return { error: err.message };
+  }
+});
+
 app.whenReady().then(async () => {
   await createWindow();
   wireAutoUpdater();

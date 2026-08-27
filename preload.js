@@ -8,4 +8,5 @@ contextBridge.exposeInMainWorld("urbanAgent", {
   pickAndParseFicha: () => ipcRenderer.invoke("pick-and-parse-ficha"),
   parseFichaBuffer: (arrayBuffer, nombreArchivo) => ipcRenderer.invoke("parse-ficha-buffer", arrayBuffer, nombreArchivo),
   buscarLicencias: (args) => ipcRenderer.invoke("buscar-licencias", args),
+  exportarPDF: (nombreSugerido) => ipcRenderer.invoke("exportar-pdf", nombreSugerido),
 });
