@@ -6,5 +6,6 @@ contextBridge.exposeInMainWorld("urbanAgent", {
   onUpdateDownloaded: (cb) => ipcRenderer.on("update-downloaded", (_e, version) => cb(version)),
   restartToUpdate: () => ipcRenderer.send("restart-to-update"),
   pickAndParseFicha: () => ipcRenderer.invoke("pick-and-parse-ficha"),
+  parseFichaBuffer: (arrayBuffer, nombreArchivo) => ipcRenderer.invoke("parse-ficha-buffer", arrayBuffer, nombreArchivo),
   buscarLicencias: (args) => ipcRenderer.invoke("buscar-licencias", args),
 });

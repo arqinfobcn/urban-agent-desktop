@@ -74,6 +74,20 @@ ipcMain.on("restart-to-update", () => autoUpdater.quitAndInstall());
 // endpoint público para pedirla por dirección, así que el usuario la adjunta
 // y aquí solo se extrae el texto crudo. La extracción de campos concretos
 // (regex) vive en el renderer, junto al resto de la lógica de la app.
+// Dos vías para adjuntarla: botón (diálogo nativo, da una ruta de disco) o
+// arrastrar-y-soltar (el renderer solo tiene los bytes del File — Electron
+// moderno, con contextIsolation, ya no expone File.path por seguridad — así
+// que ambas vías convergen aquí en parsePdfBuffer).
+async function parsePdfBuffer(buffer, nombreArchivo) {
+  const parser = new PDFParse({ data: buffer });
+  try {
+    const result = await parser.getText();
+    return { texto: result.text, nombreArchivo };
+  } finally {
+    await parser.destroy();
+  }
+}
+
 ipcMain.handle("pick-and-parse-ficha", async () => {
   const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
     title: "Selecciona la Ficha de Condiciones Urbanísticas (PDF)",
@@ -81,14 +95,11 @@ ipcMain.handle("pick-and-parse-ficha", async () => {
     properties: ["openFile"],
   });
   if (canceled || !filePaths.length) return null;
-  const buffer = fs.readFileSync(filePaths[0]);
-  const parser = new PDFParse({ data: buffer });
-  try {
-    const result = await parser.getText();
-    return { texto: result.text, nombreArchivo: path.basename(filePaths[0]) };
-  } finally {
-    await parser.destroy();
-  }
+  return parsePdfBuffer(fs.readFileSync(filePaths[0]), path.basename(filePaths[0]));
+});
+
+ipcMain.handle("parse-ficha-buffer", async (_event, arrayBuffer, nombreArchivo) => {
+  return parsePdfBuffer(Buffer.from(arrayBuffer), nombreArchivo || "ficha.pdf");
 });
 
 // ══════════════════════════════════════════════════════════════

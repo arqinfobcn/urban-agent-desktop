@@ -231,6 +231,7 @@ body{background:var(--bg);font-family:var(--fs);font-size:14px;color:var(--text)
 .a763-q label{font-size:11px;font-weight:600;color:var(--text2);line-height:1.4}
 .a763-q select{padding:7px 9px;border-radius:var(--r-sm);border:1px solid var(--border);font-size:12px;font-family:var(--fs);background:var(--surface2);color:var(--text)}
 .a763-q select.a763-empty{border:1.5px solid var(--red);background:var(--red-bg);color:var(--red)}
+.a763-q select.a763-prefilled{border:1.5px solid var(--amber);background:var(--amber-bg);color:var(--amber)}
 .a763-result{margin-top:6px;padding:12px;border-radius:var(--r-sm);border:1px solid}
 .a763-result.red{background:var(--red-bg);border-color:var(--red-border)}
 .a763-result.green{background:var(--green-bg);border-color:var(--green-border)}
@@ -244,6 +245,7 @@ body{background:var(--bg);font-family:var(--fs);font-size:14px;color:var(--text)
 .ficha-upload-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:9px;border-radius:var(--r-sm);border:1px dashed var(--border2);background:var(--surface2);color:var(--text2);font-size:12px;font-family:var(--fs);cursor:pointer}
 .ficha-upload-btn:hover:not(:disabled){background:var(--blue-bg);border-color:var(--blue-border);color:var(--blue)}
 .ficha-upload-btn:disabled{opacity:.6;cursor:not-allowed}
+.ficha-upload-btn.ficha-dragover{background:var(--blue-bg);border-color:var(--blue);border-style:solid;color:var(--blue)}
 .ficha-review{margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
 .ficha-input{padding:7px 9px;border-radius:var(--r-sm);border:1px solid var(--border);font-size:12px;font-family:var(--fm);background:var(--surface2);color:var(--text);width:100%}
 
@@ -347,6 +349,12 @@ const GIS={
 // Fecha de la última revisión manual del compendio NNUU/PROT contra el texto oficial del PGOUM.
 const NNUU_DATA_VERSION="24/09/2025";
 let MEM=[],AI=-1,LAST_RESULT=null,LAST_A763=null;
+// Sin esto, Electron navega toda la ventana al archivo local si el usuario
+// suelta un PDF fuera del botón de "Adjuntar ficha" (o falla el drop dentro
+// de él en algunos casos) — lo bloqueamos globalmente y dejamos que solo el
+// listener específico del botón (wireFichaUpload) procese el archivo.
+window.addEventListener("dragover",e=>e.preventDefault());
+window.addEventListener("drop",e=>e.preventDefault());
 // URL del backend con el chat IA (Cloudflare Worker). La app de escritorio es
 // local, pero el chat necesita un servidor porque llama a la API de Claude
 // con una clave que nunca debe viajar dentro de la app distribuible.
@@ -540,6 +548,27 @@ function renderArt763bisCard(d){
   if(gp.includes("INTEGRAL"))protDetectada="1";
   else if(gp.includes("ESTRUCTURAL"))protDetectada="2";
   else if(gp.includes("AMBIENTAL"))protDetectada="3";
+  // Prellenado: SOLO en las celdas donde hay un dato GIS real que lo
+  // sustente (nunca un valor inventado). El resto queda "— Sin responder —"
+  // como antes. Cada prellenado se marca visualmente (ámbar, "sugerido por
+  // el GIS · revisa y corrige") y distinto del rojo "sin responder" — el
+  // usuario puede corregirlo, y en cuanto lo toca deja de marcarse como
+  // sugerencia y pasa a respuesta suya confirmada.
+  const preUsoIndustrial=d.gd?(usoIndustrialDetectado?"si":"no"):"";
+  const usosVivienda=[...(d.gd?.perm||[]),...(d.gd?.aut||[])].some(u=>nk(u).includes("VIVIENDA"));
+  const preResidencialAlt=(d.gd&&usoIndustrialDetectado)?(usosVivienda?"si":"no"):"";
+  const preDentroAPE=d.normaRaw?(posibleAPE?"si":"no"):"";
+  const preNivel=nivelDetectado||"";
+  const preProteccion=protDetectada||(("gradoProt" in d)&&!d.gradoProt?"no_catalogado":"");
+  // Genera un <select> con sus <option>, marcando `sel` como seleccionada.
+  // Si `sel` no está vacío, el <select> queda con data-prefill=sel y clase
+  // a763-prefilled (ámbar) hasta que el usuario elija otra cosa.
+  function aselect(id,opts,sel){
+    const cls=sel?" class=\"a763-prefilled\"":"";
+    const attr=sel?` data-prefill="${esc(sel)}"`:"";
+    const optsHtml=opts.map(([v,lbl])=>`<option value="${esc(v)}"${v===sel?" selected":v===""&&!sel?" selected":""}>${esc(lbl)}</option>`).join("");
+    return `<select id="${id}"${cls}${attr}>${optsHtml}</select>`;
+  }
   return`
   <div class="card" id="a763card">
     <div class="card-hdr amber">
@@ -551,18 +580,19 @@ function renderArt763bisCard(d){
       ${ptag("interp")}
     </div>
     <div class="card-body">
-      <div class="disc"><i class="ti ti-info-circle" aria-hidden="true"></i><p>Ninguna pregunta viene rellenada por defecto. Las de fondo rojo aún no tienen respuesta tuya — los avisos bajo algunas de ellas son solo pistas del GIS, no la respuesta.</p></div>
+      <div class="disc"><i class="ti ti-info-circle" aria-hidden="true"></i><p>Las celdas con fondo <b>ámbar</b> vienen prellenadas a partir de un dato real del GIS (indicado debajo de cada una) — revísalas y corrígelas si hace falta. Las de fondo <b>rojo</b> no tienen ningún dato de origen y quedan sin responder hasta que las rellenes tú.</p></div>
       <div class="a763-grid">
       <div class="a763-section">Condiciones generales — Art. 7.6.3 (aplican en toda la ciudad)</div>
       <div class="a763-q"><label>A. ¿Cumple los requisitos técnicos mínimos de la normativa sectorial de hospedaje vigente?</label>
         <select id="a763_reqTecnicos"><option value="" selected>— Sin responder —</option><option value="si">Sí</option><option value="no">No</option></select>
       </div>
       <div class="a763-q"><label>B. ¿La parcela tiene uso cualificado industrial (o industrial con terciario de oficinas)?</label>
-        <select id="a763_usoIndustrial"><option value="" selected>— Sin responder —</option><option value="no">No</option><option value="si">Sí</option></select>
-        ${usoIndustrialDetectado?`<div class="a763-cita">Pista (no confirmada): el uso global de la norma zonal detectada es "${esc(d.gd?.uso||"")}", que parece industrial. Verifícalo y responde tú.</div>`:""}
+        ${aselect("a763_usoIndustrial",[["","— Sin responder —"],["no","No"],["si","Sí"]],preUsoIndustrial)}
+        ${preUsoIndustrial?`<div class="a763-cita">Prellenado a partir del uso global de la norma zonal detectada ("${esc(d.gd?.uso||"")}"). Revísalo y corrígelo si no es correcto.</div>`:""}
       </div>
       <div class="a763-q"><label>B.1 Si es industrial, ¿la normativa de la parcela admite el uso residencial (vivienda colectiva) como alternativo o autorizable?</label>
-        <select id="a763_residencialAlternativo"><option value="" selected>— Sin responder / no aplica —</option><option value="no">No</option><option value="si">Sí</option></select>
+        ${aselect("a763_residencialAlternativo",[["","— Sin responder / no aplica —"],["no","No"],["si","Sí"]],preResidencialAlt)}
+        ${preResidencialAlt?`<div class="a763-cita">Prellenado: la vivienda colectiva ${usosVivienda?"figura":"no figura"} entre los usos permitidos/autorizables de esta norma/grado. Revísalo y corrígelo si no es correcto.</div>`:""}
       </div>
       <div class="a763-q"><label>C. ¿El local dispondrá de acceso independiente? (obligatorio si el edificio es de uso residencial)</label>
         <select id="a763_accesoIndependiente"><option value="" selected>— Sin responder —</option><option value="si">Sí</option><option value="no">No</option></select>
@@ -581,8 +611,8 @@ function renderArt763bisCard(d){
         </select>
       </div>
       <div class="a763-q"><label>2. ¿Dónde? — ¿Dentro del Área de Planeamiento Específico del Centro Histórico (APE 00.01)?</label>
-        <select id="a763_dentroAPE"><option value="" selected>— Sin responder —</option><option value="si">Sí</option><option value="no">No</option></select>
-        <div class="a763-cita">${posibleAPE?"Pista (no confirmada): la norma zonal detectada es Norma Zonal 1 (Centro Histórico), lo que sugiere que sí — pero verifica el ámbito exacto del APE 00.01 y responde tú.":"Pista (no confirmada): la norma zonal detectada no es la Norma Zonal 1 — verifica igualmente si la parcela cae dentro del APE 00.01 y responde tú."}</div>
+        ${aselect("a763_dentroAPE",[["","— Sin responder —"],["si","Sí"],["no","No"]],preDentroAPE)}
+        ${preDentroAPE?`<div class="a763-cita">${posibleAPE?"Prellenado: la norma zonal detectada es Norma Zonal 1 (Centro Histórico), lo que sugiere que sí — pero verifica el ámbito exacto del APE 00.01, puede no coincidir exactamente.":"Prellenado: la norma zonal detectada no es la Norma Zonal 1 — verifica igualmente si la parcela cae dentro del APE 00.01 por si el límite exacto difiere."}</div>`:""}
       </div>
       <div class="a763-q"><label>¿Es una Colonia Histórica?</label>
         <select id="a763_colonia"><option value="" selected>— Sin responder —</option><option value="no">No</option><option value="si">Sí</option></select>
@@ -602,27 +632,15 @@ function renderArt763bisCard(d){
         <select id="a763_terciario66"><option value="" selected>— Sin responder / no aplica —</option><option value="no">No</option><option value="si">Sí, supera el 66%</option></select>
       </div>
       <div class="a763-q"><label>6. ¿Qué nivel de compatibilidad de usos (Art. 8.1.29)?</label>
-        <select id="a763_nivel">
-          <option value="" selected>— Sin responder —</option>
-          <option value="A">A</option>
-          <option value="B">B</option>
-          <option value="C">C</option>
-          <option value="D">D</option>
-        </select>
-        ${nivelDetectado?`<div class="a763-cita">Pista (no confirmada): el GIS devuelve "Nivel de Usos y Actividades" = Nivel ${esc(nivelDetectado)}. Verifícalo y responde tú.</div>`:`<div class="a763-cita">El GIS no ha devuelto un nivel — compruébalo en el Plano de Usos y Actividades y responde tú.</div>`}
+        ${aselect("a763_nivel",[["","— Sin responder —"],["A","A"],["B","B"],["C","C"],["D","D"]],preNivel)}
+        ${preNivel?`<div class="a763-cita">Prellenado a partir del "Nivel de Usos y Actividades" del GIS. Revísalo en el Plano de Usos y Actividades y corrígelo si no es correcto.</div>`:`<div class="a763-cita">El GIS no ha devuelto un nivel — compruébalo en el Plano de Usos y Actividades y responde tú.</div>`}
       </div>
       <div class="a763-q"><label>7. ¿Qué planta? — Si es uso parcial, ¿en qué planta se implanta?</label>
         <select id="a763_planta"><option value="" selected>— Sin responder —</option><option value="baja_inferior">Planta baja / inferior a la baja</option><option value="piso">Planta de piso (primera o superior)</option></select>
       </div>
       <div class="a763-q"><label>8. ¿Qué protección? — Nivel de catalogación del edificio</label>
-        <select id="a763_proteccion">
-          <option value="" selected>— Sin responder —</option>
-          <option value="no_catalogado">No catalogado</option>
-          <option value="1">Nivel 1 (Integral)</option>
-          <option value="2">Nivel 2 (Estructural)</option>
-          <option value="3">Nivel 3 (Ambiental)</option>
-        </select>
-        ${protDetectada?`<div class="a763-cita">Pista (no confirmada): el grado de protección GIS ("${esc(d.gradoProt||"")}") sugeriría el nivel ${esc(protDetectada)}. Verifícalo en el Catálogo de Protección y responde tú.</div>`:`<div class="a763-cita">No se ha podido inferir del dato GIS ("${esc(d.gradoProt||"—")}") — confírmalo en el Catálogo de Protección.</div>`}
+        ${aselect("a763_proteccion",[["","— Sin responder —"],["no_catalogado","No catalogado"],["1","Nivel 1 (Integral)"],["2","Nivel 2 (Estructural)"],["3","Nivel 3 (Ambiental)"]],preProteccion)}
+        ${preProteccion?`<div class="a763-cita">${protDetectada?`Prellenado a partir del grado de protección GIS ("${esc(d.gradoProt||"")}"). Revísalo en el Catálogo de Protección y corrígelo si no es correcto.`:"Prellenado: el GIS no devuelve ningún grado de protección para esta parcela, así que se asume no catalogado — confírmalo en el Catálogo de Protección."}</div>`:`<div class="a763-cita">No se ha podido inferir del dato GIS ("${esc(d.gradoProt||"—")}") — confírmalo en el Catálogo de Protección.</div>`}
       </div>
       <div class="a763-q"><label>9. ¿Existe planeamiento específico vigente? — Estudio de Repercusión validado o Plan Especial de hospedaje aprobado sin ejecutar</label>
         <select id="a763_planeamiento"><option value="" selected>— Sin responder —</option><option value="no">No</option><option value="si">Sí</option></select>
@@ -639,7 +657,14 @@ function wireArt763bis(container,d){
   if(!els.a763_modalidad)return;
   const colorMap={prohibido:"red",uso_alternativo:"green",uso_alternativo_condicionado:"green",autorizable:"green",complementario:"green",no_aplica:"blue",excepcion:"blue",no_determinado:"amber",incompleto:"amber"};
   function actualizar(){
-    ids.forEach(id=>els[id].classList.toggle("a763-empty",els[id].value===""));
+    ids.forEach(id=>{
+      const el=els[id];
+      el.classList.toggle("a763-empty",el.value==="");
+      // Ámbar mientras el valor coincida con el sugerido por el GIS y no lo
+      // haya tocado el usuario; en cuanto elige otra cosa (o confirma el
+      // mismo valor manualmente reabriendo el select) deja de marcarse.
+      el.classList.toggle("a763-prefilled",!!el.dataset.prefill&&el.value===el.dataset.prefill);
+    });
     const inp={
       reqTecnicos:els.a763_reqTecnicos.value,
       usoIndustrial:els.a763_usoIndustrial.value,
@@ -719,33 +744,58 @@ function aplicarFichaAObraNueva(container,c){
 function wireFichaUpload(container,d){
   const btn=container.querySelector("#fichaUploadBtn");
   if(!btn)return;
-  btn.addEventListener("click",async()=>{
-    if(!window.urbanAgent?.pickAndParseFicha){
-      container.querySelector("#fichaUploadResult").innerHTML=`<div class="disc"><i class="ti ti-alert-circle" aria-hidden="true"></i><p>Esta función solo está disponible en la app de escritorio.</p></div>`;
+  const originalLabel=btn.innerHTML;
+
+  async function procesarResultado(r){
+    if(!r)return;
+    const campos=extraerFichaUrbanistica(r.texto);
+    const resEl=container.querySelector("#fichaUploadResult");
+    resEl.innerHTML=renderFichaReview(campos,r.nombreArchivo);
+    resEl.querySelector("#fichaConfirmBtn").addEventListener("click",()=>{
+      const leer=(id)=>{const v=resEl.querySelector("#ficha_"+id).value.trim();return v===""?null:parseFloat(v.replace(",","."))};
+      aplicarFichaAObraNueva(container,{
+        superficieParcela:leer("superficieParcela"),
+        techoEdificable:leer("techoEdificable"),
+        ocupacionMaxima:leer("ocupacionMaxima"),
+        ocupacionPorcentaje:leer("ocupacionPorcentaje"),
+      });
+    });
+  }
+  function mostrarError(msg){
+    container.querySelector("#fichaUploadResult").innerHTML=`<div class="disc"><i class="ti ti-alert-circle" aria-hidden="true"></i><p>${esc(msg)}</p></div>`;
+  }
+  async function conSpinner(fn){
+    btn.disabled=true;btn.innerHTML=`<span class="spin"></span> Leyendo PDF…`;
+    try{ await fn(); }
+    catch(e){ mostrarError(`No se ha podido leer el PDF: ${e.message}`); }
+    finally{ btn.disabled=false;btn.innerHTML=originalLabel; }
+  }
+
+  btn.addEventListener("click",()=>{
+    if(!window.urbanAgent?.pickAndParseFicha){ mostrarError("Esta función solo está disponible en la app de escritorio."); return; }
+    conSpinner(async()=>procesarResultado(await window.urbanAgent.pickAndParseFicha()));
+  });
+
+  // Arrastrar y soltar el PDF directamente sobre el botón.
+  ["dragenter","dragover"].forEach(ev=>btn.addEventListener(ev,e=>{
+    e.preventDefault();e.stopPropagation();btn.classList.add("ficha-dragover");
+  }));
+  ["dragleave","dragend"].forEach(ev=>btn.addEventListener(ev,e=>{
+    e.preventDefault();e.stopPropagation();btn.classList.remove("ficha-dragover");
+  }));
+  btn.addEventListener("drop",e=>{
+    e.preventDefault();e.stopPropagation();btn.classList.remove("ficha-dragover");
+    const file=e.dataTransfer?.files?.[0];
+    if(!file){return;}
+    if(!window.urbanAgent?.parseFichaBuffer){ mostrarError("Esta función solo está disponible en la app de escritorio."); return; }
+    if(file.type&&file.type!=="application/pdf"&&!/\.pdf$/i.test(file.name)){
+      mostrarError(`"${file.name}" no parece un PDF. Adjunta la Ficha de Condiciones Urbanísticas en formato PDF.`);
       return;
     }
-    const originalLabel=btn.innerHTML;
-    btn.disabled=true;btn.innerHTML=`<span class="spin"></span> Leyendo PDF…`;
-    try{
-      const r=await window.urbanAgent.pickAndParseFicha();
-      if(!r)return;
-      const campos=extraerFichaUrbanistica(r.texto);
-      const resEl=container.querySelector("#fichaUploadResult");
-      resEl.innerHTML=renderFichaReview(campos,r.nombreArchivo);
-      resEl.querySelector("#fichaConfirmBtn").addEventListener("click",()=>{
-        const leer=(id)=>{const v=resEl.querySelector("#ficha_"+id).value.trim();return v===""?null:parseFloat(v.replace(",","."))};
-        aplicarFichaAObraNueva(container,{
-          superficieParcela:leer("superficieParcela"),
-          techoEdificable:leer("techoEdificable"),
-          ocupacionMaxima:leer("ocupacionMaxima"),
-          ocupacionPorcentaje:leer("ocupacionPorcentaje"),
-        });
-      });
-    }catch(e){
-      container.querySelector("#fichaUploadResult").innerHTML=`<div class="disc"><i class="ti ti-alert-circle" aria-hidden="true"></i><p>No se ha podido leer el PDF: ${esc(e.message)}</p></div>`;
-    }finally{
-      btn.disabled=false;btn.innerHTML=originalLabel;
-    }
+    conSpinner(async()=>{
+      const bytes=await file.arrayBuffer();
+      procesarResultado(await window.urbanAgent.parseFichaBuffer(bytes,file.name));
+    });
   });
 }
 
@@ -900,7 +950,7 @@ function renderResult(d){
           ${param("Fondo edificable",gd.ed.fondo)}
         </div>
         <div class="sdiv"></div>
-        <button class="ficha-upload-btn" id="fichaUploadBtn" type="button"><i class="ti ti-paperclip" aria-hidden="true"></i> Adjuntar Ficha de Condiciones Urbanísticas (PDF) con los valores reales</button>
+        <button class="ficha-upload-btn" id="fichaUploadBtn" type="button"><i class="ti ti-paperclip" aria-hidden="true"></i> Arrastra aquí la Ficha de Condiciones Urbanísticas (PDF), o haz clic para elegirla</button>
         <div id="fichaUploadResult"></div>
       </div>
       <div class="card-aside">
@@ -1010,6 +1060,8 @@ function renderResult(d){
     </div>
   </div>`:""}
 
+  ${renderArt763bisCard(d)}
+
   <!-- CARD ANTECEDENTES: EXPEDIENTES DE PLANEAMIENTO (MODIFICACIONES / PLANES ESPECIALES) -->
   ${d.expedientes&&d.expedientes.length?`
   <div class="card">
@@ -1041,8 +1093,6 @@ function renderResult(d){
       </div>
     </div>
   </div>`:""}
-
-  ${renderArt763bisCard(d)}
 
   <!-- FUENTE -->
   <div class="card">
