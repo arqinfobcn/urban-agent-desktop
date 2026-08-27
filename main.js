@@ -41,6 +41,18 @@ async function createWindow() {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
       nodeIntegration: false,
+      // Electron sandboxa el preload por defecto desde la v20 — en ese modo
+      // solo funciona require("electron") (contextBridge/ipcRenderer), NO
+      // require() de módulos propios como "./package.json". Nuestro
+      // preload.js sí lo usa (para exponer appVersion), así que con
+      // sandbox por defecto ese require lanzaba una excepción síncrona que
+      // abortaba TODO el script antes de llegar a exposeInMainWorld —
+      // dejando window.urbanAgent completamente indefinido en el
+      // renderer, sin ningún error visible (el resto de la página carga
+      // con normalidad porque no depende del preload). Por eso versión,
+      // Adjuntar Ficha, Últimas Licencias y Descargar PDF fallaban en la
+      // app empaquetada sin dar ningún error explícito.
+      sandbox: false,
     },
   });
   mainWindow.loadURL(`http://127.0.0.1:${port}/index.html`);

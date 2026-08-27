@@ -47,7 +47,6 @@ body{background:var(--bg);font-family:var(--fs);font-size:14px;color:var(--text)
 
 .app-header{text-align:center;margin-bottom:28px}
 .brand-name{font-size:13px;font-weight:600;font-family:var(--fm);letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-bottom:6px}
-.brand-name #brandVersion{font-weight:400;color:var(--text3);opacity:.7}
 .app-title{font-size:22px;font-weight:600;letter-spacing:-.03em;color:var(--text);margin-bottom:10px}
 .live-pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-family:var(--fm);color:var(--text2);padding:4px 12px;background:var(--surface);border:1px solid var(--border);border-radius:20px;box-shadow:var(--shadow-sm)}
 .live-dot{width:6px;height:6px;border-radius:50%;background:#34C759;box-shadow:0 0 0 2px #34C75930;animation:pulse 2s infinite}
@@ -91,9 +90,9 @@ body{background:var(--bg);font-family:var(--fs);font-size:14px;color:var(--text)
 .init-title{font-size:16px;font-weight:600;color:var(--text);margin-bottom:6px}
 .init-sub{font-size:13px;color:var(--text2);line-height:1.7;max-width:360px;margin:0 auto}
 
-.result-stack{display:flex;flex-direction:column;gap:12px;margin-top:4px}
+.result-stack{display:flex;flex-direction:column;gap:9px;margin-top:4px}
 .card{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;border:1px solid var(--border)}
-.card-hdr{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid var(--border);justify-content:space-between}
+.card-hdr{display:flex;align-items:center;gap:10px;padding:9px 13px;border-bottom:1px solid var(--border);justify-content:space-between}
 .card-hdr.blue{background:linear-gradient(135deg,var(--blue-bg),#F8FAFF);border-bottom-color:var(--blue-border)}
 .card-hdr.green{background:linear-gradient(135deg,var(--green-bg),#F5FDF8);border-bottom-color:var(--green-border)}
 .card-hdr.amber{background:linear-gradient(135deg,var(--amber-bg),#FFFCF5);border-bottom-color:var(--amber-border)}
@@ -109,10 +108,10 @@ body{background:var(--bg);font-family:var(--fs);font-size:14px;color:var(--text)
 .card-hdr-text{flex:1;min-width:0}
 .card-label{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.07em;text-transform:uppercase;font-family:var(--fm);margin-bottom:1px}
 .card-title{font-size:13px;font-weight:600;color:var(--text);letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.card-body{padding:14px}
+.card-body{padding:11px 13px}
 
 .metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:7px}
-.metric{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:9px 11px}
+.metric{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:7px 9px}
 .metric-lbl{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.05em;text-transform:uppercase;font-family:var(--fm);margin-bottom:3px}
 .metric-val{font-size:13px;font-weight:600;color:var(--text);font-family:var(--fm)}
 .metric-val.blue{color:var(--blue)}
@@ -127,7 +126,7 @@ body{background:var(--bg);font-family:var(--fs);font-size:14px;color:var(--text)
 .gis-alert strong{font-weight:600}
 
 .param-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:7px}
-.param{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:9px 11px}
+.param{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:7px 9px}
 .param-lbl{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.05em;text-transform:uppercase;font-family:var(--fm);margin-bottom:3px}
 .param-val{font-size:12px;font-weight:500;color:var(--text);line-height:1.4}
 
@@ -144,7 +143,7 @@ body{background:var(--bg);font-family:var(--fs);font-size:14px;color:var(--text)
 .u-proh{background:var(--red-bg);color:var(--red);border-color:var(--red-border)}
 
 .cond-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:5px;align-items:start}
-.cond-item{display:flex;gap:9px;align-items:flex-start;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:9px 11px}
+.cond-item{display:flex;gap:8px;align-items:flex-start;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:7px 9px}
 .cond-bullet{width:5px;height:5px;border-radius:50%;background:var(--teal);margin-top:6px;flex-shrink:0}
 .cond-text{font-size:12px;color:var(--text2);line-height:1.5}
 
@@ -174,7 +173,7 @@ body{background:var(--bg);font-family:var(--fs);font-size:14px;color:var(--text)
 
 .spin{display:inline-block;width:10px;height:10px;border:1.5px solid var(--green-border);border-top-color:var(--green);border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle;margin-right:4px}
 @keyframes sp{to{transform:rotate(360deg)}}
-.sdiv{height:1px;background:var(--border);margin:12px 0}
+.sdiv{height:1px;background:var(--border);margin:8px 0}
 .legal-disc{display:flex;gap:8px;align-items:flex-start;padding:10px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);margin-top:14px}
 .legal-disc i{color:var(--text3);flex-shrink:0;margin-top:1px}
 .legal-disc p{font-size:11px;color:var(--text3);line-height:1.6}
@@ -186,8 +185,8 @@ body{background:var(--bg);font-family:var(--fs);font-size:14px;color:var(--text)
 .ptag-concl{background:var(--green-bg);color:var(--green);border-color:var(--green-border)}
 
 /* ── EXPEDIENTES DE PLANEAMIENTO ── */
-.exp-list{display:flex;flex-direction:column;gap:8px}
-.exp-item{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px}
+.exp-list{display:flex;flex-direction:column;gap:6px}
+.exp-item{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:8px 10px}
 .exp-top{display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap}
 .exp-tipo{font-size:10px;font-weight:600;font-family:var(--fm);padding:2px 8px;border-radius:20px;background:var(--teal-bg);color:var(--teal);border:1px solid var(--teal-border)}
 .exp-scope{font-size:10px;font-weight:600;font-family:var(--fm);padding:2px 8px;border-radius:20px}
@@ -227,7 +226,7 @@ body{background:var(--bg);font-family:var(--fs);font-size:14px;color:var(--text)
 /* ── ANÁLISIS ART. 7.6.3 BIS ── */
 .a763-section{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;font-family:var(--fm);color:var(--text3);margin-bottom:8px;grid-column:1/-1}
 .a763-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:4px 16px;align-items:start}
-.a763-q{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
+.a763-q{display:flex;flex-direction:column;gap:3px;margin-bottom:7px}
 .a763-q label{font-size:11px;font-weight:600;color:var(--text2);line-height:1.4}
 .a763-q select{padding:7px 9px;border-radius:var(--r-sm);border:1px solid var(--border);font-size:12px;font-family:var(--fs);background:var(--surface2);color:var(--text)}
 .a763-q select.a763-empty{border:1.5px solid var(--red);background:var(--red-bg);color:var(--red)}
@@ -270,9 +269,9 @@ body{background:var(--bg);font-family:var(--fs);font-size:14px;color:var(--text)
 .chat-hdr-lbl{font-size:11px;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:6px}
 
 /* ── DESCARGAR PDF ── */
-.pdf-btn{display:flex;align-items:center;gap:6px;height:34px;padding:0 14px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--surface);color:var(--text2);font-size:13px;font-family:var(--fs);cursor:pointer;white-space:nowrap;flex-shrink:0}
-.pdf-btn:hover:not(:disabled){background:var(--blue-bg);color:var(--blue);border-color:var(--blue-border)}
-.pdf-btn:disabled{opacity:.4;cursor:not-allowed}
+.pdf-btn{display:flex;align-items:center;gap:6px;height:34px;padding:0 14px;border-radius:var(--r-sm);border:1px solid var(--border2);background:#8A8778;color:#fff;font-size:13px;font-weight:600;font-family:var(--fs);cursor:pointer;white-space:nowrap;flex-shrink:0}
+.pdf-btn:hover:not(:disabled){background:#767363}
+.pdf-btn:disabled{background:var(--surface2);color:var(--text3);border-color:var(--border);cursor:not-allowed}
 
 /* Solo se imprimen/exportan las tarjetas de datos (result-stack) — nunca el
    buscador, el histórico de pasos, la barra lateral de chat con la IA, el
@@ -293,7 +292,7 @@ body{background:var(--bg);font-family:var(--fs);font-size:14px;color:var(--text)
 
 <div class="wrap">
   <div class="app-header">
-    <div class="brand-name">Urban Agent · Madrid PGOUM97<span id="brandVersion"></span></div>
+    <div class="brand-name">Urban Agent · Madrid PGOUM97</div>
     <div class="app-title">Consulta urbanística GIS y análisis PGOUM</div>
     <div class="live-pill"><div class="live-dot"></div>GIS Ayuntamiento de Madrid · en tiempo real</div>
     <div><button class="update-pill" id="updatePill" type="button"><i class="ti ti-download" aria-hidden="true"></i> <span id="updateTxt">Actualización disponible</span></button></div>
@@ -349,7 +348,7 @@ body{background:var(--bg);font-family:var(--fs);font-size:14px;color:var(--text)
   </div>
 
   <div class="app-footer">
-    <div class="footer-txt">InmoLab · Urban Agent · Creada por Pedro Ojesto Vallina · <span id="footerVersion"></span></div>
+    <div class="footer-txt">InmoLab · Urban Agent · Creada por Pedro Ojesto Vallina · Version <span id="footerVersion"></span></div>
   </div>
 </div>
 
@@ -801,6 +800,39 @@ function wirePdfExport(){
   });
 }
 wirePdfExport();
+// Recalcula E=S×Z×C en vivo a partir del fondo edificable que introduce el
+// usuario (Grado 1º/3º de NZ1), usando la geometría catastral real de la
+// parcela — ver calcularSDesdeFondo. Nunca inventa un valor: si la
+// geometría no está disponible o el resultado no es fiable, lo dice.
+function wireFondoInput(container,d){
+  const input=container.querySelector("#on_fondoInput");
+  const btn=container.querySelector("#on_fondoCalcularBtn");
+  if(!input||!btn)return;
+  const gd=d.gd;
+  function actualizar(){
+    const resEl=container.querySelector("#on_fondoResultado");
+    const fondoM=parseFloat(input.value.replace(",","."));
+    if(!(fondoM>0)){resEl.innerHTML="";return;}
+    const Z=parseZValue(d.coefZ);
+    const C=gd?.ed?.cCorrector;
+    const geometria=d.parcela?.geometria;
+    if(!geometria){resEl.innerHTML=`<div class="disc" style="margin-top:8px"><i class="ti ti-alert-circle" aria-hidden="true"></i><p>No se puede calcular: no se ha obtenido la geometría real de la parcela desde el Catastro para este punto.</p></div>`;return;}
+    if(Z==null||!C){resEl.innerHTML=`<div class="disc" style="margin-top:8px"><i class="ti ti-alert-circle" aria-hidden="true"></i><p>No se puede calcular: ${Z==null?`el Coeficiente Z de esta manzana no es un valor único en el GIS (aparece como "${esc(d.coefZ||"—")}"), consulta el Plano CE para resolverlo`:"falta el coeficiente C de este grado"}.</p></div>`;return;}
+    const S=calcularSDesdeFondo(geometria,{lat:d.lat,lon:d.lon},fondoM);
+    if(S==null){resEl.innerHTML=`<div class="disc" style="margin-top:8px"><i class="ti ti-alert-circle" aria-hidden="true"></i><p>No ha sido posible calcular la superficie computable con ese fondo — la geometría catastral de esta parcela no es compatible con este cálculo (forma muy irregular, o el fondo introducido supera la profundidad real del solar). Prueba con "Adjuntar Ficha" para el valor oficial exacto.</p></div>`;return;}
+    const techo=round2(S*Z*C);
+    const ocupacion=gd.ed.ocupacionRegla==="igual_s"?S:round2(S*0.75);
+    const plantas=ocupacion>0?Math.floor(techo/ocupacion):null;
+    const setText=(id,txt)=>{const el=container.querySelector("#"+id);if(el)el.textContent=txt};
+    setText("on_techo",`${techo.toLocaleString("es-ES")} m²t`);
+    setText("on_ocupacion",`${ocupacion.toLocaleString("es-ES")} m²`);
+    setText("on_plantas",plantas!=null?`${plantas} plantas`:"—");
+    const ptagEl=container.querySelector("#on_ptag");if(ptagEl)ptagEl.innerHTML=ptag("concl");
+    resEl.innerHTML=`<div class="disc" style="margin-top:8px;border-color:#16a34a;background:#f0fdf4"><i class="ti ti-calculator" aria-hidden="true"></i><p><b>Calculado con el fondo introducido (${esc(String(fondoM).replace(".",","))} m):</b> S = ${esc(S.toLocaleString("es-ES"))} m² (recortada de la geometría catastral real de la parcela por la alineación de fachada) × Z = ${esc(String(Z).replace(".",","))} × C = ${esc(String(C).replace(".",","))} = <b>${esc(techo.toLocaleString("es-ES"))} m²t</b>. Aproximación: asume que el fondo máximo corre paralelo al borde de fachada más cercano al portal — contrasta con el Plano CE real antes de usarlo en una decisión.</p></div>`;
+  }
+  btn.addEventListener("click",actualizar);
+  input.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();actualizar();}});
+}
 function wireFichaUpload(container,d){
   const btn=container.querySelector("#fichaUploadBtn");
   if(!btn)return;
@@ -879,7 +911,7 @@ function renderResult(d){
   // plano. En los grados donde el propio artículo dice explícitamente que
   // no hay fondo máximo (Art. 8.1.14.2) se indica "No aplica".
   const fondoCell = gd?.ed?.formulaS==="fondo_plano_ce"
-    ? `<div class="metric"><div class="metric-lbl">Fondo edificable (m) <span style="font-weight:400;text-transform:none">— Plano CE</span></div><input type="text" class="ficha-input" id="on_fondoInput" placeholder="Introduce el valor del Plano CE" style="width:100%;margin-top:2px"></div>`
+    ? `<div class="metric" style="grid-column:1/-1"><div class="metric-lbl">Fondo edificable (m) <span style="font-weight:400;text-transform:none">— introduce el valor del Plano CE</span></div><div style="display:flex;gap:6px;margin-top:2px"><input type="text" class="ficha-input" id="on_fondoInput" placeholder="p.ej. 20" style="flex:1"><button class="pdf-btn" id="on_fondoCalcularBtn" type="button">Calcular</button></div><div id="on_fondoResultado"></div></div>`
     : gd?.ed?.formulaS==="parcela_edificable"
     ? `<div class="metric"><div class="metric-lbl">Fondo edificable</div><div class="metric-val muted">No aplica fondo edificable</div></div>`
     : gd?param("Fondo edificable",gd.ed.fondo):"";
@@ -1173,7 +1205,7 @@ function renderResult(d){
     </div>
   </div>`;
 
-  logEl().appendChild(wrap);wireArt763bis(wrap,d);wireFichaUpload(wrap,d);
+  logEl().appendChild(wrap);wireArt763bis(wrap,d);wireFichaUpload(wrap,d);wireFondoInput(wrap,d);
   const pdfBtn=document.getElementById("pdfExportBtn");if(pdfBtn)pdfBtn.disabled=false;
   wrap.scrollIntoView({behavior:"smooth",block:"end"});
 }
@@ -1300,15 +1332,27 @@ async function getCatastro(lat, lon) {
   const direccion = xml1.match(/<ldt>([^<]+)<\/ldt>/)?.[1] || null;
 
   let superficieParcelaCatastral = null;
+  let geometria = null;
   try {
     const p2 = new URLSearchParams({ service: "WFS", request: "GetFeature", STOREDQUERIE_ID: "GetParcel", srsname: "urn:ogc:def:crs:EPSG::4326", refcat });
     const xml2 = await (await fetch(`https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?${p2}`)).text();
     const areaStr = xml2.match(/<cp:areaValue[^>]*>([^<]+)<\/cp:areaValue>/)?.[1];
     superficieParcelaCatastral = areaStr ? parseFloat(areaStr) : null;
+    // El contorno real de la parcela (para calcular la superficie
+    // computable a partir de un fondo introducido a mano — ver
+    // calcularSDesdeFondo). EPSG:4326 define el orden de ejes como
+    // (latitud, longitud), así que gml:posList viene "lat lon lat lon…".
+    const posListStr = xml2.match(/<gml:posList[^>]*>([^<]+)<\/gml:posList>/)?.[1];
+    if (posListStr) {
+      const nums = posListStr.trim().split(/\s+/).map(Number);
+      const pts = [];
+      for (let i = 0; i + 1 < nums.length; i += 2) pts.push({ lat: nums[i], lon: nums[i + 1] });
+      if (pts.length >= 3) geometria = pts;
+    }
   } catch {
     // sin geometría catastral disponible — seguimos con referencia y dirección igualmente
   }
-  return { refcat, direccion, superficieParcelaCatastral };
+  return { refcat, direccion, superficieParcelaCatastral, geometria };
 }
 function parseCoefRange(coefStr) {
   if (!coefStr || !/m²t\/m²s/i.test(coefStr)) return null;
@@ -1325,6 +1369,102 @@ function parsePercentRange(ocStr) {
   return { min: Math.min(...nums), max: Math.max(...nums) };
 }
 function round2(n) { return Math.round(n * 100) / 100; }
+// El "Coeficiente Z" del GIS a veces no es un número limpio — algunas
+// manzanas devuelven algo como "0 / 7" (varios valores según la parte de
+// la edificación, a resolver en el Plano CE). parseFloat("0 / 7") daría
+// "0" silenciosamente, un resultado incorrecto — así que solo se acepta
+// como Z real un valor que sea un único número.
+function parseZValue(raw) {
+  const s = String(raw ?? "").trim().replace(",", ".");
+  return /^\d+(\.\d+)?$/.test(s) ? parseFloat(s) : null;
+}
+
+// ══════════════════════════════════════════════════════════════
+// SUPERFICIE COMPUTABLE (S) A PARTIR DE UN FONDO INTRODUCIDO A MANO —
+// Grados 1º/3º de NZ1: S es la parte de la parcela entre la alineación
+// oficial y el fondo máximo (Art. 8.1.10.3.a/c). Ningún servicio GIS
+// publica el fondo como dato, pero el Catastro (INSPIRE WFS) SÍ publica el
+// contorno real de la parcela — así que, con el fondo que introduce el
+// usuario, se puede calcular S geométricamente: se recorta el polígono
+// catastral real por una línea paralela al borde de fachada (el más
+// cercano al punto geocodificado), a la distancia del fondo introducido.
+// Aproximación: asume que el "fondo máximo" del Plano CE corre paralelo a
+// la alineación oficial (caso habitual en manzana cerrada) — si la
+// geometría es degenerada o el resultado no tiene sentido, se devuelve
+// null y no se muestra ningún número (nunca un valor inventado).
+function toLocalXY(pt, ref) {
+  const R = 6378137;
+  const dLat = (pt.lat - ref.lat) * Math.PI / 180;
+  const dLon = (pt.lon - ref.lon) * Math.PI / 180;
+  return { x: dLon * R * Math.cos(ref.lat * Math.PI / 180), y: dLat * R };
+}
+function shoelaceArea(poly) {
+  let a = 0;
+  for (let i = 0; i < poly.length; i++) {
+    const p1 = poly[i], p2 = poly[(i + 1) % poly.length];
+    a += p1.x * p2.y - p2.x * p1.y;
+  }
+  return Math.abs(a) / 2;
+}
+function polygonCentroid(poly) {
+  let x = 0, y = 0;
+  for (const p of poly) { x += p.x; y += p.y; }
+  return { x: x / poly.length, y: y / poly.length };
+}
+function pointSegmentDistance(p, a, b) {
+  const abx = b.x - a.x, aby = b.y - a.y;
+  const lenSq = abx * abx + aby * aby;
+  let t = lenSq > 0 ? ((p.x - a.x) * abx + (p.y - a.y) * aby) / lenSq : 0;
+  t = Math.max(0, Math.min(1, t));
+  const cx = a.x + t * abx, cy = a.y + t * aby;
+  return Math.hypot(p.x - cx, p.y - cy);
+}
+// Recorta un polígono simple (convexo o cóncavo) contra un semiplano —
+// Sutherland-Hodgman de un solo borde, válido para cualquier polígono
+// simple. Conserva el lado donde (punto−lineP)·normal ≤ offset.
+function clipHalfPlane(poly, lineP, normal, offset) {
+  const side = (pt) => (pt.x - lineP.x) * normal.x + (pt.y - lineP.y) * normal.y - offset;
+  const out = [];
+  for (let i = 0; i < poly.length; i++) {
+    const cur = poly[i], prev = poly[(i - 1 + poly.length) % poly.length];
+    const curSide = side(cur), prevSide = side(prev);
+    if (curSide <= 0) {
+      if (prevSide > 0) {
+        const t = prevSide / (prevSide - curSide);
+        out.push({ x: prev.x + t * (cur.x - prev.x), y: prev.y + t * (cur.y - prev.y) });
+      }
+      out.push(cur);
+    } else if (prevSide <= 0) {
+      const t = prevSide / (prevSide - curSide);
+      out.push({ x: prev.x + t * (cur.x - prev.x), y: prev.y + t * (cur.y - prev.y) });
+    }
+  }
+  return out;
+}
+function calcularSDesdeFondo(geometria, frentePt, fondoM) {
+  if (!geometria || geometria.length < 3 || !(fondoM > 0)) return null;
+  const poly = geometria.map((p) => toLocalXY(p, frentePt));
+  const frente = { x: 0, y: 0 };
+  let bestDist = Infinity, bestA = null, bestB = null;
+  for (let i = 0; i < poly.length; i++) {
+    const a = poly[i], b = poly[(i + 1) % poly.length];
+    const dist = pointSegmentDistance(frente, a, b);
+    if (dist < bestDist) { bestDist = dist; bestA = a; bestB = b; }
+  }
+  if (!bestA || !bestB) return null;
+  const ex = bestB.x - bestA.x, ey = bestB.y - bestA.y;
+  const len = Math.hypot(ex, ey);
+  if (len === 0) return null;
+  let nx = -ey / len, ny = ex / len;
+  const centroid = polygonCentroid(poly);
+  if (nx * (centroid.x - bestA.x) + ny * (centroid.y - bestA.y) < 0) { nx = -nx; ny = -ny; }
+  const clipped = clipHalfPlane(poly, bestA, { x: nx, y: ny }, fondoM);
+  if (clipped.length < 3) return null;
+  const area = shoelaceArea(clipped);
+  const totalArea = shoelaceArea(poly);
+  if (!(area > 0) || area > totalArea * 1.01) return null;
+  return round2(area);
+}
 
 async function lookupCompendio({ normaKey, gradoKey, pKey, lat, lon, coefZ }) {
   const [pdata, admin, expedientes, catastro, fichaEspecifica] = await Promise.all([
@@ -1350,6 +1490,7 @@ async function lookupCompendio({ normaKey, gradoKey, pKey, lat, lon, coefZ }) {
       refCatastral: catastro?.refcat ?? null,
       direccionCatastral: catastro?.direccion ?? null,
       fichaEspecifica: fichaEspecifica ?? null,
+      geometria: catastro?.geometria ?? null,
     };
   }
 
@@ -1361,8 +1502,8 @@ async function lookupCompendio({ normaKey, gradoKey, pKey, lat, lon, coefZ }) {
   // estimación. La ocupación sigue el Art. 8.1.13 (75% de S, o igual a S).
   let obraNueva = null;
   if (gd && parcela?.superficieParcela && normaKey === "1" && gd.ed.formulaS === "parcela_edificable" && gd.ed.cCorrector && coefZ) {
-    const Z = parseFloat(String(coefZ).replace(",", "."));
-    if (!isNaN(Z)) {
+    const Z = parseZValue(coefZ);
+    if (Z != null) {
       const S = parcela.superficieParcela;
       const techoVal = round2(S * Z * gd.ed.cCorrector);
       const ocupacionVal = gd.ed.ocupacionRegla === "75pct" ? round2(S * 0.75) : gd.ed.ocupacionRegla === "igual_s" ? S : null;
@@ -1652,8 +1793,7 @@ document.getElementById("chatClear").addEventListener("click",()=>{CHAT_MSGS=[];
 // AUTO-ACTUALIZACIÓN (expuesto por el proceso principal vía preload)
 // ══════════════════════════════════════════════════════════════
 if(window.urbanAgent){
-  document.getElementById("footerVersion").textContent=`v${window.urbanAgent.appVersion}`;
-  document.getElementById("brandVersion").textContent=` · Version ${window.urbanAgent.appVersion}`;
+  document.getElementById("footerVersion").textContent=window.urbanAgent.appVersion;
   const pill=document.getElementById("updatePill"), txt=document.getElementById("updateTxt");
   window.urbanAgent.onUpdateAvailable(v=>{
     txt.textContent=`Actualización ${v} disponible — descargando…`;
