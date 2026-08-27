@@ -738,6 +738,7 @@ function renderResult(d){
   function rangeText(r,suf){return r?(r.min===r.max?`${r.min.toLocaleString("es-ES")}${suf}`:`${r.min.toLocaleString("es-ES")}–${r.max.toLocaleString("es-ES")}${suf}`):null}
   const techoText = d.obraNueva?rangeText(d.obraNueva.techo," m²t"):null;
   const ocupText = d.obraNueva?rangeText(d.obraNueva.ocupacion," m²"):null;
+  const fo = d.obraNueva?.formulaOficial||null;
 
   const wrap=document.createElement("div");wrap.className="result-stack";
   wrap.innerHTML=`
@@ -874,12 +875,13 @@ function renderResult(d){
     <div class="card-hdr green">
       <div class="card-icon icon-green"><i class="ti ti-building-skyscraper" aria-hidden="true"></i></div>
       <div class="card-hdr-text">
-        <div class="card-label">Simulación · Edificabilidad como obra nueva</div>
-        <div class="card-title">Aprovechamiento máximo sobre parcela vacía</div>
+        <div class="card-label">${fo?"Cálculo · Edificabilidad como obra nueva":"Simulación · Edificabilidad como obra nueva"}</div>
+        <div class="card-title">${fo?"Aprovechamiento máximo sobre parcela vacía (fórmula oficial)":"Aprovechamiento máximo sobre parcela vacía"}</div>
       </div>
       <span id="on_ptag">${ptag("concl")}</span>
     </div>
     <div class="card-body">
+      ${fo?`<div class="disc" style="border-color:#16a34a;background:#f0fdf4;margin-bottom:12px" id="on_formula"><i class="ti ti-calculator" aria-hidden="true"></i><p><b>E = S × Z × C</b> (${esc(fo.cita)}) &nbsp;→&nbsp; S = ${esc(fo.S.toLocaleString("es-ES"))} m² (Catastro) × Z = ${esc(String(fo.Z).replace(".",","))} (DATO OBTENIDO, GIS Condiciones de Edificación) × C = ${esc(String(fo.C).replace(".",","))} (fijo por grado, ${esc(fo.cita)}) = <b>${techoText?esc(techoText):""}</b>. Este resultado usa la fórmula real del PGOUM, no un rango estimado.</p></div>`:""}
       <div class="metric-grid">
         <div class="metric"><div class="metric-lbl">Superficie de parcela</div><div class="metric-val blue" id="on_superficie">${d.parcela.superficieParcela?esc(`${d.parcela.superficieParcela.toLocaleString("es-ES")} m²`):"—"}</div></div>
         <div class="metric"><div class="metric-lbl">Techo edificable máximo</div><div class="metric-val purple" id="on_techo">${techoText?esc(techoText):"—"}</div></div>
@@ -891,7 +893,7 @@ function renderResult(d){
         ${param("Altura máxima permitida",gd.ed.alt)}
         ${param("Fondo edificable",gd.ed.fondo)}
       </div>
-      <div class="disc" id="on_disc"><i class="ti ti-alert-triangle" aria-hidden="true"></i><p>Simulación de anteproyecto: techo edificable = superficie de parcela (Catastro) × coeficiente de edificabilidad neta; ocupación = parcela × % de ocupación máxima; nº de plantas = techo ÷ ocupación (aprox., valores medios del rango). No descuenta patios, retranqueos, cesiones, núcleos de comunicación, elementos protegidos ni normativa sectorial (accesibilidad, incendios, aparcamiento). No sustituye un estudio de detalle ni un anteproyecto firmado por un técnico competente.</p></div>
+      <div class="disc" id="on_disc"><i class="ti ti-alert-triangle" aria-hidden="true"></i><p>${fo?"Cálculo con la fórmula oficial del PGOUM a partir de datos reales (superficie catastral y coeficiente Z del GIS municipal). No descuenta patios, retranqueos, cesiones, núcleos de comunicación, elementos protegidos ni normativa sectorial (accesibilidad, incendios, aparcamiento), y la superficie de parcela puede diferir ligeramente de la Ficha de Condiciones Urbanísticas oficial (redondeos catastrales). No sustituye un estudio de detalle ni un anteproyecto firmado por un técnico competente.":"Simulación de anteproyecto: techo edificable = superficie de parcela (Catastro) × coeficiente de edificabilidad neta; ocupación = parcela × % de ocupación máxima; nº de plantas = techo ÷ ocupación (aprox., valores medios del rango). No descuenta patios, retranqueos, cesiones, núcleos de comunicación, elementos protegidos ni normativa sectorial (accesibilidad, incendios, aparcamiento). No sustituye un estudio de detalle ni un anteproyecto firmado por un técnico competente."}</p></div>
       ${!techoText||!ocupText?`<div class="disc" id="on_disc2"><i class="ti ti-info-circle" aria-hidden="true"></i><p>${!techoText?"El coeficiente de edificabilidad de esta norma/grado se fija en el Plano CE de la manzana (no es un valor único), así que no se puede calcular el techo edificable automáticamente. ":""}${!ocupText?"La ocupación máxima de esta norma/grado se fija en el Plano CE de la manzana, así que no se puede calcular la ocupación en planta automáticamente. ":""}Esto no es un fallo de la app: en estas normas (típicamente Centro Histórico) el PGOUM no publica un valor citywide, sino que remite al plano CE de cada manzana concreta. Puedes adjuntar abajo la Ficha de Condiciones Urbanísticas real de esta parcela (la descargas tú del visor del Ayuntamiento) para sustituir esta estimación por los valores oficiales exactos.</p></div>`:""}
       <div class="sdiv"></div>
       <button class="ficha-upload-btn" id="fichaUploadBtn" type="button"><i class="ti ti-paperclip" aria-hidden="true"></i> Adjuntar Ficha de Condiciones Urbanísticas (PDF) con los valores reales</button>
@@ -1111,7 +1113,7 @@ function parsePercentRange(ocStr) {
 }
 function round2(n) { return Math.round(n * 100) / 100; }
 
-async function lookupCompendio({ normaKey, gradoKey, pKey, lat, lon }) {
+async function lookupCompendio({ normaKey, gradoKey, pKey, lat, lon, coefZ }) {
   const [pdata, admin, expedientes, catastro, fichaEspecifica] = await Promise.all([
     lat && lon ? getParcelData(lat, lon).catch(() => null) : Promise.resolve(null),
     lat && lon ? getBarrioDistrito(lat, lon).catch(() => null) : Promise.resolve(null),
@@ -1138,8 +1140,29 @@ async function lookupCompendio({ normaKey, gradoKey, pKey, lat, lon }) {
     };
   }
 
+  // Norma Zonal 1 (Centro Histórico) usa la fórmula real del Art. 8.1.10
+  // PGOUM: E = S × Z × C. Z ya viene del GIS (Coeficiente Z, por manzana);
+  // C es un corrector FIJO por grado (Art. 8.1.10.3). Solo es automatizable
+  // cuando S no depende del fondo gráfico del Plano CE (formulaS ===
+  // "parcela_edificable"); en ese caso el resultado es exacto, no una
+  // estimación. La ocupación sigue el Art. 8.1.13 (75% de S, o igual a S).
   let obraNueva = null;
-  if (gd && parcela?.superficieParcela) {
+  if (gd && parcela?.superficieParcela && normaKey === "1" && gd.ed.formulaS === "parcela_edificable" && gd.ed.cCorrector && coefZ) {
+    const Z = parseFloat(String(coefZ).replace(",", "."));
+    if (!isNaN(Z)) {
+      const S = parcela.superficieParcela;
+      const techoVal = round2(S * Z * gd.ed.cCorrector);
+      const ocupacionVal = gd.ed.ocupacionRegla === "75pct" ? round2(S * 0.75) : gd.ed.ocupacionRegla === "igual_s" ? S : null;
+      const plantasEst = ocupacionVal && ocupacionVal > 0 ? Math.floor(techoVal / ocupacionVal) : null;
+      obraNueva = {
+        techo: { min: techoVal, max: techoVal },
+        ocupacion: ocupacionVal != null ? { min: round2(ocupacionVal), max: round2(ocupacionVal) } : null,
+        plantasEst,
+        formulaOficial: { S, Z, C: gd.ed.cCorrector, cita: "Art. 8.1.10 y 8.1.13 PGOUM" },
+      };
+    }
+  }
+  if (!obraNueva && gd && parcela?.superficieParcela) {
     const coefRange = parseCoefRange(gd.ed.coef);
     const ocRange = parsePercentRange(gd.ed.oc);
     const techo = coefRange
@@ -1238,7 +1261,7 @@ async function run(){
     addStep(`<span class="spin"></span>`,"i-run","Compendio normativo","Consultando edificabilidad, usos, protección, distrito/barrio y expedientes de planeamiento…",id3);
     let lookup;
     try{
-      lookup=await lookupCompendio({normaKey:parsed.norma,gradoKey:parsed.grado,pKey,lat:geo.lat,lon:geo.lon});
+      lookup=await lookupCompendio({normaKey:parsed.norma,gradoKey:parsed.grado,pKey,lat:geo.lat,lon:geo.lon,coefZ});
     }catch(e){
       updStep(id3,"i-err",`<i class="ti ti-alert-circle" aria-hidden="true"></i>`,esc(e.message));
       document.getElementById("btn").disabled=false;

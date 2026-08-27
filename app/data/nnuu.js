@@ -1,7 +1,7 @@
 export default {
   "1":{nombre:"Protección del Patrimonio Histórico",cap:"Cap. 8.1",grados:{
     "1":{label:"Grado 1º · Centro Histórico",
-      ed:{oc:"Según plano CE manzana",alt:"Altura cornisa existente o dominante (Art. 8.1.15)",fondo:"Según plano CE manzana (Art. 8.1.14)",coef:"Sin coeficiente único — según plano CE (Art. 8.1.10)",ret:"Sin retranqueo a vial (Art. 8.1.11)",vuel:"Máx. 0,45–0,60 m según ancho vía (Art. 8.1.17)"},
+      ed:{oc:"Igual a la superficie computable S (Art. 8.1.13.1)",alt:"Altura cornisa existente o dominante (Art. 8.1.15)",fondo:"Según plano CE manzana (Art. 8.1.14)",coef:"E = S×Z×C — C=0,875 fijo (Art. 8.1.10.3.a); Z según Plano CE; S entre alineación oficial y fondo máximo del Plano CE",ret:"Sin retranqueo a vial (Art. 8.1.11)",vuel:"Máx. 0,45–0,60 m según ancho vía (Art. 8.1.17)",formulaS:"fondo_plano_ce",cCorrector:0.875,ocupacionRegla:"igual_s"},
       uso:"Residencial / Múltiple",
       perm:["Vivienda colectiva","Comercio al por menor en PB","Oficinas y despachos profesionales","Hostelería y restauración","Dotacional privado (educativo, sanitario, cultural)","Aparcamiento en sótano vinculado"],
       tol:["Pequeño taller artesanal en PB","Alojamiento turístico con condiciones"],
@@ -9,7 +9,7 @@ export default {
       proh:["Industria general","Almacén y distribución","Grandes superficies comerciales","Infraestructuras de transporte"],
       cond:["Alineación obligatoria a vial. Sin retranqueos en fachada (Art. 8.1.11)","Fondo edificable fijado por Plano CE de cada manzana (Art. 8.1.14)","Altura libre mínima: PB 3,00 m / Plantas piso 2,50 m (Art. 8.1.16)","Vuelos según Art. 6.7 NNUU (Art. 8.1.17)","Fachadas: materiales y configuración originales obligatorios (Art. 8.1.8)","Prohibida modificación de huecos, cornisas y elementos ornamentales (Art. 8.1.8)"]},
     "2":{label:"Grado 2º · Entornos del Centro Histórico",
-      ed:{oc:"Según plano CE manzana",alt:"Según plano CE y Art. 6.6.8 — orientativo PB+4 a PB+6 (16–21 m)",fondo:"Según plano CE manzana (Art. 8.1.14)",coef:"Sin coeficiente único — según plano CE (Art. 8.1.10)",ret:"Sin retranqueo a vial (Art. 8.1.11)",vuel:"Máx. 0,60–0,80 m según ancho vía (Art. 8.1.17)"},
+      ed:{oc:"75% de la superficie computable S (Art. 8.1.13.2)",alt:"Según plano CE y Art. 6.6.8 — orientativo PB+4 a PB+6 (16–21 m)",fondo:"No se establece fondo máximo (Art. 8.1.14.2)",coef:"E = S×Z×C — C=0,66 fijo (Art. 8.1.10.3.b); Z según Plano CE; S = parcela edificable (Art. 6.2.9)",ret:"Sin retranqueo a vial (Art. 8.1.11)",vuel:"Máx. 0,60–0,80 m según ancho vía (Art. 8.1.17)",formulaS:"parcela_edificable",cCorrector:0.66,ocupacionRegla:"75pct"},
       uso:"Residencial",
       perm:["Vivienda colectiva libre y protegida","Comercio al por menor en PB","Oficinas y despachos profesionales","Hostelería y restauración","Alojamiento hotelero","Dotacional privado (educativo, sanitario, cultural)","Aparcamiento en sótano vinculado"],
       tol:["Pequeño taller artesanal en PB","Estudios y actividades artísticas"],
@@ -17,7 +17,7 @@ export default {
       proh:["Industria general","Almacén y distribución","Grandes superficies comerciales","Actividades peligrosas o insalubres"],
       cond:["Alineación obligatoria a vial. Sin retranqueos en fachada (Art. 8.1.11)","Fondo exacto en Plano CE de manzana (Art. 8.1.14)","Altura libre mínima: PB 3,00 m / Plantas piso 2,50 m (Art. 8.1.16)","Vuelos según Art. 6.7 NNUU; máx. 0,60–0,80 m (Art. 8.1.17)","Fachadas: materiales y configuración originales (Art. 8.1.8)","Cambio de uso en edificio protegido requiere informe patrimonial (Art. 8.1.32)"]},
     "3":{label:"Grado 3º · Áreas histórico-ambientales",
-      ed:{oc:"Según plano CE manzana (Art. 8.1.13)",alt:"Orientativo PB+3 a PB+5 / 12–20 m cornisa. Exacto en plano CE (Art. 8.1.15)",fondo:"16–22 m orientativo; exacto en plano CE manzana (Art. 8.1.14)",coef:"Sin coeficiente único — según plano CE (Art. 8.1.10)",ret:"Sin retranqueo a vial (Art. 8.1.11)",vuel:"Máx. 0,60–0,80 m en calles 8–12 m (Art. 8.1.17 / Art. 6.7)"},
+      ed:{oc:"Igual a la superficie computable S (Art. 8.1.13.1)",alt:"Orientativo PB+3 a PB+5 / 12–20 m cornisa. Exacto en plano CE (Art. 8.1.15)",fondo:"16–22 m orientativo; exacto en plano CE manzana (Art. 8.1.14)",coef:"E = S×Z×C — C=0,90 fijo (Art. 8.1.10.3.c); Z según Plano CE; S entre alineación oficial y fondo máximo del Plano CE",ret:"Sin retranqueo a vial (Art. 8.1.11)",vuel:"Máx. 0,60–0,80 m en calles 8–12 m (Art. 8.1.17 / Art. 6.7)",formulaS:"fondo_plano_ce",cCorrector:0.90,ocupacionRegla:"igual_s"},
       uso:"Residencial colectivo",
       perm:["Vivienda colectiva libre y protegida","Comercio al por menor en PB","Oficinas y despachos profesionales","Hostelería y restauración","Alojamiento hotelero","Dotacional privado (educativo, sanitario, cultural)","Aparcamiento en sótano vinculado"],
       tol:["Pequeño taller artesanal en PB","Estudios y actividades artísticas"],
