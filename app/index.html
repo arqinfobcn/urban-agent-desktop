@@ -25,7 +25,25 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);font-family:var(--fs);font-size:14px;color:var(--text);min-height:100vh}
-.wrap{max-width:640px;margin:0 auto;padding:32px 16px 48px}
+.wrap{max-width:1360px;margin:0 auto;padding:32px 16px 48px}
+
+/* ── LAYOUT: columna principal + barra lateral de chat ── */
+.page-grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:22px;align-items:start}
+.main-col{min-width:0}
+.side-col{position:sticky;top:16px;display:flex;flex-direction:column;gap:14px;max-height:calc(100vh - 32px)}
+@media (max-width:980px){
+  .page-grid{grid-template-columns:1fr}
+  .side-col{position:static;max-height:none}
+}
+
+/* ── Interior de tarjeta en dos columnas: datos (izq., más peso) vs
+   notas/instrucciones en gris (dcha., más estrechas) — reduce el alto
+   de cada tarjeta y aprovecha el ancho disponible. ── */
+.card-split{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:8px 16px;align-items:start}
+.card-main{min-width:0}
+.card-aside{min-width:0;display:flex;flex-direction:column;gap:10px}
+.card-aside .disc,.card-aside .gis-alert{margin-top:0}
+@media (max-width:640px){.card-split{grid-template-columns:1fr}}
 
 .app-header{text-align:center;margin-bottom:28px}
 .brand-name{font-size:13px;font-weight:600;font-family:var(--fm);letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-bottom:6px}
@@ -92,7 +110,7 @@ body{background:var(--bg);font-family:var(--fs);font-size:14px;color:var(--text)
 .card-title{font-size:13px;font-weight:600;color:var(--text);letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .card-body{padding:14px}
 
-.metric-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:7px}
 .metric{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:9px 11px}
 .metric-lbl{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.05em;text-transform:uppercase;font-family:var(--fm);margin-bottom:3px}
 .metric-val{font-size:13px;font-weight:600;color:var(--text);font-family:var(--fm)}
@@ -107,12 +125,12 @@ body{background:var(--bg);font-family:var(--fs);font-size:14px;color:var(--text)
 .gis-alert p{font-size:12px;color:var(--amber);line-height:1.6}
 .gis-alert strong{font-weight:600}
 
-.param-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
+.param-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:7px}
 .param{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:9px 11px}
 .param-lbl{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.05em;text-transform:uppercase;font-family:var(--fm);margin-bottom:3px}
 .param-val{font-size:12px;font-weight:500;color:var(--text);line-height:1.4}
 
-.use-section{display:flex;flex-direction:column;gap:10px}
+.use-section{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px 16px;align-items:start}
 .use-group-hdr{display:flex;align-items:center;gap:6px;margin-bottom:5px}
 .use-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 .use-dot.green{background:var(--green)}.use-dot.amber{background:var(--amber)}.use-dot.blue{background:var(--blue)}.use-dot.red{background:var(--red)}
@@ -124,7 +142,7 @@ body{background:var(--bg);font-family:var(--fs);font-size:14px;color:var(--text)
 .u-aut{background:var(--blue-bg);color:var(--blue);border-color:var(--blue-border)}
 .u-proh{background:var(--red-bg);color:var(--red);border-color:var(--red-border)}
 
-.cond-list{display:flex;flex-direction:column;gap:5px}
+.cond-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:5px;align-items:start}
 .cond-item{display:flex;gap:9px;align-items:flex-start;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:9px 11px}
 .cond-bullet{width:5px;height:5px;border-radius:50%;background:var(--teal);margin-top:6px;flex-shrink:0}
 .cond-text{font-size:12px;color:var(--text2);line-height:1.5}
@@ -207,7 +225,8 @@ body{background:var(--bg);font-family:var(--fs);font-size:14px;color:var(--text)
 .repo-url-edit button[data-repo-save]{background:var(--blue);color:#fff;border-color:var(--blue)}
 
 /* ── ANÁLISIS ART. 7.6.3 BIS ── */
-.a763-section{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;font-family:var(--fm);color:var(--text3);margin-bottom:8px}
+.a763-section{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;font-family:var(--fm);color:var(--text3);margin-bottom:8px;grid-column:1/-1}
+.a763-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:4px 16px;align-items:start}
 .a763-q{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
 .a763-q label{font-size:11px;font-weight:600;color:var(--text2);line-height:1.4}
 .a763-q select{padding:7px 9px;border-radius:var(--r-sm);border:1px solid var(--border);font-size:12px;font-family:var(--fs);background:var(--surface2);color:var(--text)}
@@ -229,10 +248,9 @@ body{background:var(--bg);font-family:var(--fs);font-size:14px;color:var(--text)
 .ficha-input{padding:7px 9px;border-radius:var(--r-sm);border:1px solid var(--border);font-size:12px;font-family:var(--fm);background:var(--surface2);color:var(--text);width:100%}
 
 /* ── CHAT IA ── */
-.chat-panel{margin-top:10px}
-.chat-panel[hidden]{display:none}
-.chat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
-.chat-log{max-height:420px;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+.chat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;height:calc(100vh - 32px)}
+@media (max-width:980px){.chat-card{height:520px}}
+.chat-log{flex:1;min-height:0;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
 .chat-msg{max-width:88%;padding:9px 12px;border-radius:12px;font-size:13px;line-height:1.55;white-space:pre-wrap}
 .chat-msg.user{align-self:flex-end;background:var(--blue);color:#fff;border-bottom-right-radius:3px}
 .chat-msg.assistant{align-self:flex-start;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-bottom-left-radius:3px}
@@ -259,37 +277,41 @@ body{background:var(--bg);font-family:var(--fs);font-size:14px;color:var(--text)
     <div><button class="update-pill" id="updatePill" type="button"><i class="ti ti-download" aria-hidden="true"></i> <span id="updateTxt">Actualización disponible</span></button></div>
   </div>
 
-  <div id="app-body">
-    <div class="search-wrap">
-      <div class="search-inner">
-        <i class="ti ti-map-pin search-ico" aria-hidden="true"></i>
-        <input class="search-input" id="addr" placeholder="Calle Alcalá 120, Madrid" autocomplete="off">
-        <div class="search-divider"></div>
-        <button class="search-btn" id="btn">Consultar</button>
+  <div class="page-grid">
+    <div class="main-col" id="app-body">
+      <div class="search-wrap">
+        <div class="search-inner">
+          <i class="ti ti-map-pin search-ico" aria-hidden="true"></i>
+          <input class="search-input" id="addr" placeholder="Calle Alcalá 120, Madrid" autocomplete="off">
+          <div class="search-divider"></div>
+          <button class="search-btn" id="btn">Consultar</button>
+        </div>
+        <div class="search-foot">
+          <i class="ti ti-info-circle" aria-hidden="true"></i>
+          Introduce la vía y el número exacto del portal
+        </div>
       </div>
-      <div class="search-foot">
-        <i class="ti ti-info-circle" aria-hidden="true"></i>
-        Introduce la vía y el número exacto del portal
+
+      <div class="mbar" id="mbar"></div>
+      <div class="log" id="log">
+        <div class="init-screen">
+          <div class="init-ico"><i class="ti ti-building-estate" aria-hidden="true"></i></div>
+          <div class="init-title">Introduce una dirección de Madrid</div>
+          <div class="init-sub">El agente consulta el GIS oficial del Ayuntamiento y genera el análisis de edificabilidad, usos y protección de forma automática.</div>
+        </div>
       </div>
+
+      <div class="legal-disc">
+        <i class="ti ti-scale" aria-hidden="true"></i>
+        <p>Información orientativa generada a partir de fuentes públicas (GIS del Ayuntamiento de Madrid) y de la compilación de las Normas Urbanísticas del PGOUM 1997. Cada dato indica si procede directamente de una fuente oficial (<b>DATO OBTENIDO</b>), de una lectura razonada de la normativa (<b>INTERPRETACIÓN NORMATIVA</b>) o de un cálculo derivado (<b>CONCLUSIÓN</b>). No sustituye la consulta al Ayuntamiento de Madrid ni el asesoramiento de un técnico competente (arquitecto/aparejador) antes de tomar decisiones urbanísticas, contractuales o de inversión. InmoLab no se responsabiliza de las decisiones adoptadas a partir de esta información.</p>
+      </div>
+
+      <button class="repo-toggle" id="repoToggle" type="button"><i class="ti ti-books" aria-hidden="true"></i> Repositorio normativo</button>
+      <div class="repo-panel" id="repoPanel" hidden></div>
     </div>
 
-    <div class="mbar" id="mbar"></div>
-    <div class="log" id="log">
-      <div class="init-screen">
-        <div class="init-ico"><i class="ti ti-building-estate" aria-hidden="true"></i></div>
-        <div class="init-title">Introduce una dirección de Madrid</div>
-        <div class="init-sub">El agente consulta el GIS oficial del Ayuntamiento y genera el análisis de edificabilidad, usos y protección de forma automática.</div>
-      </div>
-    </div>
-
-    <div class="legal-disc">
-      <i class="ti ti-scale" aria-hidden="true"></i>
-      <p>Información orientativa generada a partir de fuentes públicas (GIS del Ayuntamiento de Madrid) y de la compilación de las Normas Urbanísticas del PGOUM 1997. Cada dato indica si procede directamente de una fuente oficial (<b>DATO OBTENIDO</b>), de una lectura razonada de la normativa (<b>INTERPRETACIÓN NORMATIVA</b>) o de un cálculo derivado (<b>CONCLUSIÓN</b>). No sustituye la consulta al Ayuntamiento de Madrid ni el asesoramiento de un técnico competente (arquitecto/aparejador) antes de tomar decisiones urbanísticas, contractuales o de inversión. InmoLab no se responsabiliza de las decisiones adoptadas a partir de esta información.</p>
-    </div>
-
-    <button class="repo-toggle" id="chatToggle" type="button"><i class="ti ti-message-chatbot" aria-hidden="true"></i> Chat con la IA</button>
-    <div class="chat-panel" id="chatPanel" hidden>
-      <div class="chat-card">
+    <div class="side-col">
+      <div class="chat-card" id="chatPanel">
         <div class="chat-hdr">
           <span class="chat-hdr-lbl"><i class="ti ti-message-chatbot" aria-hidden="true"></i> Analista urbanístico IA</span>
           <button class="chat-clear" id="chatClear" type="button">Borrar conversación</button>
@@ -301,13 +323,10 @@ body{background:var(--bg);font-family:var(--fs);font-size:14px;color:var(--text)
         </div>
       </div>
     </div>
-
-    <button class="repo-toggle" id="repoToggle" type="button"><i class="ti ti-books" aria-hidden="true"></i> Repositorio normativo</button>
-    <div class="repo-panel" id="repoPanel" hidden></div>
   </div>
 
   <div class="app-footer">
-    <div class="footer-txt">InmoLab · Urban Agent · Creada por Pedro Ojesto Vallina</div>
+    <div class="footer-txt">InmoLab · Urban Agent · Creada por Pedro Ojesto Vallina · <span id="footerVersion"></span></div>
   </div>
 </div>
 
@@ -533,6 +552,7 @@ function renderArt763bisCard(d){
     </div>
     <div class="card-body">
       <div class="disc"><i class="ti ti-info-circle" aria-hidden="true"></i><p>Ninguna pregunta viene rellenada por defecto. Las de fondo rojo aún no tienen respuesta tuya — los avisos bajo algunas de ellas son solo pistas del GIS, no la respuesta.</p></div>
+      <div class="a763-grid">
       <div class="a763-section">Condiciones generales — Art. 7.6.3 (aplican en toda la ciudad)</div>
       <div class="a763-q"><label>A. ¿Cumple los requisitos técnicos mínimos de la normativa sectorial de hospedaje vigente?</label>
         <select id="a763_reqTecnicos"><option value="" selected>— Sin responder —</option><option value="si">Sí</option><option value="no">No</option></select>
@@ -547,7 +567,9 @@ function renderArt763bisCard(d){
       <div class="a763-q"><label>C. ¿El local dispondrá de acceso independiente? (obligatorio si el edificio es de uso residencial)</label>
         <select id="a763_accesoIndependiente"><option value="" selected>— Sin responder —</option><option value="si">Sí</option><option value="no">No</option></select>
       </div>
+      </div>
       <div class="sdiv"></div>
+      <div class="a763-grid">
       <div class="a763-section">Área central — Art. 7.6.3 bis (solo dentro del APE 00.01)</div>
       <div class="a763-q"><label>1. ¿Qué hospedaje?</label>
         <select id="a763_modalidad">
@@ -604,6 +626,7 @@ function renderArt763bisCard(d){
       </div>
       <div class="a763-q"><label>9. ¿Existe planeamiento específico vigente? — Estudio de Repercusión validado o Plan Especial de hospedaje aprobado sin ejecutar</label>
         <select id="a763_planeamiento"><option value="" selected>— Sin responder —</option><option value="no">No</option><option value="si">Sí</option></select>
+      </div>
       </div>
       <div class="a763-result" id="a763result"></div>
       <div class="disc"><i class="ti ti-alert-triangle" aria-hidden="true"></i><p>Herramienta de apoyo basada en el texto literal del Art. 7.6.3 bis (Compendio NNUU, ed. 24/09/2025). No sustituye la consulta urbanística oficial al Ayuntamiento de Madrid ni el informe de un técnico competente antes de solicitar una licencia.</p></div>
@@ -753,23 +776,28 @@ function renderResult(d){
       </div>
       ${ptag("dato")}
     </div>
-    <div class="card-body">
-      <div class="metric-grid">
-        ${metric("Norma zonal",d.normaRaw,"blue")}
-        ${metric("Denominación",d.denom)}
-        ${metric("Grado condición GIS",d.gradoRaw)}
-        ${metric("Coeficiente Z",d.coefZ||"Ver plano CE")}
-        ${metric("Nº manzana",d.manz)}
-        ${metric("Nº catálogo (condiciones)",d.catCond)}
+    <div class="card-body card-split">
+      <div class="card-main">
+        <div class="metric-grid">
+          ${metric("Norma zonal",d.normaRaw,"blue")}
+          ${metric("Denominación",d.denom)}
+          ${metric("Grado condición GIS",d.gradoRaw)}
+          ${metric("Coeficiente Z",d.coefZ||"Ver plano CE")}
+          ${metric("Nº manzana",d.manz)}
+          ${metric("Nº catálogo (condiciones)",d.catCond)}
+        </div>
+        ${d.gradoProt||d.nivelUsos||d.catProt?`<div class="sdiv"></div><div class="metric-grid">
+          ${metric("Grado de protección",d.gradoProt,"amber")}
+          ${metric("Nivel usos y actividades",d.nivelUsos)}
+          ${metric("Nº catálogo (protección)",d.catProt)}
+        </div>`:""}
       </div>
-      ${d.gradoProt||d.nivelUsos||d.catProt?`<div class="sdiv"></div><div class="metric-grid">
-        ${metric("Grado de protección",d.gradoProt,"amber")}
-        ${metric("Nivel usos y actividades",d.nivelUsos)}
-        ${metric("Nº catálogo (protección)",d.catProt)}
-      </div>`:""}
-      ${planos?`<div class="planos">${planos}</div>`:""}
-      ${sinGrado?`<div class="gis-alert"><i class="ti ti-alert-triangle" aria-hidden="true"></i><p><strong>Nota:</strong> No se ha podido identificar el grado PGOUM desde la denominación GIS "<em>${esc(d.denom||"—")}</em>". Verifica en el visor oficial del Ayuntamiento. Los datos GIS quedan registrados arriba.</p></div>`:""}
-      ${gradoAproximado?`<div class="gis-alert"><i class="ti ti-alert-triangle" aria-hidden="true"></i><p><strong>Grado estimado, no confirmado:</strong> el GIS no devolvió una "Denominación" oficial para esta parcela, así que el grado mostrado (${esc(gd.label)}) se ha inferido de un campo interno que no siempre coincide con el grado PGOUM real. Confirma en el visor oficial antes de usar este dato en una decisión.</p></div>`:""}
+      <div class="card-aside">
+        ${planos?`<div class="planos">${planos}</div>`:""}
+        ${sinGrado?`<div class="gis-alert"><i class="ti ti-alert-triangle" aria-hidden="true"></i><p><strong>Nota:</strong> No se ha podido identificar el grado PGOUM desde la denominación GIS "<em>${esc(d.denom||"—")}</em>". Verifica en el visor oficial del Ayuntamiento. Los datos GIS quedan registrados a la izquierda.</p></div>`:""}
+        ${gradoAproximado?`<div class="gis-alert"><i class="ti ti-alert-triangle" aria-hidden="true"></i><p><strong>Grado estimado, no confirmado:</strong> el GIS no devolvió una "Denominación" oficial para esta parcela, así que el grado mostrado (${esc(gd.label)}) se ha inferido de un campo interno que no siempre coincide con el grado PGOUM real. Confirma en el visor oficial antes de usar este dato en una decisión.</p></div>`:""}
+        ${!sinGrado&&!gradoAproximado&&!planos?`<div class="disc"><i class="ti ti-info-circle" aria-hidden="true"></i><p>Datos leídos en directo de las capas GIS del Ayuntamiento (Normas Zonales, Condiciones de Edificación, Edificios Protegidos) para el punto geocodificado.</p></div>`:""}
+      </div>
     </div>
   </div>
 
@@ -804,46 +832,23 @@ function renderResult(d){
       </div>
       ${ptag("dato")}
     </div>
-    <div class="card-body">
-      <div class="metric-grid">
-        ${metric("Superficie de parcela (Catastro)",d.parcela.superficieParcela?`${d.parcela.superficieParcela.toLocaleString("es-ES")} m²`:null,"blue")}
-        ${metric("Referencia catastral",d.parcela.refCatastral)}
-        ${metric("Uso principal (planeamiento)",d.parcela.usoPrincipal)}
+    <div class="card-body card-split">
+      <div class="card-main">
+        <div class="metric-grid">
+          ${metric("Superficie de parcela (Catastro)",d.parcela.superficieParcela?`${d.parcela.superficieParcela.toLocaleString("es-ES")} m²`:null,"blue")}
+          ${metric("Referencia catastral",d.parcela.refCatastral)}
+          ${metric("Uso principal (planeamiento)",d.parcela.usoPrincipal)}
+        </div>
+        ${d.clasificacionSuelo?`<div class="sdiv"></div><div class="metric-grid"><div class="metric" style="grid-column:1/-1"><div class="metric-lbl" style="display:flex;align-items:center">Clasificación del suelo${ptag("interp")}</div><div class="metric-val ${d.clasificacionSuelo.valor?'purple':'muted'}">${d.clasificacionSuelo.valor?esc(d.clasificacionSuelo.valor):"No determinada automáticamente"}</div></div></div>`:""}
       </div>
-      ${!d.parcela.superficieParcela?`<div class="disc"><i class="ti ti-alert-triangle" aria-hidden="true"></i><p>No se ha podido obtener la superficie real de la parcela desde el Catastro para este punto. Verifica en la <a href="https://www1.sedecatastro.gob.es" target="_blank" rel="noopener">Sede Electrónica del Catastro</a>.</p></div>`:""}
-      ${d.parcela.fichaEspecifica?`<div class="sdiv"></div><div class="disc"><i class="ti ti-file-text" aria-hidden="true"></i><p><strong>Ficha específica${d.parcela.fichaEspecifica.numeroCatalogo?` · Nº catálogo ${esc(d.parcela.fichaEspecifica.numeroCatalogo)}`:""}:</strong> ${esc(d.parcela.fichaEspecifica.texto)}</p></div>`:""}
-      ${d.clasificacionSuelo?`<div class="sdiv"></div><div class="metric-grid"><div class="metric" style="grid-column:1/-1"><div class="metric-lbl" style="display:flex;align-items:center">Clasificación del suelo${ptag("interp")}</div><div class="metric-val ${d.clasificacionSuelo.valor?'purple':'muted'}">${d.clasificacionSuelo.valor?esc(d.clasificacionSuelo.valor):"No determinada automáticamente"}</div></div></div><div class="disc"><i class="ti ti-info-circle" aria-hidden="true"></i><p>${esc(d.clasificacionSuelo.base)}</p></div>`:""}
+      <div class="card-aside">
+        ${!d.parcela.superficieParcela?`<div class="disc"><i class="ti ti-alert-triangle" aria-hidden="true"></i><p>No se ha podido obtener la superficie real de la parcela desde el Catastro para este punto. Verifica en la <a href="https://www1.sedecatastro.gob.es" target="_blank" rel="noopener">Sede Electrónica del Catastro</a>.</p></div>`:""}
+        ${d.parcela.fichaEspecifica?`<div class="disc"><i class="ti ti-file-text" aria-hidden="true"></i><p><strong>Ficha específica${d.parcela.fichaEspecifica.numeroCatalogo?` · Nº catálogo ${esc(d.parcela.fichaEspecifica.numeroCatalogo)}`:""}:</strong> ${esc(d.parcela.fichaEspecifica.texto)}</p></div>`:""}
+        ${d.clasificacionSuelo?`<div class="disc"><i class="ti ti-info-circle" aria-hidden="true"></i><p>${esc(d.clasificacionSuelo.base)}</p></div>`:""}
+      </div>
     </div>
   </div>`:`
   <div class="card"><div class="card-body"><div class="disc"><i class="ti ti-info-circle" aria-hidden="true"></i><p>No se ha podido obtener la superficie de parcela para este punto. Verifica manualmente en la <a href="https://www1.sedecatastro.gob.es" target="_blank" rel="noopener">Sede Electrónica del Catastro</a>.</p></div></div></div>`}
-
-  <!-- CARD 1.7: EXPEDIENTES DE PLANEAMIENTO (MODIFICACIONES / PLANES ESPECIALES) -->
-  ${d.expedientes&&d.expedientes.length?`
-  <div class="card">
-    <div class="card-hdr purple">
-      <div class="card-icon icon-purple"><i class="ti ti-file-diff" aria-hidden="true"></i></div>
-      <div class="card-hdr-text">
-        <div class="card-label">Expedientes de planeamiento · Ayuntamiento de Madrid</div>
-        <div class="card-title">${d.expedientes.length} expediente${d.expedientes.length===1?"":"s"} sobre este ámbito</div>
-      </div>
-      ${ptag("dato")}
-    </div>
-    <div class="card-body">
-      <div class="exp-list">
-        ${d.expedientes.map(e=>{const esp=esExpedienteEspecifico(e.denominacion,d.display_name);return`<div class="exp-item">
-          <div class="exp-top">${e.tipo?`<span class="exp-tipo">${esc(e.tipo)}</span>`:""}<span class="exp-scope ${esp?"exp-scope-edificio":"exp-scope-general"}">${esp?"Este edificio":"Ámbito general"}</span><span class="exp-num">${esc(e.numero||e.figura||"")}</span></div>
-          <div class="exp-denom">${esc(e.denominacion||"—")}</div>
-          <div class="exp-meta">
-            ${e.fase?`<span>${esc(e.fase)}</span>`:""}
-            ${e.fechaAprobacion?`<span>${esc(e.fechaAprobacion)}</span>`:""}
-            ${e.organo?`<span>${esc(e.organo)}</span>`:""}
-            ${e.enlace?`<a class="exp-link" href="${esc(e.enlace)}" target="_blank" rel="noopener">Ver expediente <i class="ti ti-external-link" aria-hidden="true"></i></a>`:""}
-          </div>
-        </div>`}).join("")}
-      </div>
-      <div class="disc"><i class="ti ti-alert-triangle" aria-hidden="true"></i><p>Ordenados por fecha (más recientes primero). El color es una estimación automática: <span style="color:var(--green)">verde</span> si el título del expediente cita el número de portal consultado (probablemente específico de este edificio, p.ej. un Plan Especial); <span style="color:var(--red)">rojo</span> si no lo cita (probablemente de ámbito más amplio, p.ej. una Modificación Puntual del PGOUM o una normativa como la de cubiertas verdes). Revisa cada enlace para confirmarlo.</p></div>
-    </div>
-  </div>`:""}
 
   <!-- CARD 2: EDIFICABILIDAD -->
   ${gd?`
@@ -856,16 +861,20 @@ function renderResult(d){
       </div>
       ${ptag("interp")}
     </div>
-    <div class="card-body">
-      <div class="param-grid">
-        ${param("Ocupación máxima",gd.ed.oc)}
-        ${param("Altura máxima",gd.ed.alt)}
-        ${param("Fondo edificable",gd.ed.fondo)}
-        ${param("Coef. edificabilidad neta",gd.ed.coef)}
-        ${param("Retranqueos",gd.ed.ret)}
-        ${param("Vuelos permitidos",gd.ed.vuel)}
+    <div class="card-body card-split">
+      <div class="card-main">
+        <div class="param-grid">
+          ${param("Ocupación máxima",gd.ed.oc)}
+          ${param("Altura máxima",gd.ed.alt)}
+          ${param("Fondo edificable",gd.ed.fondo)}
+          ${param("Coef. edificabilidad neta",gd.ed.coef)}
+          ${param("Retranqueos",gd.ed.ret)}
+          ${param("Vuelos permitidos",gd.ed.vuel)}
+        </div>
       </div>
-      <div class="disc"><i class="ti ti-alert-triangle" aria-hidden="true"></i><p>Los valores exactos de fondo y altura se determinan manzana a manzana en el Plano CE. Verifica en el <a href="https://www.madrid.es" target="_blank" rel="noopener">visor oficial</a>.</p></div>
+      <div class="card-aside">
+        <div class="disc"><i class="ti ti-alert-triangle" aria-hidden="true"></i><p>Los valores exactos de fondo y altura se determinan manzana a manzana en el Plano CE. Verifica en el <a href="https://www.madrid.es" target="_blank" rel="noopener">visor oficial</a>.</p></div>
+      </div>
     </div>
   </div>`:""}
 
@@ -880,24 +889,25 @@ function renderResult(d){
       </div>
       <span id="on_ptag">${ptag("concl")}</span>
     </div>
-    <div class="card-body">
-      ${fo?`<div class="disc" style="border-color:#16a34a;background:#f0fdf4;margin-bottom:12px" id="on_formula"><i class="ti ti-calculator" aria-hidden="true"></i><p><b>E = S × Z × C</b> (${esc(fo.cita)}) &nbsp;→&nbsp; S = ${esc(fo.S.toLocaleString("es-ES"))} m² (Catastro) × Z = ${esc(String(fo.Z).replace(".",","))} (DATO OBTENIDO, GIS Condiciones de Edificación) × C = ${esc(String(fo.C).replace(".",","))} (fijo por grado, ${esc(fo.cita)}) = <b>${techoText?esc(techoText):""}</b>. Este resultado usa la fórmula real del PGOUM, no un rango estimado.</p></div>`:""}
-      <div class="metric-grid">
-        <div class="metric"><div class="metric-lbl">Superficie de parcela</div><div class="metric-val blue" id="on_superficie">${d.parcela.superficieParcela?esc(`${d.parcela.superficieParcela.toLocaleString("es-ES")} m²`):"—"}</div></div>
-        <div class="metric"><div class="metric-lbl">Techo edificable máximo</div><div class="metric-val purple" id="on_techo">${techoText?esc(techoText):"—"}</div></div>
-        <div class="metric"><div class="metric-lbl">Ocupación máx. en planta</div><div class="metric-val purple" id="on_ocupacion">${ocupText?esc(ocupText):"—"}</div></div>
+    <div class="card-body card-split">
+      <div class="card-main">
+        <div class="metric-grid">
+          <div class="metric"><div class="metric-lbl">Superficie de parcela</div><div class="metric-val blue" id="on_superficie">${d.parcela.superficieParcela?esc(`${d.parcela.superficieParcela.toLocaleString("es-ES")} m²`):"—"}</div></div>
+          <div class="metric"><div class="metric-lbl">Techo edificable máximo</div><div class="metric-val purple" id="on_techo">${techoText?esc(techoText):"—"}</div></div>
+          <div class="metric"><div class="metric-lbl">Ocupación máx. en planta</div><div class="metric-val purple" id="on_ocupacion">${ocupText?esc(ocupText):"—"}</div></div>
+          <div class="metric"><div class="metric-lbl">Nº plantas estimado (aprox.)</div><div class="metric-val amber" id="on_plantas">${d.obraNueva?.plantasEst!=null?`${d.obraNueva.plantasEst} plantas`:"—"}</div></div>
+          ${param("Altura máxima permitida",gd.ed.alt)}
+          ${param("Fondo edificable",gd.ed.fondo)}
+        </div>
+        <div class="sdiv"></div>
+        <button class="ficha-upload-btn" id="fichaUploadBtn" type="button"><i class="ti ti-paperclip" aria-hidden="true"></i> Adjuntar Ficha de Condiciones Urbanísticas (PDF) con los valores reales</button>
+        <div id="fichaUploadResult"></div>
       </div>
-      <div class="sdiv"></div>
-      <div class="metric-grid">
-        <div class="metric"><div class="metric-lbl">Nº plantas estimado (aprox.)</div><div class="metric-val amber" id="on_plantas">${d.obraNueva?.plantasEst!=null?`${d.obraNueva.plantasEst} plantas`:"—"}</div></div>
-        ${param("Altura máxima permitida",gd.ed.alt)}
-        ${param("Fondo edificable",gd.ed.fondo)}
+      <div class="card-aside">
+        ${fo?`<div class="disc" style="border-color:#16a34a;background:#f0fdf4" id="on_formula"><i class="ti ti-calculator" aria-hidden="true"></i><p><b>E = S × Z × C</b> (${esc(fo.cita)}) &nbsp;→&nbsp; S = ${esc(fo.S.toLocaleString("es-ES"))} m² (Catastro) × Z = ${esc(String(fo.Z).replace(".",","))} (DATO OBTENIDO, GIS Condiciones de Edificación) × C = ${esc(String(fo.C).replace(".",","))} (fijo por grado, ${esc(fo.cita)}) = <b>${techoText?esc(techoText):""}</b>. Este resultado usa la fórmula real del PGOUM, no un rango estimado.</p></div>`:""}
+        <div class="disc" id="on_disc"><i class="ti ti-alert-triangle" aria-hidden="true"></i><p>${fo?"Cálculo con la fórmula oficial del PGOUM a partir de datos reales (superficie catastral y coeficiente Z del GIS municipal). No descuenta patios, retranqueos, cesiones, núcleos de comunicación, elementos protegidos ni normativa sectorial (accesibilidad, incendios, aparcamiento), y la superficie de parcela puede diferir ligeramente de la Ficha de Condiciones Urbanísticas oficial (redondeos catastrales). No sustituye un estudio de detalle ni un anteproyecto firmado por un técnico competente.":"Simulación de anteproyecto: techo edificable = superficie de parcela (Catastro) × coeficiente de edificabilidad neta; ocupación = parcela × % de ocupación máxima; nº de plantas = techo ÷ ocupación (aprox., valores medios del rango). No descuenta patios, retranqueos, cesiones, núcleos de comunicación, elementos protegidos ni normativa sectorial (accesibilidad, incendios, aparcamiento). No sustituye un estudio de detalle ni un anteproyecto firmado por un técnico competente."}</p></div>
+        ${!techoText||!ocupText?`<div class="disc" id="on_disc2"><i class="ti ti-info-circle" aria-hidden="true"></i><p>${!techoText?"El coeficiente de edificabilidad de esta norma/grado se fija en el Plano CE de la manzana (no es un valor único), así que no se puede calcular el techo edificable automáticamente. ":""}${!ocupText?"La ocupación máxima de esta norma/grado se fija en el Plano CE de la manzana, así que no se puede calcular la ocupación en planta automáticamente. ":""}Esto no es un fallo de la app: en estas normas (típicamente Centro Histórico) el PGOUM no publica un valor citywide, sino que remite al plano CE de cada manzana concreta. Puedes adjuntar la Ficha de Condiciones Urbanísticas real de esta parcela (la descargas tú del visor del Ayuntamiento) para sustituir esta estimación por los valores oficiales exactos.</p></div>`:""}
       </div>
-      <div class="disc" id="on_disc"><i class="ti ti-alert-triangle" aria-hidden="true"></i><p>${fo?"Cálculo con la fórmula oficial del PGOUM a partir de datos reales (superficie catastral y coeficiente Z del GIS municipal). No descuenta patios, retranqueos, cesiones, núcleos de comunicación, elementos protegidos ni normativa sectorial (accesibilidad, incendios, aparcamiento), y la superficie de parcela puede diferir ligeramente de la Ficha de Condiciones Urbanísticas oficial (redondeos catastrales). No sustituye un estudio de detalle ni un anteproyecto firmado por un técnico competente.":"Simulación de anteproyecto: techo edificable = superficie de parcela (Catastro) × coeficiente de edificabilidad neta; ocupación = parcela × % de ocupación máxima; nº de plantas = techo ÷ ocupación (aprox., valores medios del rango). No descuenta patios, retranqueos, cesiones, núcleos de comunicación, elementos protegidos ni normativa sectorial (accesibilidad, incendios, aparcamiento). No sustituye un estudio de detalle ni un anteproyecto firmado por un técnico competente."}</p></div>
-      ${!techoText||!ocupText?`<div class="disc" id="on_disc2"><i class="ti ti-info-circle" aria-hidden="true"></i><p>${!techoText?"El coeficiente de edificabilidad de esta norma/grado se fija en el Plano CE de la manzana (no es un valor único), así que no se puede calcular el techo edificable automáticamente. ":""}${!ocupText?"La ocupación máxima de esta norma/grado se fija en el Plano CE de la manzana, así que no se puede calcular la ocupación en planta automáticamente. ":""}Esto no es un fallo de la app: en estas normas (típicamente Centro Histórico) el PGOUM no publica un valor citywide, sino que remite al plano CE de cada manzana concreta. Puedes adjuntar abajo la Ficha de Condiciones Urbanísticas real de esta parcela (la descargas tú del visor del Ayuntamiento) para sustituir esta estimación por los valores oficiales exactos.</p></div>`:""}
-      <div class="sdiv"></div>
-      <button class="ficha-upload-btn" id="fichaUploadBtn" type="button"><i class="ti ti-paperclip" aria-hidden="true"></i> Adjuntar Ficha de Condiciones Urbanísticas (PDF) con los valores reales</button>
-      <div id="fichaUploadResult"></div>
     </div>
   </div>`:""}
 
@@ -951,16 +961,83 @@ function renderResult(d){
       </div>
       ${ptag("interp")}
     </div>
-    <div class="card-body">
-      <div class="prot-alert">
-        <i class="ti ti-alert-triangle prot-alert-ico" aria-hidden="true"></i>
-        <div class="prot-alert-txt">El régimen de <strong>protección ${esc(d.gradoProt)}</strong> prevalece sobre los parámetros de la norma zonal. Toda intervención requiere consulta previa con el Área de Patrimonio del Ayuntamiento de Madrid.</div>
+    <div class="card-body card-split">
+      <div class="card-main">
+        <div class="prot-2col">
+          <div><div class="prot-col-lbl green"><i class="ti ti-check" aria-hidden="true"></i> Obras admitidas</div>
+            <div class="use-tags">${pd.adm.map(o=>`<span class="utag u-perm">${esc(o)}</span>`).join("")}</div></div>
+          <div><div class="prot-col-lbl red"><i class="ti ti-x" aria-hidden="true"></i> Obras prohibidas</div>
+            <div class="use-tags">${pd.proh.map(o=>`<span class="utag u-proh">${esc(o)}</span>`).join("")}</div></div>
+        </div>
       </div>
-      <div class="prot-2col">
-        <div><div class="prot-col-lbl green"><i class="ti ti-check" aria-hidden="true"></i> Obras admitidas</div>
-          <div class="use-tags">${pd.adm.map(o=>`<span class="utag u-perm">${esc(o)}</span>`).join("")}</div></div>
-        <div><div class="prot-col-lbl red"><i class="ti ti-x" aria-hidden="true"></i> Obras prohibidas</div>
-          <div class="use-tags">${pd.proh.map(o=>`<span class="utag u-proh">${esc(o)}</span>`).join("")}</div></div>
+      <div class="card-aside">
+        <div class="prot-alert" style="margin-bottom:0">
+          <i class="ti ti-alert-triangle prot-alert-ico" aria-hidden="true"></i>
+          <div class="prot-alert-txt">El régimen de <strong>protección ${esc(d.gradoProt)}</strong> prevalece sobre los parámetros de la norma zonal. Toda intervención requiere consulta previa con el Área de Patrimonio del Ayuntamiento de Madrid.</div>
+        </div>
+      </div>
+    </div>
+  </div>`:""}
+
+  <!-- CARD LICENCIAS: ÚLTIMAS LICENCIAS URBANÍSTICAS OTORGADAS (DATOS ABIERTOS) -->
+  ${d.licencias&&d.licencias.length?`
+  <div class="card">
+    <div class="card-hdr blue">
+      <div class="card-icon icon-blue"><i class="ti ti-license" aria-hidden="true"></i></div>
+      <div class="card-hdr-text">
+        <div class="card-label">Últimas licencias otorgadas · Portal de datos abiertos</div>
+        <div class="card-title">${d.licencias.length} licencia${d.licencias.length===1?"":"s"} en esta vía/portal</div>
+      </div>
+      ${ptag("dato")}
+    </div>
+    <div class="card-body card-split">
+      <div class="card-main">
+        <div class="exp-list">
+          ${d.licencias.map(li=>`<div class="exp-item">
+            <div class="exp-top"><span class="exp-tipo">${esc(li.tipo||"Licencia")}</span><span class="exp-num">${esc(li.numero||"")}</span></div>
+            <div class="exp-denom">${esc(li.direccion||"—")} · ${esc(li.organo||"—")}</div>
+            <div class="exp-meta">
+              ${li.resolucion?`<span>${esc(li.resolucion)}</span>`:""}
+              ${li.fecha?`<span>${esc(li.fecha)}</span>`:""}
+              ${li.normaZonal?`<span>${esc(li.normaZonal)}</span>`:""}
+            </div>
+          </div>`).join("")}
+        </div>
+      </div>
+      <div class="card-aside">
+        <div class="disc"><i class="ti ti-alert-triangle" aria-hidden="true"></i><p>Fuente: dataset público <a href="https://datos.madrid.es/dataset/640505-0-licencias-urbanisticas-otorgadas" target="_blank" rel="noopener">"Licencias urbanísticas otorgadas"</a> del portal de datos abiertos del Ayuntamiento (actualización mensual, sin geolocalización exacta — filtrado por nombre de vía y número de portal, puede incluir portales adyacentes con numeración similar). No es un listado en tiempo real ni sustituye la consulta oficial de expedientes.</p></div>
+      </div>
+    </div>
+  </div>`:""}
+
+  <!-- CARD ANTECEDENTES: EXPEDIENTES DE PLANEAMIENTO (MODIFICACIONES / PLANES ESPECIALES) -->
+  ${d.expedientes&&d.expedientes.length?`
+  <div class="card">
+    <div class="card-hdr purple">
+      <div class="card-icon icon-purple"><i class="ti ti-file-diff" aria-hidden="true"></i></div>
+      <div class="card-hdr-text">
+        <div class="card-label">Antecedentes · Expedientes de planeamiento</div>
+        <div class="card-title">${d.expedientes.length} expediente${d.expedientes.length===1?"":"s"} sobre este ámbito</div>
+      </div>
+      ${ptag("dato")}
+    </div>
+    <div class="card-body card-split">
+      <div class="card-main">
+        <div class="exp-list">
+          ${d.expedientes.map(e=>{const esp=esExpedienteEspecifico(e.denominacion,d.display_name);return`<div class="exp-item">
+            <div class="exp-top">${e.tipo?`<span class="exp-tipo">${esc(e.tipo)}</span>`:""}<span class="exp-scope ${esp?"exp-scope-edificio":"exp-scope-general"}">${esp?"Este edificio":"Ámbito general"}</span><span class="exp-num">${esc(e.numero||e.figura||"")}</span></div>
+            <div class="exp-denom">${esc(e.denominacion||"—")}</div>
+            <div class="exp-meta">
+              ${e.fase?`<span>${esc(e.fase)}</span>`:""}
+              ${e.fechaAprobacion?`<span>${esc(e.fechaAprobacion)}</span>`:""}
+              ${e.organo?`<span>${esc(e.organo)}</span>`:""}
+              ${e.enlace?`<a class="exp-link" href="${esc(e.enlace)}" target="_blank" rel="noopener">Ver expediente <i class="ti ti-external-link" aria-hidden="true"></i></a>`:""}
+            </div>
+          </div>`}).join("")}
+        </div>
+      </div>
+      <div class="card-aside">
+        <div class="disc"><i class="ti ti-alert-triangle" aria-hidden="true"></i><p>Ordenados por fecha (más recientes primero). El color es una estimación automática: <span style="color:var(--green)">verde</span> si el título del expediente cita el número de portal consultado (probablemente específico de este edificio, p.ej. un Plan Especial); <span style="color:var(--red)">rojo</span> si no lo cita (probablemente de ámbito más amplio, p.ej. una Modificación Puntual del PGOUM o una normativa como la de cubiertas verdes). Revisa cada enlace para confirmarlo.</p></div>
       </div>
     </div>
   </div>`:""}
@@ -983,7 +1060,7 @@ async function geocode(dir){
   const d=await fj(`${GIS.geo}?${p}`,"Geocodificación");
   const pt=(d.candidates||[]).find(c=>c.attributes&&c.attributes.Addr_type==="PointAddress"&&c.attributes.AddNum);
   if(!pt)throw new Error("Portal no localizado. Introduce vía y número exactos: p.ej. Gran Vía 32.");
-  return{lat:pt.location.y,lon:pt.location.x,display_name:pt.address,score:pt.score};
+  return{lat:pt.location.y,lon:pt.location.x,display_name:pt.address,score:pt.score,via:pt.attributes.StName||null,numero:pt.attributes.AddNum||null};
 }
 async function identify(url,lon,lat){
   const p=new URLSearchParams({geometry:`${lon},${lat}`,geometryType:"esriGeometryPoint",sr:"4326",layers:"all",tolerance:"5",mapExtent:`${lon-.001},${lat-.001},${lon+.001},${lat+.001}`,imageDisplay:"800,600,96",returnGeometry:"false",f:"pjson"});
@@ -1066,11 +1143,24 @@ async function getExpedientesPlaneamiento(lat, lon) {
       denominacion: a.EXP_TX_DENOM || null, fase: a.FAS_TX_DENOM || null,
       fechaAprobacion: a.FEX_DT_APROB ? new Date(a.FEX_DT_APROB).toISOString().slice(0, 10) : null,
       organo: a.ORG_TX_DESC || null,
-      enlace: /^https:\/\//.test(a.ENLACE || "") ? a.ENLACE : null,
+      enlace: fixEnlacePlaneamiento(a.ENLACE),
     };
   });
   expedientes.sort((a, b) => (b.fechaAprobacion || "").localeCompare(a.fechaAprobacion || ""));
   return expedientes;
+}
+// El GIS devuelve el enlace de seguimiento con dominios legacy dados de baja
+// (www-s.madrid.es / www-s.munimadrid.es), que redirigen a una página de
+// "servicio no disponible". El mismo visor VSURB_WBVISOR sigue vivo bajo
+// servpub.madrid.es (verificado en vivo), así que se reescribe el dominio
+// conservando la ruta y los parámetros originales del dato oficial.
+function fixEnlacePlaneamiento(raw) {
+  if (!/^https:\/\//.test(raw || "")) return null;
+  try {
+    const u = new URL(raw);
+    if (/^www-s\.(munimadrid|madrid)\.es$/i.test(u.hostname)) u.hostname = "servpub.madrid.es";
+    return u.toString();
+  } catch { return raw; }
 }
 // Referencia catastral y superficie REAL de la parcela (Dirección General
 // del Catastro). La capa "Parcelas Urbanísticas" del visor de planeamiento
@@ -1269,10 +1359,21 @@ async function run(){
     }
     updStep(id3,"i-ok",`<i class="ti ti-check" aria-hidden="true"></i>`,"Compendio normativo obtenido.");
 
+    const id4="s4";
+    addStep(`<span class="spin"></span>`,"i-run","Últimas licencias","Consultando el portal de datos abiertos del Ayuntamiento…",id4);
+    let licencias=[];
+    try{
+      if(window.urbanAgent?.buscarLicencias)licencias=await window.urbanAgent.buscarLicencias({via:geo.via,numero:geo.numero});
+      updStep(id4,"i-ok",`<i class="ti ti-check" aria-hidden="true"></i>`,licencias.length?`${licencias.length} licencia${licencias.length===1?"":"s"} encontrada${licencias.length===1?"":"s"}.`:"Sin licencias registradas en esta vía/portal en el dataset.");
+    }catch(e){
+      updStep(id4,"i-warn",`<i class="ti ti-alert-triangle" aria-hidden="true"></i>`,"No se ha podido consultar el dataset de licencias — se omite este dato.");
+    }
+
     const rec={display_name:geo.display_name,lat:geo.lat,lon:geo.lon,score:geo.score,
       normaRaw,denom,manz,catCond,catProt,gradoRaw,coefZ,gradoProt,nivelUsos,pc,po,pg,pp,
       aproximado:parsed.aproximado,nz:lookup.nz,gd:lookup.gd,pd:lookup.pd,parcela:lookup.parcela,
-      admin:lookup.admin,expedientes:lookup.expedientes,clasificacionSuelo:lookup.clasificacionSuelo,obraNueva:lookup.obraNueva};
+      admin:lookup.admin,expedientes:lookup.expedientes,clasificacionSuelo:lookup.clasificacionSuelo,obraNueva:lookup.obraNueva,
+      licencias};
     saveMem(rec);
     renderResult(rec);
     LAST_RESULT=rec;
@@ -1422,17 +1523,13 @@ async function enviarChat(){
 document.getElementById("chatSend").addEventListener("click",enviarChat);
 document.getElementById("chatInput").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();enviarChat()}});
 document.getElementById("chatClear").addEventListener("click",()=>{CHAT_MSGS=[];renderChat()});
-document.getElementById("chatToggle").addEventListener("click",()=>{
-  const panel=document.getElementById("chatPanel");
-  const hidden=panel.hasAttribute("hidden");
-  if(hidden)panel.removeAttribute("hidden");else panel.setAttribute("hidden","");
-});
 
 // ══════════════════════════════════════════════════════════════
 // AUTO-ACTUALIZACIÓN (expuesto por el proceso principal vía preload)
 // ══════════════════════════════════════════════════════════════
 if(window.urbanAgent){
   document.getElementById("cornerVersion").textContent=`v${window.urbanAgent.appVersion}`;
+  document.getElementById("footerVersion").textContent=`v${window.urbanAgent.appVersion}`;
   const pill=document.getElementById("updatePill"), txt=document.getElementById("updateTxt");
   window.urbanAgent.onUpdateAvailable(v=>{
     txt.textContent=`Actualización ${v} disponible — descargando…`;
