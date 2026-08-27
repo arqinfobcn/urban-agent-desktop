@@ -169,7 +169,6 @@ body{background:var(--bg);font-family:var(--fs);font-size:14px;color:var(--text)
 .source-badge{font-size:10px;font-weight:600;font-family:var(--fm);padding:2px 9px;border-radius:20px;background:var(--purple-bg);color:var(--purple);border:1px solid var(--purple-border);white-space:nowrap}
 .source-txt{font-size:11px;color:var(--text3)}
 
-.corner-version{position:fixed;top:10px;right:12px;font-size:10px;font-family:var(--fm);color:var(--text3);background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:2px 9px;z-index:10}
 .app-footer{text-align:center;margin-top:32px;padding-top:16px;border-top:1px solid var(--border)}
 .footer-txt{font-size:11px;color:var(--text3);font-family:var(--fm);letter-spacing:.02em}
 
@@ -251,8 +250,9 @@ body{background:var(--bg);font-family:var(--fs);font-size:14px;color:var(--text)
 .ficha-input{padding:7px 9px;border-radius:var(--r-sm);border:1px solid var(--border);font-size:12px;font-family:var(--fm);background:var(--surface2);color:var(--text);width:100%}
 
 /* ── CHAT IA ── */
-.chat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;height:calc(100vh - 32px)}
-@media (max-width:980px){.chat-card{height:520px}}
+.chat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;max-height:calc(100vh - 32px)}
+.chat-log{max-height:40vh}
+@media (max-width:980px){.chat-card{max-height:520px}}
 .chat-log{flex:1;min-height:0;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
 .chat-msg{max-width:88%;padding:9px 12px;border-radius:12px;font-size:13px;line-height:1.55;white-space:pre-wrap}
 .chat-msg.user{align-self:flex-end;background:var(--blue);color:#fff;border-bottom-right-radius:3px}
@@ -270,10 +270,9 @@ body{background:var(--bg);font-family:var(--fs);font-size:14px;color:var(--text)
 .chat-hdr-lbl{font-size:11px;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:6px}
 
 /* ── DESCARGAR PDF ── */
-.pdf-bar{display:flex;justify-content:flex-end;margin-bottom:6px}
-.pdf-btn{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--text2);font-size:12px;font-family:var(--fs);cursor:pointer;box-shadow:var(--shadow-sm)}
+.pdf-btn{display:flex;align-items:center;gap:6px;height:34px;padding:0 14px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--surface);color:var(--text2);font-size:13px;font-family:var(--fs);cursor:pointer;white-space:nowrap;flex-shrink:0}
 .pdf-btn:hover:not(:disabled){background:var(--blue-bg);color:var(--blue);border-color:var(--blue-border)}
-.pdf-btn:disabled{opacity:.5;cursor:not-allowed}
+.pdf-btn:disabled{opacity:.4;cursor:not-allowed}
 
 /* Solo se imprimen/exportan las tarjetas de datos (result-stack) — nunca el
    buscador, el histórico de pasos, la barra lateral de chat con la IA, el
@@ -281,18 +280,17 @@ body{background:var(--bg);font-family:var(--fs);font-size:14px;color:var(--text)
 @media print{
   body{background:#fff}
   .page-grid{display:block}
-  .side-col,.search-wrap,.mbar,.legal-disc,.repo-toggle,.repo-panel,
-  .app-header,.app-footer,.corner-version,.pdf-bar,.srow,
+  .side-col,.search-wrap,.mbar,.repo-toggle,.repo-panel,.srow,
   .ficha-upload-btn,#fichaUploadResult{display:none!important}
   .a763-q select{border:none;background:none;padding:2px 0;-webkit-appearance:none;appearance:none;font-weight:600}
-  .card{box-shadow:none;border:1px solid #ccc;break-inside:avoid;margin-bottom:10px}
-  .wrap{max-width:100%;padding:0}
+  .card{box-shadow:none;border:1px solid #ccc;break-inside:avoid;margin-bottom:8px}
+  .wrap{max-width:100%;padding:0;zoom:.78}
+  .app-footer{margin-top:16px}
 }
 </style>
 </head>
 <body>
 
-<div class="corner-version" id="cornerVersion"></div>
 <div class="wrap">
   <div class="app-header">
     <div class="brand-name">Urban Agent · Madrid PGOUM97<span id="brandVersion"></span></div>
@@ -309,6 +307,7 @@ body{background:var(--bg);font-family:var(--fs);font-size:14px;color:var(--text)
           <input class="search-input" id="addr" placeholder="Calle Alcalá 120, Madrid" autocomplete="off">
           <div class="search-divider"></div>
           <button class="search-btn" id="btn">Consultar</button>
+          <button class="pdf-btn" id="pdfExportBtn" type="button" disabled><i class="ti ti-file-type-pdf" aria-hidden="true"></i> Descargar PDF</button>
         </div>
         <div class="search-foot">
           <i class="ti ti-info-circle" aria-hidden="true"></i>
@@ -566,20 +565,19 @@ function renderArt763bisCard(d){
   const nivelDetectado=(d.nivelUsos||"").match(/Nivel\s*([A-E])/i)?.[1]||"";
   const usoIndustrialDetectado=nk(d.gd?.uso||"").includes("INDUSTRIAL");
   const gp=nk(d.gradoProt||"");
-  // El catálogo real de Madrid (capa CAT_CEP) usa 8 categorías, no solo las
-  // 3 que regula el Art. 7.6.3 bis (Integral/Estructural/Ambiental): también
-  // existen Parcial, Singular, Volumétrico, Remitido y Sin Catalogar
-  // (verificado en vivo contra el dataset completo — "Parcial" es de hecho
-  // la categoría más frecuente). Solo prellenamos cuando el valor GIS
-  // coincide con uno de los 3 niveles que el artículo define, o cuando
-  // explícitamente no hay catalogación — el resto de categorías reales
-  // (Parcial, Singular, Volumétrico, Remitido) no tienen una correspondencia
-  // clara y documentada con Nivel 1/2/3, así que NO se adivina: se muestra
-  // el valor real de todos modos, para que el usuario decida.
+  // El catálogo real de Madrid (capa CAT_CEP) usa 8 categorías. El Art. 4.3.4
+  // del compendio (verbatim) confirma que cada uno de los 3 niveles que
+  // regula el Art. 7.6.3 bis se divide en dos grados:
+  //   Nivel 1: a) Singular  b) Integral
+  //   Nivel 2: a) Estructural  b) Volumétrico
+  //   Nivel 3: a) Parcial  b) Ambiental
+  // más "Sin Catalogar" y "Remitido" (este último — Área de Planeamiento
+  // Remitido — no tiene nivel asignado hasta que se redacte ese plan, así
+  // que se deja sin responder en vez de adivinar).
   let protDetectada="";
-  if(gp.includes("INTEGRAL"))protDetectada="1";
-  else if(gp.includes("ESTRUCTURAL"))protDetectada="2";
-  else if(gp.includes("AMBIENTAL"))protDetectada="3";
+  if(gp.includes("INTEGRAL")||gp.includes("SINGULAR"))protDetectada="1";
+  else if(gp.includes("ESTRUCTURAL")||gp.includes("VOLUM"))protDetectada="2";
+  else if(gp.includes("AMBIENTAL")||gp.includes("PARCIAL"))protDetectada="3";
   else if(gp.includes("SIN CATALOGAR"))protDetectada="no_catalogado";
   const protNoMapeable=d.gradoProt&&!protDetectada;
   // Prellenado: SOLO en las celdas donde hay un dato GIS real que lo
@@ -674,8 +672,8 @@ function renderArt763bisCard(d){
         <select id="a763_planta"><option value="" selected>— Sin responder —</option><option value="baja_inferior">Planta baja / inferior a la baja</option><option value="piso">Planta de piso (primera o superior)</option></select>
       </div>
       <div class="a763-q"><label>8. ¿Qué protección? — Nivel de catalogación del edificio</label>
-        ${aselect("a763_proteccion",[["","— Sin responder —"],["no_catalogado","No catalogado"],["1","Nivel 1 (Integral)"],["2","Nivel 2 (Estructural)"],["3","Nivel 3 (Ambiental)"]],preProteccion)}
-        ${preProteccion?`<div class="a763-cita">${protDetectada!=="no_catalogado"?`Prellenado a partir del grado de protección GIS ("${esc(d.gradoProt||"")}"). Revísalo en el Catálogo de Protección y corrígelo si no es correcto.`:d.gradoProt?`Prellenado: el GIS clasifica esta parcela como "${esc(d.gradoProt)}" (sin catalogar). Confírmalo en el Catálogo de Protección.`:"Prellenado: el GIS no devuelve ningún grado de protección para esta parcela, así que se asume no catalogado — confírmalo en el Catálogo de Protección."}</div>`:protNoMapeable?`<div class="a763-cita">El GIS clasifica esta parcela como "${esc(d.gradoProt)}", una categoría real del catálogo (junto a Integral/Estructural/Ambiental hay también Parcial, Singular, Volumétrico y Remitido) que no tiene una correspondencia clara y documentada con los niveles 1/2/3 de este artículo — no se adivina cuál marcar. Consulta el Catálogo de Protección y responde tú.</div>`:`<div class="a763-cita">No se ha podido inferir del dato GIS ("${esc(d.gradoProt||"—")}") — confírmalo en el Catálogo de Protección.</div>`}
+        ${aselect("a763_proteccion",[["","— Sin responder —"],["no_catalogado","No catalogado"],["1","Nivel 1 (Singular / Integral)"],["2","Nivel 2 (Estructural / Volumétrico)"],["3","Nivel 3 (Parcial / Ambiental)"]],preProteccion)}
+        ${preProteccion?`<div class="a763-cita">${protDetectada!=="no_catalogado"?`Prellenado a partir del grado de protección GIS ("${esc(d.gradoProt||"")}"), según el Art. 4.3.4 del compendio (Nivel 1: Singular/Integral · Nivel 2: Estructural/Volumétrico · Nivel 3: Parcial/Ambiental). Revísalo en el Catálogo de Protección y corrígelo si no es correcto.`:d.gradoProt?`Prellenado: el GIS clasifica esta parcela como "${esc(d.gradoProt)}" (sin catalogar). Confírmalo en el Catálogo de Protección.`:"Prellenado: el GIS no devuelve ningún grado de protección para esta parcela, así que se asume no catalogado — confírmalo en el Catálogo de Protección."}</div>`:protNoMapeable?`<div class="a763-cita">El GIS clasifica esta parcela como "${esc(d.gradoProt)}" — probablemente un edificio en Área de Planeamiento Remitido, sin nivel de protección asignado todavía. Consulta el Catálogo de Protección y responde tú.</div>`:`<div class="a763-cita">No se ha podido inferir del dato GIS ("${esc(d.gradoProt||"—")}") — confírmalo en el Catálogo de Protección.</div>`}
       </div>
       <div class="a763-q"><label>9. ¿Existe planeamiento específico vigente? — Estudio de Repercusión validado o Plan Especial de hospedaje aprobado sin ejecutar</label>
         <select id="a763_planeamiento"><option value="" selected>— Sin responder —</option><option value="no">No</option><option value="si">Sí</option></select>
@@ -784,15 +782,15 @@ function aplicarFichaAObraNueva(container,c){
 // PDF" en el diálogo de impresión) — misma regla @media print en ambos
 // casos, así que el resultado visual es el mismo.
 // ══════════════════════════════════════════════════════════════
-function wirePdfExport(container,d){
-  const btn=container.querySelector("#pdfExportBtn");
+function wirePdfExport(){
+  const btn=document.getElementById("pdfExportBtn");
   if(!btn)return;
   const originalLabel=btn.innerHTML;
   btn.addEventListener("click",async()=>{
     if(!window.urbanAgent?.exportarPDF){ window.print(); return; }
     btn.disabled=true;btn.innerHTML=`<span class="spin"></span> Generando PDF…`;
     try{
-      const nombreSugerido=`Urban-Agent_${(d.display_name||"informe").replace(/[^\p{L}\p{N}]+/gu,"_")}.pdf`;
+      const nombreSugerido=`${(LAST_RESULT?.display_name||"Urban-Agent-informe").replace(/[^\p{L}\p{N}]+/gu,"_")}.pdf`;
       const r=await window.urbanAgent.exportarPDF(nombreSugerido);
       if(r&&r.error)throw new Error(r.error);
     }catch(e){
@@ -802,6 +800,7 @@ function wirePdfExport(container,d){
     }
   });
 }
+wirePdfExport();
 function wireFichaUpload(container,d){
   const btn=container.querySelector("#fichaUploadBtn");
   if(!btn)return;
@@ -873,11 +872,20 @@ function renderResult(d){
   const techoText = d.obraNueva?rangeText(d.obraNueva.techo," m²t"):null;
   const ocupText = d.obraNueva?rangeText(d.obraNueva.ocupacion," m²"):null;
   const fo = d.obraNueva?.formulaOficial||null;
+  // El fondo edificable de los grados 1º/3º (Norma Zonal 1) solo consta
+  // dibujado en el Plano de Condiciones de Edificación (Art. 8.1.14.1) — no
+  // hay ninguna capa GIS que lo publique como dato (comprobado en vivo).
+  // Se deja la celda editable para que lo introduzcas tú al consultar ese
+  // plano. En los grados donde el propio artículo dice explícitamente que
+  // no hay fondo máximo (Art. 8.1.14.2) se indica "No aplica".
+  const fondoCell = gd?.ed?.formulaS==="fondo_plano_ce"
+    ? `<div class="metric"><div class="metric-lbl">Fondo edificable (m) <span style="font-weight:400;text-transform:none">— Plano CE</span></div><input type="text" class="ficha-input" id="on_fondoInput" placeholder="Introduce el valor del Plano CE" style="width:100%;margin-top:2px"></div>`
+    : gd?.ed?.formulaS==="parcela_edificable"
+    ? `<div class="metric"><div class="metric-lbl">Fondo edificable</div><div class="metric-val muted">No aplica fondo edificable</div></div>`
+    : gd?param("Fondo edificable",gd.ed.fondo):"";
 
   const wrap=document.createElement("div");wrap.className="result-stack";
   wrap.innerHTML=`
-
-  <div class="pdf-bar"><button class="pdf-btn" id="pdfExportBtn" type="button"><i class="ti ti-file-type-pdf" aria-hidden="true"></i> Descargar PDF</button></div>
 
   <!-- CARD 1: LOCALIZACIÓN GIS -->
   <div class="card">
@@ -1010,7 +1018,7 @@ function renderResult(d){
           <div class="metric"><div class="metric-lbl">Ocupación máx. en planta</div><div class="metric-val purple" id="on_ocupacion">${ocupText?esc(ocupText):"—"}</div></div>
           <div class="metric"><div class="metric-lbl">Nº plantas estimado (aprox.)</div><div class="metric-val amber" id="on_plantas">${d.obraNueva?.plantasEst!=null?`${d.obraNueva.plantasEst} plantas`:"—"}</div></div>
           ${param("Altura máxima permitida",gd.ed.alt)}
-          ${param("Fondo edificable",gd.ed.fondo)}
+          ${fondoCell}
         </div>
         <div class="sdiv"></div>
         <button class="ficha-upload-btn" id="fichaUploadBtn" type="button"><i class="ti ti-paperclip" aria-hidden="true"></i> Arrastra aquí la Ficha de Condiciones Urbanísticas (PDF), o haz clic para elegirla</button>
@@ -1165,7 +1173,9 @@ function renderResult(d){
     </div>
   </div>`;
 
-  logEl().appendChild(wrap);wireArt763bis(wrap,d);wireFichaUpload(wrap,d);wirePdfExport(wrap,d);wrap.scrollIntoView({behavior:"smooth",block:"end"});
+  logEl().appendChild(wrap);wireArt763bis(wrap,d);wireFichaUpload(wrap,d);
+  const pdfBtn=document.getElementById("pdfExportBtn");if(pdfBtn)pdfBtn.disabled=false;
+  wrap.scrollIntoView({behavior:"smooth",block:"end"});
 }
 
 async function geocode(dir){
@@ -1417,8 +1427,9 @@ function loadMem(i){
   LAST_RESULT=d;
 }
 function clearMem(){
-  MEM=[];AI=-1;renderMem();
+  MEM=[];AI=-1;renderMem();LAST_RESULT=null;
   logEl().innerHTML=`<div class="init-screen"><div class="init-ico"><i class="ti ti-building-estate" aria-hidden="true"></i></div><div class="init-title">Historial borrado</div><div class="init-sub">Introduce una nueva dirección para comenzar.</div></div>`;
+  const pdfBtn=document.getElementById("pdfExportBtn");if(pdfBtn)pdfBtn.disabled=true;
 }
 
 async function run(){
@@ -1641,7 +1652,6 @@ document.getElementById("chatClear").addEventListener("click",()=>{CHAT_MSGS=[];
 // AUTO-ACTUALIZACIÓN (expuesto por el proceso principal vía preload)
 // ══════════════════════════════════════════════════════════════
 if(window.urbanAgent){
-  document.getElementById("cornerVersion").textContent=`v${window.urbanAgent.appVersion}`;
   document.getElementById("footerVersion").textContent=`v${window.urbanAgent.appVersion}`;
   document.getElementById("brandVersion").textContent=` · Version ${window.urbanAgent.appVersion}`;
   const pill=document.getElementById("updatePill"), txt=document.getElementById("updateTxt");
