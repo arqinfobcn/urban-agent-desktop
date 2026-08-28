@@ -817,7 +817,7 @@ function wireFondoInput(container,d){
     const C=gd?.ed?.cCorrector;
     const geometria=d.parcela?.geometria;
     if(!geometria){resEl.innerHTML=`<div class="disc" style="margin-top:8px"><i class="ti ti-alert-circle" aria-hidden="true"></i><p>No se puede calcular: no se ha obtenido la geometría real de la parcela desde el Catastro para este punto.</p></div>`;return;}
-    if(Z==null||!C){resEl.innerHTML=`<div class="disc" style="margin-top:8px"><i class="ti ti-alert-circle" aria-hidden="true"></i><p>No se puede calcular: ${Z==null?`el Coeficiente Z de esta manzana no es un valor único en el GIS (aparece como "${esc(d.coefZ||"—")}"), consulta el Plano CE para resolverlo`:"falta el coeficiente C de este grado"}.</p></div>`;return;}
+    if(Z==null||!C){resEl.innerHTML=`<div class="disc" style="margin-top:8px"><i class="ti ti-alert-circle" aria-hidden="true"></i><p>No se puede calcular: ${Z==null?`el GIS no devuelve ningún Coeficiente Z para esta manzana (aparece como "${esc(d.coefZ||"—")}"), consulta el Plano CE para resolverlo`:"falta el coeficiente C de este grado"}.</p></div>`;return;}
     const S=calcularSDesdeFondo(geometria,{lat:d.lat,lon:d.lon},fondoM);
     if(S==null){resEl.innerHTML=`<div class="disc" style="margin-top:8px"><i class="ti ti-alert-circle" aria-hidden="true"></i><p>No ha sido posible calcular la superficie computable con ese fondo — la geometría catastral de esta parcela no es compatible con este cálculo (forma muy irregular, o el fondo introducido supera la profundidad real del solar). Prueba con "Adjuntar Ficha" para el valor oficial exacto.</p></div>`;return;}
     const techo=round2(S*Z*C);
@@ -828,7 +828,10 @@ function wireFondoInput(container,d){
     setText("on_ocupacion",`${ocupacion.toLocaleString("es-ES")} m²`);
     setText("on_plantas",plantas!=null?`${plantas} plantas`:"—");
     const ptagEl=container.querySelector("#on_ptag");if(ptagEl)ptagEl.innerHTML=ptag("concl");
-    resEl.innerHTML=`<div class="disc" style="margin-top:8px;border-color:#16a34a;background:#f0fdf4"><i class="ti ti-calculator" aria-hidden="true"></i><p><b>Calculado con el fondo introducido (${esc(String(fondoM).replace(".",","))} m):</b> S = ${esc(S.toLocaleString("es-ES"))} m² (recortada de la geometría catastral real de la parcela por la alineación de fachada) × Z = ${esc(String(Z).replace(".",","))} × C = ${esc(String(C).replace(".",","))} = <b>${esc(techo.toLocaleString("es-ES"))} m²t</b>. Aproximación: asume que el fondo máximo corre paralelo al borde de fachada más cercano al portal — contrasta con el Plano CE real antes de usarlo en una decisión.</p></div>`;
+    // Ya no aplica: ese aviso decía que no se podía calcular automáticamente.
+    const disc2=container.querySelector("#on_disc2");if(disc2)disc2.remove();
+    const zEsMultiple=/\//.test(String(d.coefZ||""));
+    resEl.innerHTML=`<div class="disc" style="margin-top:8px;border-color:#16a34a;background:#f0fdf4"><i class="ti ti-calculator" aria-hidden="true"></i><p><b>Calculado con el fondo introducido (${esc(String(fondoM).replace(".",","))} m):</b> S = ${esc(S.toLocaleString("es-ES"))} m² (recortada de la geometría catastral real de la parcela por la alineación de fachada) × Z = ${esc(String(Z).replace(".",","))}${zEsMultiple?` (mayor valor del rango del GIS, "${esc(d.coefZ)}")`:""} × C = ${esc(String(C).replace(".",","))} = <b>${esc(techo.toLocaleString("es-ES"))} m²t</b>. Aproximación: asume que el fondo máximo corre paralelo al borde de fachada más cercano al portal — contrasta con el Plano CE real antes de usarlo en una decisión.</p></div>`;
   }
   btn.addEventListener("click",actualizar);
   input.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();actualizar();}});
@@ -1371,12 +1374,17 @@ function parsePercentRange(ocStr) {
 function round2(n) { return Math.round(n * 100) / 100; }
 // El "Coeficiente Z" del GIS a veces no es un número limpio — algunas
 // manzanas devuelven algo como "0 / 7" (varios valores según la parte de
-// la edificación, a resolver en el Plano CE). parseFloat("0 / 7") daría
-// "0" silenciosamente, un resultado incorrecto — así que solo se acepta
-// como Z real un valor que sea un único número.
+// la edificación — p.ej. planta baja frente al resto — a resolver con
+// detalle en el Plano CE). parseFloat("0 / 7") daría "0" silenciosamente,
+// un resultado incorrecto. Se toma el mayor de los valores del rango — es
+// el volumen máximo edificable admitido en esa manzana según Z (el más
+// favorable / el que se usa como cálculo de máximo aprovechamiento) — y se
+// avisa igualmente de que el Plano CE puede matizarlo por zonas del
+// edificio.
 function parseZValue(raw) {
-  const s = String(raw ?? "").trim().replace(",", ".");
-  return /^\d+(\.\d+)?$/.test(s) ? parseFloat(s) : null;
+  const s = String(raw ?? "").trim();
+  const nums = [...s.matchAll(/\d+(?:[.,]\d+)?/g)].map((m) => parseFloat(m[0].replace(",", ".")));
+  return nums.length ? Math.max(...nums) : null;
 }
 
 // ══════════════════════════════════════════════════════════════
