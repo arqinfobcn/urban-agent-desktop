@@ -118,6 +118,8 @@ body{background:var(--bg);font-family:var(--fs);font-size:14px;color:var(--text)
 .metric-val.purple{color:var(--purple)}
 .metric-val.amber{color:var(--amber)}
 .metric-val.muted{color:var(--text3);font-weight:400;font-style:italic;font-size:12px;font-family:var(--fs)}
+.metric-val.valor-corregido{color:var(--purple);cursor:help}
+.metric.metric-corregido{background:var(--purple-bg);border-color:var(--purple-border)}
 
 /* ── ALERTA GIS ── */
 .gis-alert{display:flex;gap:8px;align-items:flex-start;background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:var(--r-sm);padding:10px 12px;margin-top:10px}
@@ -761,7 +763,28 @@ function renderFichaReview(campos,nombreArchivo){
 function aplicarFichaAObraNueva(container,c){
   const num2=(n)=>n==null?"—":n.toLocaleString("es-ES");
   const plantas=(c.techoEdificable&&c.ocupacionMaxima&&c.ocupacionMaxima>0)?Math.floor(c.techoEdificable/c.ocupacionMaxima):null;
-  const set=(id,txt)=>{const el=container.querySelector("#"+id);if(el)el.textContent=txt};
+  // Compara con lo que ya había en pantalla (estimación, cálculo con fondo
+  // introducido, o vacío) — si la Ficha oficial trae un valor distinto, la
+  // celda se marca en morado como "corregida por la Ficha oficial" y
+  // guarda el valor anterior en el title (tooltip) para que quede
+  // trazable de dónde venía. Si coincide, no se marca nada.
+  const set=(id,nuevoTxt)=>{
+    const el=container.querySelector("#"+id);
+    if(!el)return;
+    const antes=el.textContent.trim();
+    el.textContent=nuevoTxt;
+    const cambia=antes!==""&&antes!=="—"&&antes!==nuevoTxt;
+    const metricBox=el.closest(".metric");
+    if(cambia){
+      el.classList.add("valor-corregido");
+      if(metricBox)metricBox.classList.add("metric-corregido");
+      el.title=`La Ficha oficial corrige la estimación de la app: antes ${antes}, ahora ${nuevoTxt}.`;
+    }else{
+      el.classList.remove("valor-corregido");
+      if(metricBox)metricBox.classList.remove("metric-corregido");
+      el.removeAttribute("title");
+    }
+  };
   if(c.superficieParcela!=null)set("on_superficie",`${num2(c.superficieParcela)} m²`);
   set("on_techo",c.techoEdificable!=null?`${num2(c.techoEdificable)} m²t`:"—");
   set("on_ocupacion",c.ocupacionMaxima!=null?`${num2(c.ocupacionMaxima)} m²${c.ocupacionPorcentaje!=null?` (${num2(c.ocupacionPorcentaje)}%)`:""}`:"—");
@@ -769,9 +792,11 @@ function aplicarFichaAObraNueva(container,c){
   const ptagEl=container.querySelector("#on_ptag");
   if(ptagEl)ptagEl.innerHTML=ptag("dato");
   const discEl=container.querySelector("#on_disc");
-  if(discEl)discEl.innerHTML=`<i class="ti ti-check" aria-hidden="true"></i><p>Valores de la Ficha de Condiciones Urbanísticas oficial, confirmados por ti — ya no son una estimación. Nº de plantas sigue siendo un cálculo derivado (techo ÷ ocupación).</p>`;
+  if(discEl)discEl.innerHTML=`<i class="ti ti-check" aria-hidden="true"></i><p>Valores de la Ficha de Condiciones Urbanísticas oficial, confirmados por ti — ya no son una estimación. Las celdas en <b style="color:var(--purple)">morado</b> son las que la Ficha ha corregido respecto al cálculo o estimación anterior de la app (pasa el cursor por encima para ver el valor previo). Nº de plantas sigue siendo un cálculo derivado (techo ÷ ocupación).</p>`;
   const disc2=container.querySelector("#on_disc2");
   if(disc2)disc2.remove();
+  const fondoRes=container.querySelector("#on_fondoResultado");
+  if(fondoRes)fondoRes.innerHTML="";
 }
 // ══════════════════════════════════════════════════════════════
 // DESCARGAR PDF — exporta solo las tarjetas de datos (result-stack), nunca
